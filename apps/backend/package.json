@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
+    "bcrypt": "^6.0.0",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
@@ -31,7 +32,11 @@
     "ws": "^8.18.0",
     "zod": "^3.24.0"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
