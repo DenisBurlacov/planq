@@ -112,7 +112,7 @@ universal-team-prompt-v1.2.md  ← после следующего проект�
 |Версия|Проект|Ключевые изменения|
 |---|---|---|
 |v1.0|—|первая версия, базовые роли и стандарты|
-|v1.1|PLANQ (в процессе)|DevOps/Security/Data/PM роли, intake вопросы, монетизация, банк идей, ретроспективы, прокачка ролей|
+|v1.1|PLANQ (в процессе)|DevOps/Security/Data/PM роли, intake вопросы, монетизация, банк идей, ретроспективы, прокачка ролей. Уроки из Stage 1-2: Volta+Husky PATH, ESLint flat config, Express 5 типизация, Prisma seed вне rootDir, pnpm approve-builds|
 
 ### Принципы эволюции
 
@@ -455,6 +455,12 @@ v1.1 → v1.2
 ```
 - v1.1 (PLANQ): версионирование API и структура папок —
   закладывать до первой строки кода, не после
+- v1.1 (PLANQ Stage 1): Volta PATH не попадает в git hooks —
+  всегда экспортировать VOLTA_HOME в .husky/pre-commit
+- v1.1 (PLANQ Stage 1): ESLint flat config (v10+) — использовать
+  eslint.config.js, не .eslintrc.json (deprecated)
+- v1.1 (PLANQ Stage 2): prisma/ вне rootDir — не включать в
+  tsconfig include, seed живёт отдельно от src/
 ```
 
 ### Backend Senior
@@ -462,6 +468,10 @@ v1.1 → v1.2
 ```
 - v1.1 (PLANQ): единый формат ошибок с requestId —
   закладывать с первого endpoint, рефакторить потом дорого
+- v1.1 (PLANQ Stage 1): Express 5 + TypeScript — требует
+  явную аннотацию const app: Express (inferred type ошибка)
+- v1.1 (PLANQ Stage 2): seed данные — использовать throw
+  вместо non-null assertion для поиска, ESLint strict не пропустит
 ```
 
 ### Frontend Senior
@@ -487,7 +497,10 @@ v1.1 → v1.2
 ### DevOps Engineer
 
 ```
-[заполняется после завершения PLANQ]
+- v1.1 (PLANQ Stage 1): pnpm approve-builds — создавать
+  .pnpm-approve-builds.json заранее, интерактивный prompt блокирует CI
+- v1.1 (PLANQ Stage 1): версии пакетов — всегда проверять
+  актуальные на npm, не угадывать (ts-jest 30 не существует)
 ```
 
 ### Security Engineer
@@ -502,6 +515,10 @@ v1.1 → v1.2
 ```
 - v1.1 (PLANQ): soft delete vs hard delete — обсуждать
   явно в начале, влияет на схему и все запросы
+- v1.1 (PLANQ Stage 2): seed через upsert — идемпотентность
+  из коробки, повторный запуск безопасен. Всегда upsert, не create
+- v1.1 (PLANQ Stage 2): bcrypt в seed — native addon,
+  требует approve-builds, учитывать при настройке CI
 ```
 
 ### Tech Writer

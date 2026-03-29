@@ -217,14 +217,16 @@ git push origin feature/stage-N-название
 
 ## Текущее состояние
 
-**Версия промта:** v1.7 **Текущий этап:** не начат **Последняя сессия:** — **Система:** не определена (Ubuntu / CachyOS / macOS) **gh CLI:** не установлен **GitHub репо:** не создан **URL репо:** —
+**Версия промта:** v1.7 **Текущий этап:** Этап 3 — Бэкенд + тесты **Последняя сессия:** 2026-03-29 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
+
+**Окружение:** Node v22.22.2 (Volta) | pnpm v10.33.0 | Docker v29.3.1 | WebStorm
 
 ### Прогресс по этапам
 
 **planq-app:**
 
-- [ ] Этап 1 — Инфраструктура
-- [ ] Этап 2 — База данных
+- [x] Этап 1 — Инфраструктура ✅
+- [x] Этап 2 — База данных ✅
 - [ ] Этап 3 — Бэкенд + тесты
 - [ ] Этап 4 — WebSocket
 - [ ] Этап 5 — Фронтенд
@@ -241,8 +243,8 @@ git push origin feature/stage-N-название
 
 |Этап|Ветка|Статус|
 |---|---|---|
-|1|`feature/stage-1-infrastructure`|не создана|
-|2|`feature/stage-2-database`|не создана|
+|1|`feature/stage-1-infrastructure`|завершена, запушена|
+|2|`feature/stage-2-database`|PR #1 создан|
 |3|`feature/stage-3-backend`|не создана|
 |4|`feature/stage-4-websocket`|не создана|
 |5|`feature/stage-5-frontend`|не создана|
@@ -254,11 +256,27 @@ git push origin feature/stage-N-название
 
 ### Принятые решения (сверх промта)
 
-пусто
+- Node 22 LTS вместо Node 20 (актуальный LTS на март 2026)
+- ESLint 10 flat config (eslint.config.js) вместо .eslintrc.json (ESLint 8 deprecated)
+- Jest 29.x вместо 30 (ts-jest 30 не существует)
+- Express 5 (вместо 4) — актуальная стабильная версия
+- Volta как менеджер Node (глобально), .husky/pre-commit экспортирует VOLTA_HOME
+- bcrypt для хэширования паролей в seed и auth
+
+### Решения команды перед Этапом 3
+
+- **Ритуал этапа:** перед стартом — каждая роль высказывается. После — ретроспектива + обновление промтов. Без исключений.
+- **Этап 3 разбить на атомарные коммиты:** middleware → auth → products → cart → orders → checkout → profile → wishlist → reviews → promotions → health/reset
+- **Soft delete middleware:** централизованный Prisma middleware для фильтрации deletedAt, не копипаст в каждом запросе
+- **Swagger синхронно:** каждый новый endpoint → сразу Swagger, не в конце этапа
+- **`/health` с проверкой БД:** не просто `{ status: "ok" }`, а реальный ping к PostgreSQL
+- **`POST /api/test/reset`:** реальный сброс к seed, защищён X-Reset-Token с первого дня
+- **Каждый сервис → сразу юнит тест.** Каждый endpoint → сразу интеграционный тест + Swagger
+- **Security с первого endpoint:** helmet, CORS, rate limiting, JWT refresh rotation, Zod валидация
 
 ### Известные баги и технический долг
 
-пусто
+- pnpm approve-builds — Prisma/esbuild/bcrypt build scripts требуют .pnpm-approve-builds.json, интерактивный prompt блокирует CI
 
 ### Отклонения от оригинального дизайна
 
@@ -1328,36 +1346,60 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 
 Заполняется Claude Code в конце каждого этапа — пока детали свежи. Формат фиксированный, ответы короткие и конкретные. По завершении всего проекта — финальная ретроспектива переносится в универсальный промт.
 
-### Этап 1 — Инфраструктура
+### Этап 1 — Инфраструктура ✅ (2026-03-29)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- pnpm workspaces + монорепо структура встала с первого раза
+- ESLint 10 flat config + Prettier + Husky — все проверки проходят чисто
+- Docker Compose с PostgreSQL — healthcheck, поднялся сразу
+- Tailwind настроен через CSS переменные дизайн системы — темы готовы
 
 Что создало проблемы:
-[заполняется после завершения]
+- Volta PATH не попадает в git hooks (Husky) — пришлось явно экспортировать
+  VOLTA_HOME и PATH в .husky/pre-commit
+- Express 5 + TypeScript — inferred type ошибка, нужна явная аннотация Express
+- Jest 30 / ts-jest 30 не существуют — промт указывал ^30, откатили на 29.x
+- pnpm approve-builds — интерактивный prompt блокирует автоматизацию,
+  пришлось создать .pnpm-approve-builds.json вручную
+- WebStorm не видит Node через Volta — потребовалась ручная настройка пути
+- SSH ключ был не загружен в agent — блокировал push
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- сразу добавить type: "module" в корневой package.json
+- сразу добавить @types/node в backend devDependencies
+- сразу создать .prettierignore (pnpm-lock.yaml, промты)
+- проверять актуальные версии пакетов перед записью в package.json
+- Husky pre-commit — сразу закладывать Volta PATH
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- Volta + Husky: всегда экспортировать VOLTA_HOME в .husky/pre-commit
+- Express 5 + TS: требует явной типизации const app: Express
+- pnpm approve-builds: создавать .pnpm-approve-builds.json заранее
+- Версии пакетов: всегда проверять актуальные версии, не угадывать
 ```
 
-### Этап 2 — База данных
+### Этап 2 — База данных ✅ (2026-03-29)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- Prisma schema — 12 моделей встали с первого раза, миграция чистая
+- upsert в seed — идемпотентность из коробки, повторный запуск безопасен
+- Edge cases в seed сразу — длинные названия, stock 0, пустые images, рейтинг 1.0/5.0
+- bcrypt для паролей — правильно с первого дня
 
 Что создало проблемы:
-[заполняется после завершения]
+- prisma/ в tsconfig include ломает typecheck (rootDir конфликт)
+- non-null assertion (!) в seed — ESLint strict не пропускает, заменили на helper
+- bcrypt требует approve-builds (native addon) — добавили в .pnpm-approve-builds.json
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- сразу исключить prisma/ из tsconfig include (seed вне src/)
+- использовать helper функцию для поиска по seed данным вместо find()!
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- Prisma seed: не включать prisma/ в tsconfig include — rootDir конфликт
+- Seed: использовать throw вместо non-null assertion для поиска по данным
 ```
 
 ### Этап 3 — Бэкенд + тесты
