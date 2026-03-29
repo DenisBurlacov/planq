@@ -2,11 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
     "module": "ESNext",
     "target": "ES2022",
     "lib": ["ES2022"],
-    "types": ["node", "jest"],
+    "types": ["node", "jest", "bcrypt", "swagger-jsdoc"],
     "baseUrl": ".",
     "paths": {
       "@services/*": ["src/services/*"],
