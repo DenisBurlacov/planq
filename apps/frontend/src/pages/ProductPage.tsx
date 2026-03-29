@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,7 @@ export function ProductPage() {
   const { increment } = useCartStore();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const qc = useQueryClient();
 
   const [activeImage, setActiveImage] = useState(0);
@@ -52,7 +53,7 @@ export function ProductPage() {
 
   const handleAddToCart = async () => {
     if (!accessToken) {
-      toast('info', 'Please sign in');
+      navigate('/login', { state: { from: location } });
       return;
     }
     setAddingToCart(true);
@@ -69,7 +70,7 @@ export function ProductPage() {
 
   const handleToggleWishlist = async () => {
     if (!accessToken) {
-      toast('info', 'Please sign in');
+      navigate('/login', { state: { from: location } });
       return;
     }
     setIsWishlisted(prev => !prev);
