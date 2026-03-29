@@ -12,7 +12,8 @@
       "@hooks/*": ["src/hooks/*"],
       "@store/*": ["src/store/*"],
       "@api/*": ["src/api/*"],
-      "@types/*": ["src/types/*"],
+      "@appTypes/*": ["src/types/*"],
+      "@ws/*": ["src/ws/*"],
       "@locales/*": ["src/locales/*"],
       "@styles/*": ["src/styles/*"]
     }
