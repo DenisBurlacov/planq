@@ -29,10 +29,10 @@ export const productsApi = {
   getCategories: () => apiFetch<Category[]>('/api/v1/categories'),
 
   getReviews: (productId: string, page = 1) =>
-    apiFetch<PaginatedResponse<Review>>(`/api/v1/reviews/${productId}?page=${page}`),
+    apiFetch<PaginatedResponse<Review>>(`/api/v1/reviews/product/${productId}?page=${page}`),
 
   createReview: (productId: string, rating: number, comment?: string) =>
-    apiFetch<Review>(`/api/v1/reviews/${productId}`, {
+    apiFetch<Review>(`/api/v1/reviews/product/${productId}`, {
       method: 'POST',
       body: JSON.stringify({ rating, comment }),
     }),

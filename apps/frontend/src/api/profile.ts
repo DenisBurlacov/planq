@@ -20,5 +20,5 @@ export const profileApi = {
     }),
 
   getTransactions: (page = 1) =>
-    apiFetch<PaginatedResponse<Transaction>>(`/api/v1/profile/transactions?page=${page}`),
+    apiFetch<PaginatedResponse<Transaction>>(`/api/v1/profile/wallet?page=${page}`),
 };
