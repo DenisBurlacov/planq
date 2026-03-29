@@ -17,6 +17,6 @@
       "@ws/*": ["src/ws/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "prisma/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }
