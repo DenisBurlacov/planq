@@ -3,6 +3,7 @@ import { OrderStatus, PaymentMethod, TransactionType } from '@prisma/client';
 import prisma from '@utils/prisma.js';
 import { AppError } from '@utils/AppError.js';
 import logger from '@utils/logger.js';
+import { schedulePaymentResult } from '@ws/handlers/payment.js';
 
 export const CheckoutSchema = z.object({
   shippingAddress: z.string().min(5),
@@ -150,5 +151,9 @@ export async function checkout(userId: string, input: CheckoutInput) {
   });
 
   logger.info({ message: 'Order created', orderId: order.id, userId });
+
+  // Async WS notification — does not block the response
+  schedulePaymentResult(userId, order.id);
+
   return order;
 }
