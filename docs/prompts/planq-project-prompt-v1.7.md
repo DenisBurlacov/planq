@@ -217,7 +217,7 @@ git push origin feature/stage-N-название
 
 ## Текущее состояние
 
-**Версия промта:** v1.7 **Текущий этап:** Этап 4 — WebSocket **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
+**Версия промта:** v1.7 **Текущий этап:** Этап 5 — Фронтенд **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
 
 **Окружение:** Node v22.22.2 (Volta) | pnpm v10.33.0 | Docker v29.3.1 | WebStorm
 
@@ -228,7 +228,7 @@ git push origin feature/stage-N-название
 - [x] Этап 1 — Инфраструктура ✅
 - [x] Этап 2 — База данных ✅
 - [x] Этап 3 — Бэкенд + тесты ✅
-- [ ] Этап 4 — WebSocket
+- [x] Этап 4 — WebSocket ✅
 - [ ] Этап 5 — Фронтенд
 - [ ] Этап 6 — Мониторинг
 - [ ] Этап 7 — Интеграция
@@ -246,7 +246,7 @@ git push origin feature/stage-N-название
 |1|`feature/stage-1-infrastructure`|завершена, запушена|
 |2|`feature/stage-2-database`|PR #1 создан|
 |3|`feature/stage-3-backend`|создана, в работе|
-|4|`feature/stage-4-websocket`|не создана|
+|4|`feature/stage-4-websocket`|создана, в работе|
 |5|`feature/stage-5-frontend`|не создана|
 |6|`feature/stage-6-monitoring`|не создана|
 |7|`feature/stage-7-integration`|не создана|
@@ -1464,20 +1464,25 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 - читать schema.prisma перед написанием сервисов
 ```
 
-### Этап 4 — WebSocket
+### Этап 4 — WebSocket ✅ (2026-03-30)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- WsServer singleton pattern — чистый DI, сервисы импортируют и используют без конфигурации
+- jest.useFakeTimers() + runAllTimersAsync() — schedulePaymentResult протестирован без реального setTimeout
+- @ws/* alias уже был настроен в tsconfig и jest.config.cjs — ноль дополнительной конфигурации
+- 22 тестов, всё зелёное с первого запуска
 
-Что создало проблемы:
-[заполняется после завершения]
+Что создало проблемы (1 ошибка):
+1. eslint.config.js ignores: паттерн '*.config.cjs' не матчит файл в поддиректории.
+   Нужен '**/*.config.cjs' — globstar для рекурсивного поиска
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- Добавить **/*.config.cjs в eslint ignores сразу при создании jest.config.cjs (Этап 3)
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- ESLint ignores: паттерны для файлов в поддиректориях требуют **/ префикс (globstar)
+- jest.useFakeTimers() — стандарт для тестирования setTimeout/setInterval логики
 ```
 
 ### Этап 5 — Фронтенд
