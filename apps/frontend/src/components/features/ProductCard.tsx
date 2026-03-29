@@ -43,7 +43,10 @@ export function ProductCard({
   const isOutOfStock = product.stock === 0;
 
   return (
-    <div className="group relative rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden transition-shadow hover:shadow-lg">
+    <div
+      data-testid="product-card"
+      className="group relative rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden transition-shadow hover:shadow-lg"
+    >
       {/* Image */}
       <Link to={`/catalog/${product.id}`}>
         <div className="relative h-48 bg-[var(--bg-sidebar)] overflow-hidden">
@@ -115,6 +118,7 @@ export function ProductCard({
 
         {/* Add to cart */}
         <Button
+          data-testid="add-to-cart-button"
           size="sm"
           className="mt-3 w-full"
           disabled={isOutOfStock}
