@@ -1,0 +1,59 @@
+{
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty",
+    "browseCatalog": "Browse Catalog",
+    "summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "total": "Total",
+    "promoCode": "Promo Code",
+    "promoPlaceholder": "Enter promo code",
+    "applyPromo": "Apply",
+    "removeItem": "Remove",
+    "checkout": "Proceed to Checkout"
+  },
+  "steps": {
+    "address": "Address",
+    "payment": "Payment",
+    "confirm": "Confirm"
+  },
+  "address": {
+    "title": "Shipping Address",
+    "placeholder": "Street, city, postal code"
+  },
+  "payment": {
+    "title": "Payment Method",
+    "card": "Credit / Debit Card",
+    "wallet": "Wallet",
+    "walletBalance": "Balance: {{amount}}",
+    "walletInsufficient": "Insufficient balance",
+    "cardNumber": "Card Number",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiry": "Expiry",
+    "cvv": "CVV",
+    "testCards": "Test Cards",
+    "cardSuccess": "4242 4242 4242 4242 — Success",
+    "cardDeclined": "4000 0000 0000 0002 — Declined",
+    "cardInsufficient": "4000 0000 0000 9995 — Insufficient funds"
+  },
+  "processing": {
+    "title": "Processing Payment",
+    "subtitle": "Please wait while we process your payment...",
+    "doNotClose": "Do not close this window"
+  },
+  "success": {
+    "title": "Order Placed!",
+    "subtitle": "Your order has been confirmed.",
+    "orderId": "Order ID: {{id}}",
+    "viewOrder": "View Order",
+    "continueShopping": "Continue Shopping"
+  },
+  "failed": {
+    "title": "Payment Failed",
+    "subtitle": "We couldn't process your payment.",
+    "tryAgain": "Try Again",
+    "reason": "Reason: {{reason}}"
+  },
+  "placeOrder": "Place Order"
+}
