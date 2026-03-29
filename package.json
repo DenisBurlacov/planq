@@ -1,0 +1,42 @@
+{
+  "name": "planq",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PLANQ — furniture e-commerce platform",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "pnpm -r --parallel run typecheck",
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "planq",
+    "e-commerce",
+    "furniture"
+  ],
+  "author": "DenisBurlacov",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "volta": {
+    "node": "22.22.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.2"
+  }
+}
