@@ -112,7 +112,7 @@ universal-team-prompt-v1.2.md  ← после следующего проект�
 |Версия|Проект|Ключевые изменения|
 |---|---|---|
 |v1.0|—|первая версия, базовые роли и стандарты|
-|v1.1|PLANQ (в процессе)|DevOps/Security/Data/PM роли, intake вопросы, монетизация, банк идей, ретроспективы, прокачка ролей. Уроки из Stage 1-2: Volta+Husky PATH, ESLint flat config, Express 5 типизация, Prisma seed вне rootDir, pnpm approve-builds|
+|v1.1|PLANQ (в процессе)|DevOps/Security/Data/PM роли, intake вопросы, монетизация, банк идей, ретроспективы, прокачка ролей. Уроки из Stage 1-2: Volta+Husky PATH, ESLint flat config, Express 5 типизация, Prisma seed вне rootDir, pnpm approve-builds. Уроки Stage 3: Prisma v6 $use удалён, tsconfig split pattern, Jest ESM mocks __esModule, jest.config.cjs, tsx watch flag order, dotenv first import, Express 5 req.params cast, читать schema перед сервисами, PM ретроспектива без напоминаний|
 
 ### Принципы эволюции
 
@@ -448,6 +448,10 @@ v1.1 → v1.2
 ```
 - v1.1 (PLANQ): scope может незаметно вырасти в 3 раза
   за один брейншторм — фиксировать MVP жёстко в начале
+- v1.1 (PLANQ Stage 3): перед стартом нового этапа — PM проверяет
+  что ветка предыдущего этапа замержена в develop. Это чеклист PM, не напоминание заказчика
+- v1.1 (PLANQ Stage 3): ретроспектива — обязанность PM. Документировать
+  все ошибки и уроки в промт без напоминаний заказчика. После каждого этапа, не в конце проекта
 ```
 
 ### Architect
@@ -461,6 +465,11 @@ v1.1 → v1.2
   eslint.config.js, не .eslintrc.json (deprecated)
 - v1.1 (PLANQ Stage 2): prisma/ вне rootDir — не включать в
   tsconfig include, seed живёт отдельно от src/
+- v1.1 (PLANQ Stage 3): tsconfig split pattern — основной tsconfig.json
+  без rootDir (чтобы тесты проходили), отдельный tsconfig.build.json
+  с rootDir: "src" только для production сборки
+- v1.1 (PLANQ Stage 3): читать CHANGELOG при переходе на новую major версию
+  зависимости — Prisma v6 удалила $use middleware без deprecation warning
 ```
 
 ### Backend Senior
@@ -472,6 +481,18 @@ v1.1 → v1.2
   явную аннотацию const app: Express (inferred type ошибка)
 - v1.1 (PLANQ Stage 2): seed данные — использовать throw
   вместо non-null assertion для поиска, ESLint strict не пропустит
+- v1.1 (PLANQ Stage 3): Prisma v6 — $use middleware удалён.
+  Soft delete: explicit deletedAt: null в каждом findMany/findFirst
+- v1.1 (PLANQ Stage 3): читать schema.prisma перед написанием сервисов —
+  не угадывать имена relation полей (Cart.items, не Cart.cartItems)
+- v1.1 (PLANQ Stage 3): Express 5 req.params — тип string | string[],
+  всегда добавлять as string cast: req.params.id as string
+- v1.1 (PLANQ Stage 3): tsx watch — флаг --tsconfig идёт ПОСЛЕ
+  subcommand: tsx watch --tsconfig tsconfig.json src/server.ts
+- v1.1 (PLANQ Stage 3): dotenv — import 'dotenv/config' ПЕРВЫМ импортом
+  в server.ts. Без этого DATABASE_URL пустой при старте Prisma Client
+- v1.1 (PLANQ Stage 3): getAuthUser(req) utility вместо req.user! —
+  ESLint no-non-null-assertion не пропустит, лучше явный helper с AppError
 ```
 
 ### Frontend Senior
@@ -501,6 +522,12 @@ v1.1 → v1.2
   .pnpm-approve-builds.json заранее, интерактивный prompt блокирует CI
 - v1.1 (PLANQ Stage 1): версии пакетов — всегда проверять
   актуальные на npm, не угадывать (ts-jest 30 не существует)
+- v1.1 (PLANQ Stage 3): Jest config — использовать jest.config.cjs
+  (module.exports = {...}), не .ts без ts-node
+- v1.1 (PLANQ Stage 3): Jest ESM mock default export — всегда добавлять
+  __esModule: true в factory объект: jest.mock('...', () => ({ __esModule: true, default: ... }))
+- v1.1 (PLANQ Stage 3): moduleNameMapper для path aliases с .js суффиксом —
+  паттерн должен быть optional: '^@utils/(.*?)(\\.js)?': '<rootDir>/src/utils/$1'
 ```
 
 ### Security Engineer
