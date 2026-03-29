@@ -11,7 +11,7 @@ export function Footer() {
                 <div className="h-2.5 w-2.5 rounded-sm bg-accent" />
                 <div className="h-2.5 w-2.5 rounded-sm bg-accent/60" />
                 <div className="h-2.5 w-2.5 rounded-sm bg-accent/60" />
-                <div className="h-2.5 w-2.5 rounded-sm bg-accent" />
+                <div className="h-2.5 w-2.5 rounded-sm bg-accent/30" />
               </div>
               <span className="font-bold text-[var(--text-primary)]">PLANQ</span>
             </div>

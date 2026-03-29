@@ -67,7 +67,7 @@ export function Navbar() {
               className="px-2 py-1 text-xs font-medium rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
               aria-label="Toggle language"
             >
-              {i18n.language === 'en' ? 'RU' : 'EN'}
+              {i18n.language === 'en' ? 'EN' : 'RU'}
             </button>
 
             <button
