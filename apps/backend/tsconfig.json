@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "ESNext",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["node", "jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@services/*": ["src/services/*"],
+      "@routes/*": ["src/routes/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@middleware/*": ["src/middleware/*"],
+      "@utils/*": ["src/utils/*"],
+      "@ws/*": ["src/ws/*"]
+    }
+  },
+  "include": ["src/**/*", "tests/**/*", "prisma/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

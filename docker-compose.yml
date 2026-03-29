@@ -1,0 +1,79 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-planq}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-planq_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-planq_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-planq}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-planq}:${POSTGRES_PASSWORD:-planq_secret}@postgres:5432/${POSTGRES_DB:-planq_db}
+      CORS_ORIGIN: http://localhost:3000
+      RESET_TOKEN: ${RESET_TOKEN:-super_secret_reset_token_change_in_production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+
+  # Monitoring stack (optional)
+  # Start with: docker compose --profile monitoring up
+  grafana:
+    image: grafana/grafana:latest
+    profiles: ['monitoring']
+    restart: unless-stopped
+    ports:
+      - '${GRAFANA_PORT:-3100}:3000'
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/monitoring/grafana:/etc/grafana/provisioning
+
+  loki:
+    image: grafana/loki:latest
+    profiles: ['monitoring']
+    restart: unless-stopped
+    volumes:
+      - ./docker/monitoring/loki:/etc/loki
+      - loki_data:/loki
+
+  promtail:
+    image: grafana/promtail:latest
+    profiles: ['monitoring']
+    restart: unless-stopped
+    volumes:
+      - ./docker/monitoring/promtail:/etc/promtail
+      - /var/log:/var/log:ro
+
+volumes:
+  postgres_data:
+  grafana_data:
+  loki_data:
