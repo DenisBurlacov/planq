@@ -217,7 +217,7 @@ git push origin feature/stage-N-название
 
 ## Текущее состояние
 
-**Версия промта:** v1.7 **Текущий этап:** Этап 2 — База данных **Последняя сессия:** 2026-03-29 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
+**Версия промта:** v1.7 **Текущий этап:** Этап 3 — Бэкенд + тесты **Последняя сессия:** 2026-03-29 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
 
 **Окружение:** Node v22.22.2 (Volta) | pnpm v10.33.0 | Docker v29.3.1 | WebStorm
 
@@ -226,7 +226,7 @@ git push origin feature/stage-N-название
 **planq-app:**
 
 - [x] Этап 1 — Инфраструктура ✅
-- [ ] Этап 2 — База данных
+- [x] Этап 2 — База данных ✅
 - [ ] Этап 3 — Бэкенд + тесты
 - [ ] Этап 4 — WebSocket
 - [ ] Этап 5 — Фронтенд
@@ -244,7 +244,7 @@ git push origin feature/stage-N-название
 |Этап|Ветка|Статус|
 |---|---|---|
 |1|`feature/stage-1-infrastructure`|завершена, запушена|
-|2|`feature/stage-2-database`|не создана|
+|2|`feature/stage-2-database`|PR #1 создан|
 |3|`feature/stage-3-backend`|не создана|
 |4|`feature/stage-4-websocket`|не создана|
 |5|`feature/stage-5-frontend`|не создана|
@@ -1366,20 +1366,27 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 - Версии пакетов: всегда проверять актуальные версии, не угадывать
 ```
 
-### Этап 2 — База данных
+### Этап 2 — База данных ✅ (2026-03-29)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- Prisma schema — 12 моделей встали с первого раза, миграция чистая
+- upsert в seed — идемпотентность из коробки, повторный запуск безопасен
+- Edge cases в seed сразу — длинные названия, stock 0, пустые images, рейтинг 1.0/5.0
+- bcrypt для паролей — правильно с первого дня
 
 Что создало проблемы:
-[заполняется после завершения]
+- prisma/ в tsconfig include ломает typecheck (rootDir конфликт)
+- non-null assertion (!) в seed — ESLint strict не пропускает, заменили на helper
+- bcrypt требует approve-builds (native addon) — добавили в .pnpm-approve-builds.json
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- сразу исключить prisma/ из tsconfig include (seed вне src/)
+- использовать helper функцию для поиска по seed данным вместо find()!
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- Prisma seed: не включать prisma/ в tsconfig include — rootDir конфликт
+- Seed: использовать throw вместо non-null assertion для поиска по данным
 ```
 
 ### Этап 3 — Бэкенд + тесты
