@@ -682,12 +682,18 @@ async function main() {
   console.log(`  Promo codes: 3`);
 }
 
-main()
-  .catch(e => {
-    // eslint-disable-next-line no-console
-    console.error('Seed failed:', e);
-    process.exit(1);
-  })
-  .finally(() => {
-    void prisma.$disconnect();
-  });
+// Export for use in /api/test/reset endpoint
+export default main;
+
+// Run directly when executed as a script
+if (process.argv[1]?.endsWith('seed.ts') || process.argv[1]?.endsWith('seed.js')) {
+  main()
+    .catch(e => {
+      // eslint-disable-next-line no-console
+      console.error('Seed failed:', e);
+      process.exit(1);
+    })
+    .finally(() => {
+      void prisma.$disconnect();
+    });
+}
