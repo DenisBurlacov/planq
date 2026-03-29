@@ -260,10 +260,23 @@ git push origin feature/stage-N-название
 - ESLint 10 flat config (eslint.config.js) вместо .eslintrc.json (ESLint 8 deprecated)
 - Jest 29.x вместо 30 (ts-jest 30 не существует)
 - Express 5 (вместо 4) — актуальная стабильная версия
+- Volta как менеджер Node (глобально), .husky/pre-commit экспортирует VOLTA_HOME
+- bcrypt для хэширования паролей в seed и auth
+
+### Решения команды перед Этапом 3
+
+- **Ритуал этапа:** перед стартом — каждая роль высказывается. После — ретроспектива + обновление промтов. Без исключений.
+- **Этап 3 разбить на атомарные коммиты:** middleware → auth → products → cart → orders → checkout → profile → wishlist → reviews → promotions → health/reset
+- **Soft delete middleware:** централизованный Prisma middleware для фильтрации deletedAt, не копипаст в каждом запросе
+- **Swagger синхронно:** каждый новый endpoint → сразу Swagger, не в конце этапа
+- **`/health` с проверкой БД:** не просто `{ status: "ok" }`, а реальный ping к PostgreSQL
+- **`POST /api/test/reset`:** реальный сброс к seed, защищён X-Reset-Token с первого дня
+- **Каждый сервис → сразу юнит тест.** Каждый endpoint → сразу интеграционный тест + Swagger
+- **Security с первого endpoint:** helmet, CORS, rate limiting, JWT refresh rotation, Zod валидация
 
 ### Известные баги и технический долг
 
-- pnpm approve-builds — Prisma/esbuild build scripts игнорируются, нужно approve вручную
+- pnpm approve-builds — Prisma/esbuild/bcrypt build scripts требуют .pnpm-approve-builds.json, интерактивный prompt блокирует CI
 
 ### Отклонения от оригинального дизайна
 
