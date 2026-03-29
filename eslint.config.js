@@ -26,6 +26,7 @@ export default tseslint.config(
       'test-results/',
       '*.config.js',
       '*.config.ts',
+      '**/*.config.cjs',
     ],
   }
 );
