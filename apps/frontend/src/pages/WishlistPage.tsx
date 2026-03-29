@@ -53,7 +53,7 @@ export function WishlistPage() {
     );
   }
 
-  if (!data?.items.length) {
+  if (!data?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <Heart className="h-16 w-16 text-[var(--text-secondary)]" />
@@ -68,10 +68,10 @@ export function WishlistPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">
-        Wishlist ({data.items.length})
+        Wishlist ({data.length})
       </h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {data.items.map(({ product }) => (
+        {data.map(({ product }) => (
           <ProductCard
             key={product.id}
             product={product}
