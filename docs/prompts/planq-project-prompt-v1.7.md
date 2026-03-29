@@ -217,7 +217,7 @@ git push origin feature/stage-N-название
 
 ## Текущее состояние
 
-**Версия промта:** v1.7 **Текущий этап:** Этап 5 — Фронтенд **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
+**Версия промта:** v1.7 **Текущий этап:** Этап 6 — Мониторинг **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
 
 **Окружение:** Node v22.22.2 (Volta) | pnpm v10.33.0 | Docker v29.3.1 | WebStorm
 
@@ -229,7 +229,7 @@ git push origin feature/stage-N-название
 - [x] Этап 2 — База данных ✅
 - [x] Этап 3 — Бэкенд + тесты ✅
 - [x] Этап 4 — WebSocket ✅
-- [ ] Этап 5 — Фронтенд
+- [x] Этап 5 — Фронтенд ✅
 - [ ] Этап 6 — Мониторинг
 - [ ] Этап 7 — Интеграция
 - [ ] Этап 8 — CI/CD
@@ -1485,20 +1485,46 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 - jest.useFakeTimers() — стандарт для тестирования setTimeout/setInterval логики
 ```
 
-### Этап 5 — Фронтенд
+### Этап 5 — Фронтенд ✅ (2026-03-30)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- Zustand persist + devtools — store готов за 10 минут, SSR hydration не нужна
+- React Query v5 placeholderData prev → prev — плавная пагинация без единой строки extra кода
+- apiFetch с 401 auto-refresh — реализовано однократно, работает для всех 18 API-файлов
+- useWebSocket hook с reconnect — изолирован, страницы checkout/order-detail подключили без дублирования
+- data-testid на всех интерактивных элементах с первого коммита — zero QA долг
+- Husky + lint-staged сработали сразу: prettier + eslint --fix на каждый коммит
 
-Что создало проблемы:
-[заполняется после завершения]
+Что создало проблемы (5 ошибок):
+1. Алиас @types конфликтует с зарезервированным namespace TypeScript.
+   TypeScript трактует @types/* как пространство имён деклараций, не как path alias.
+   Ошибка TS6137 во всех 18 файлах с импортами.
+   Решение: переименовать alias в vite.config.ts и tsconfig.json: @types → @appTypes,
+   затем bulk replace в src/ через sed.
+2. import.meta.env даёт TS2339 — vite/client типы не подключены.
+   Решение: создать src/vite-env.d.ts с /// <reference types="vite/client" />.
+3. Alias @ws/* не добавлен во frontend vite.config.ts и tsconfig.json —
+   присутствовал только в backend. Ошибка TS2307 в useWebSocket import.
+   Решение: добавить '@ws' в оба конфига frontend.
+4. Импорт { useState } в CheckoutPage — объявлен, не использован (TS6133/ESLint).
+   Решение: удалить строку импорта.
+5. @typescript-eslint/no-invalid-void-type — apiFetch<void> запрещён в strict режиме.
+   void валиден только как return type, не как generic аргумент.
+   Решение: заменить apiFetch<void> → apiFetch<undefined> во всех API-файлах.
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- Сразу называть alias @appTypes, не @types — TypeScript reserved namespace известен
+- Создавать vite-env.d.ts в шаблоне этапа 5, не добавлять постфактум
+- Добавлять @ws alias во frontend конфиг одновременно с backend (один шаблон)
+- Использовать apiFetch<undefined> вместо apiFetch<void> с первого файла
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- Vite/TS: alias @types/* — зарезервировано TypeScript, использовать @appTypes или @models
+- Vite/TS frontend: всегда создавать vite-env.d.ts с /// <reference types="vite/client" />
+- apiFetch<void>: в strict TS void нельзя как generic arg — использовать undefined
+- Path aliases: добавлять одновременно в vite.config.ts И tsconfig.json — иначе Vite
+  разрешает, а TypeScript ругается (или наоборот)
 ```
 
 ### Этап 6 — Мониторинг
