@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { ProductCard } from '@components/features/ProductCard';
@@ -15,6 +15,8 @@ export function HomePage() {
   const { accessToken } = useAuthStore();
   const { increment } = useCartStore();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { data, isLoading } = useQuery({
     queryKey: ['products', 'home'],
@@ -23,7 +25,7 @@ export function HomePage() {
 
   const handleAddToCart = async (product: Product) => {
     if (!accessToken) {
-      toast('info', 'Please sign in to add items to cart');
+      navigate('/login', { state: { from: location } });
       return;
     }
     try {

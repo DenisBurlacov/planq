@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '@components/features/ProductCard';
@@ -19,6 +20,8 @@ export function CatalogPage() {
   const { accessToken } = useAuthStore();
   const { increment } = useCartStore();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [query, setQuery] = useState<ProductsQuery>({ page: 1, limit: 12 });
   const [search, setSearch] = useState('');
@@ -43,7 +46,7 @@ export function CatalogPage() {
 
   const handleAddToCart = async (product: Product) => {
     if (!accessToken) {
-      toast('info', 'Please sign in to add items to cart');
+      navigate('/login', { state: { from: location } });
       return;
     }
     try {
@@ -57,7 +60,7 @@ export function CatalogPage() {
 
   const handleToggleWishlist = async (productId: string) => {
     if (!accessToken) {
-      toast('info', 'Please sign in to save items');
+      navigate('/login', { state: { from: location } });
       return;
     }
     const isWishlisted = wishlistedIds.has(productId);
