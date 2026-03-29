@@ -531,6 +531,10 @@ v1.1 → v1.2
   __esModule: true в factory объект: jest.mock('...', () => ({ __esModule: true, default: ... }))
 - v1.1 (PLANQ Stage 3): moduleNameMapper для path aliases с .js суффиксом —
   паттерн должен быть optional: '^@utils/(.*?)(\\.js)?': '<rootDir>/src/utils/$1'
+- v1.1 (PLANQ Stage 4): ESLint ignores для файлов в поддиректориях —
+  паттерн '*.config.cjs' не матчит вложенные пути, нужен '**/*.config.cjs'
+- v1.1 (PLANQ Stage 4): тестирование setTimeout/async — jest.useFakeTimers() +
+  await jest.runAllTimersAsync() в beforeEach/afterEach блоке
 ```
 
 ### Security Engineer
