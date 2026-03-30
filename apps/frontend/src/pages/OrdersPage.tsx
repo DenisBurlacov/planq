@@ -31,7 +31,10 @@ export function OrdersPage() {
 
   if (!data?.items.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
+      <div
+        data-testid="empty-state"
+        className="flex flex-col items-center justify-center py-24 gap-4"
+      >
         <Package className="h-16 w-16 text-[var(--text-secondary)]" />
         <p className="text-[var(--text-secondary)]">No orders yet</p>
         <Link to="/catalog" className="text-accent hover:underline text-sm">
@@ -44,9 +47,14 @@ export function OrdersPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Orders</h1>
-      <div className="space-y-4">
+      <div data-testid="orders-list" className="space-y-4">
         {data.items.map(order => (
-          <Link key={order.id} to={`/orders/${order.id}`} className="block">
+          <Link
+            key={order.id}
+            to={`/orders/${order.id}`}
+            className="block"
+            data-testid="order-item"
+          >
             <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5 hover:border-accent transition-colors">
               <div className="flex items-center justify-between mb-3">
                 <div>

@@ -1,6 +1,10 @@
 {
   "title": "Profile",
   "settings": "Settings",
+  "tabs": {
+    "settings": "Settings",
+    "security": "Security"
+  },
   "wallet": {
     "title": "Wallet",
     "balance": "Balance",
