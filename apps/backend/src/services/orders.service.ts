@@ -57,11 +57,15 @@ export async function checkout(userId: string, input: CheckoutInput) {
     throw new AppError('CART_EMPTY', 'Cart is empty', 400);
   }
 
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+
   // Calculate total
-  let total = cart.items.reduce((sum, item) => {
-    const price = item.product.salePrice ?? item.product.price;
-    return sum + price * item.quantity;
-  }, 0);
+  let total = round2(
+    cart.items.reduce((sum, item) => {
+      const price = item.product.salePrice ?? item.product.price;
+      return sum + price * item.quantity;
+    }, 0)
+  );
 
   // Apply promo code
   if (input.promoCode) {
@@ -79,7 +83,7 @@ export async function checkout(userId: string, input: CheckoutInput) {
         400
       );
     }
-    total = total * (1 - promo.discountPercent / 100);
+    total = round2(total * (1 - promo.discountPercent / 100));
     await prisma.promoCode.update({
       where: { code: input.promoCode },
       data: { currentUses: { increment: 1 } },

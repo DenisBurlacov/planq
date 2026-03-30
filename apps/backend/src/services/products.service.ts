@@ -64,7 +64,7 @@ export async function getProducts(query: ProductsQuery) {
 
 export async function getProductById(id: string) {
   const product = await prisma.product.findFirst({
-    where: { id },
+    where: { id, deletedAt: null },
     include: { category: true, reviews: { where: { deletedAt: null }, take: 10 } },
   });
 
