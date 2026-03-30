@@ -237,8 +237,8 @@ git push origin feature/stage-N-название
 - [x] Этап 5 — Фронтенд ✅
 - [x] Этап 6 — CI/CD ✅
 - [x] Этап 7 — Мониторинг ✅
-- [ ] Этап 8 — Интеграция
-- [ ] Этап 9 — Документация
+- [x] Этап 8 — UI + Контент ✅
+- [ ] Этап 9 — Документация + LOCATORS.md
 
 **planq-tests-js (студенческий этап — вне скоупа команды):**
 
@@ -1360,24 +1360,30 @@ _UI-компоненты для QA-практики (обязательно пр
 
 **Этап 7 — Мониторинг** ✅ Grafana + Loki + Promtail, docker-compose `--profile monitoring`, Promtail Docker SD scraping, Grafana datasource + dashboard auto-provisioning
 
-**Этап 8 — UI-обогащение + Интеграция** Цель: максимально насытить проект UI-компонентами для QA-практики студентов. Скоуп зафиксирован командой (2026-03-30):
+**Этап 8 — UI + Контент** ✅ Закрыт 2026-03-30. PR #17 → develop → main.
 
-_P1 (обязательно):_
-- Checkbox-фильтры по категории в каталоге (`?category=` query param)
-- Modal — подтверждение удаления товара из корзины
-- Tabs на ProfilePage — вкладки «Данные» / «Безопасность»
-- Toast типы — error/warning визуально отличимы от success (цвет + иконка)
-- Empty state для Wishlist и Orders (`data-testid="empty-state"`)
+_Выполнено (8.1):_
+- ✅ Checkbox-фильтры по категории в каталоге
+- ✅ Modal — подтверждение удаления товара из корзины
+- ✅ Tabs на ProfilePage — вкладки «Настройки» / «Безопасность»
+- ✅ Toast — цветная левая граница по типу
+- ✅ Empty state для Wishlist и Orders (`data-testid="empty-state"`)
+- ✅ data-testid="orders-list", "order-item", "wishlist-grid"
 
-_P2 (если влезет):_
-- Breadcrumb на ProductPage и CheckoutPage
-- Tooltip на кнопке «добавить в вишлист»
+_Выполнено (8.2):_
+- ✅ Seed: 10 категорий (+ Декор, Текстиль, Освещение, Хранение), 62 товара, все Unsplash-фото проверены (16 битых ID исправлено)
+- ✅ HomePage: Hero с бейджем + статистикой + dual CTA, плитка категорий, Best Sellers, Sale Banner
+- ✅ ProductCard: hover lift + Quick View overlay + Wishlist tooltip; data-testid
+- ✅ ProductPage: галерея h-96 + thumbnail strip, Breadcrumb, Accordion (4 секции), полные data-testids
+- ✅ Новые компоненты: `Breadcrumb`, `Accordion`
+- ✅ Navbar: 13 data-testid (logo, links, cart-badge, auth buttons, dropdown)
+- ✅ NotFoundPage: data-testids + Browse Catalog CTA
+- ✅ CheckoutPage: Breadcrumb (Home → Cart → Checkout)
+- ✅ docs/LOCATORS.md: 70+ data-testid, разбиты по страницам, намеренные отсутствия
 
-_QA-аудит:_ после реализации — проверить все `data-testid`, зафиксировать список «есть намеренно / нет намеренно» для студентов.
+⚠️ _Урок: часть Unsplash ID даёт 404. Проверять через curl с User-Agent браузера перед коммитом seed._
 
-⚠️ _Урок: конкретный список UI-компонентов обсуждался при написании промта v1.7 но не был детализирован. Исправлено: скоуп зафиксирован до начала кодинга._
-
-**Этап 9 — Документация** полный комплект docs/, CHANGELOG v1.0, LICENSE, SECURITY.md
+**Этап 9 — Документация + LOCATORS.md** полный комплект docs/, CHANGELOG v1.0, LICENSE, SECURITY.md, LOCATORS.md
 
 **Этап 10 — planq-tests-js** инфраструктура тестового репо, POM, fixtures, helpers, E2E тесты, API тесты, CI
 
