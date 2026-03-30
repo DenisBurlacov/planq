@@ -144,19 +144,29 @@ export function CatalogPage() {
             <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
               {t('filters.category')}
             </label>
-            <select
-              className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none"
-              onChange={e =>
-                setQuery(q => ({ ...q, categoryId: e.target.value || undefined, page: 1 }))
-              }
-            >
-              <option value="">{t('filters.allCategories')}</option>
+            <div data-testid="category-filter" className="mt-1 space-y-1 max-h-36 overflow-y-auto">
               {categories?.map(cat => (
-                <option key={cat.id} value={cat.id}>
+                <label
+                  key={cat.id}
+                  className="flex items-center gap-2 text-sm cursor-pointer py-0.5"
+                >
+                  <input
+                    type="checkbox"
+                    data-testid={`category-checkbox-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    checked={query.categoryId === cat.id}
+                    onChange={() =>
+                      setQuery(q => ({
+                        ...q,
+                        categoryId: q.categoryId === cat.id ? undefined : cat.id,
+                        page: 1,
+                      }))
+                    }
+                    className="rounded"
+                  />
                   {cat.name}
-                </option>
+                </label>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="flex gap-2 items-end col-span-1">
