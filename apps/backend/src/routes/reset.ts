@@ -1,8 +1,13 @@
 import { Router, type Router as ExpressRouter } from 'express';
 import type { Request, Response, NextFunction } from 'express';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { AppError } from '@utils/AppError.js';
 import logger from '@utils/logger.js';
 import { wsServer } from '@ws/wsServer.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const router: ExpressRouter = Router();
 
@@ -41,7 +46,11 @@ router.post('/reset', async (req: Request, res: Response, next: NextFunction) =>
   try {
     logger.info({ message: 'DB reset triggered', requestId: req.requestId });
 
-    const { default: runSeed } = await import('../../prisma/seed.js');
+    // Use runtime path to avoid TypeScript rootDir error (seed.ts is outside src/)
+    const seedPath = join(__dirname, '../../prisma/seed.js');
+
+    const { default: runSeed } = await import(seedPath);
+
     await runSeed();
 
     logger.info({ message: 'DB reset completed', requestId: req.requestId });
