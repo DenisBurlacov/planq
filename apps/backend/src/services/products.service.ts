@@ -11,6 +11,11 @@ export const ProductsQuerySchema = z.object({
     .string()
     .optional()
     .transform(v => v === 'true'),
+  onSale: z
+    .string()
+    .optional()
+    .transform(v => v === 'true'),
+  sort: z.enum(['newest', 'priceAsc', 'priceDesc', 'rating']).optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });
@@ -18,10 +23,11 @@ export const ProductsQuerySchema = z.object({
 export type ProductsQuery = z.infer<typeof ProductsQuerySchema>;
 
 export async function getProducts(query: ProductsQuery) {
-  const { categoryId, search, minPrice, maxPrice, inStock, page, limit } = query;
+  const { categoryId, search, minPrice, maxPrice, inStock, onSale, sort, page, limit } = query;
   const skip = (page - 1) * limit;
 
   const where = {
+    deletedAt: null,
     ...(categoryId && { categoryId }),
     ...(search && {
       OR: [
@@ -32,10 +38,24 @@ export async function getProducts(query: ProductsQuery) {
     ...(minPrice !== undefined && { price: { gte: minPrice } }),
     ...(maxPrice !== undefined && { price: { lte: maxPrice } }),
     ...(inStock && { stock: { gt: 0 } }),
+    ...(onSale && { salePrice: { not: null } }),
   };
 
+  const orderBy = (() => {
+    switch (sort) {
+      case 'priceAsc':
+        return { price: 'asc' as const };
+      case 'priceDesc':
+        return { price: 'desc' as const };
+      case 'rating':
+        return { rating: 'desc' as const };
+      default:
+        return { createdAt: 'desc' as const };
+    }
+  })();
+
   const [items, total] = await Promise.all([
-    prisma.product.findMany({ where, skip, take: limit, include: { category: true } }),
+    prisma.product.findMany({ where, orderBy, skip, take: limit, include: { category: true } }),
     prisma.product.count({ where }),
   ]);
 

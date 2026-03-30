@@ -45,11 +45,11 @@ export function CartPage() {
   const discountAmount = promoDiscount ? subtotal * (promoDiscount / 100) : 0;
   const total = subtotal - discountAmount;
 
-  const handleUpdateQuantity = async (itemId: string, newQty: number) => {
+  const handleUpdateQuantity = async (productId: string, newQty: number) => {
     if (newQty < 1) return;
-    setUpdatingItem(itemId);
+    setUpdatingItem(productId);
     try {
-      await cartApi.update(itemId, newQty);
+      await cartApi.update(productId, newQty);
       await qc.invalidateQueries({ queryKey: ['cart'] });
     } catch {
       toast('error', 'Failed to update');
@@ -58,10 +58,10 @@ export function CartPage() {
     }
   };
 
-  const handleRemove = async (itemId: string) => {
-    setUpdatingItem(itemId);
+  const handleRemove = async (productId: string) => {
+    setUpdatingItem(productId);
     try {
-      await cartApi.remove(itemId);
+      await cartApi.remove(productId);
       await qc.invalidateQueries({ queryKey: ['cart'] });
       toast('success', 'Item removed');
     } catch {
@@ -149,8 +149,8 @@ export function CartPage() {
                     </Link>
                     <button
                       data-testid="cart-item-remove"
-                      onClick={() => handleRemove(item.id)}
-                      disabled={updatingItem === item.id}
+                      onClick={() => handleRemove(item.productId)}
+                      disabled={updatingItem === item.productId}
                       className="ml-2 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -160,8 +160,8 @@ export function CartPage() {
                     <div className="flex items-center gap-2">
                       <button
                         data-testid="cart-item-decrease"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1 || updatingItem === item.id}
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
+                        disabled={item.quantity <= 1 || updatingItem === item.productId}
                         className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--bg-sidebar)] disabled:opacity-50"
                       >
                         <Minus className="h-3 w-3" />
@@ -174,8 +174,8 @@ export function CartPage() {
                       </span>
                       <button
                         data-testid="cart-item-increase"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                        disabled={updatingItem === item.id}
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
+                        disabled={updatingItem === item.productId}
                         className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--bg-sidebar)] disabled:opacity-50"
                       >
                         <Plus className="h-3 w-3" />
@@ -241,7 +241,12 @@ export function CartPage() {
             data-testid="checkout-button"
             className="mt-4 w-full"
             onClick={() =>
-              navigate('/checkout', { state: { promoCode: promoDiscount ? promoCode : undefined } })
+              navigate('/checkout', {
+                state: {
+                  promoCode: promoDiscount ? promoCode : undefined,
+                  promoDiscount: promoDiscount ?? undefined,
+                },
+              })
             }
           >
             {t('cart.checkout')}
