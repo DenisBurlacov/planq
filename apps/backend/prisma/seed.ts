@@ -10,23 +10,23 @@ async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
 }
 
-// Unsplash photo URLs — real furniture & home decor photos
+// Unsplash photo URLs — verified working (200 with browser UA)
 const PHOTOS = {
   // Living Room
-  sofa1: 'https://images.unsplash.com/photo-1555041469-b8035584d43b?w=600&h=400&fit=crop',
+  sofa1: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop',
   sofa2: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop',
   sofa3: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&h=400&fit=crop',
   coffeeTable1: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&h=400&fit=crop',
   coffeeTable2: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop',
-  floorLamp1: 'https://images.unsplash.com/photo-1507149651823-06db76b17ee3?w=600&h=400&fit=crop',
+  floorLamp1: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600&h=400&fit=crop',
   floorLamp2: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600&h=400&fit=crop',
   bookshelf1: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop',
-  rug1: 'https://images.unsplash.com/photo-1600166898405-ababb987f8e4?w=600&h=400&fit=crop',
+  rug1: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=600&h=400&fit=crop',
   tvStand1: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&h=400&fit=crop',
   armchair1: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop',
   // Bedroom
   bed1: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop',
-  bed2: 'https://images.unsplash.com/photo-1588046130851-a6b9b9cc1a3a?w=600&h=400&fit=crop',
+  bed2: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=600&h=400&fit=crop',
   bed3: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=600&h=400&fit=crop',
   bedsideTable1:
     'https://images.unsplash.com/photo-1595526051245-4506e0005bd0?w=600&h=400&fit=crop',
@@ -38,14 +38,14 @@ const PHOTOS = {
   diningTable2: 'https://images.unsplash.com/photo-1550226891-ef816aed4a98?w=600&h=400&fit=crop',
   diningChair1: 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=600&h=400&fit=crop',
   kitchenIsland1:
-    'https://images.unsplash.com/photo-1565538810643-a18eee985c5f?w=600&h=400&fit=crop',
-  kitchenShelf1: 'https://images.unsplash.com/photo-1556909114-a5a5a6a7e6a6?w=600&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=600&h=400&fit=crop',
+  kitchenShelf1: 'https://images.unsplash.com/photo-1550226891-ef816aed4a98?w=600&h=400&fit=crop',
   barStool1: 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=600&h=400&fit=crop',
   // Bathroom
   bathroomCabinet1:
     'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=600&h=400&fit=crop',
   towelRack1: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=600&h=400&fit=crop',
-  laundryBasket1: 'https://images.unsplash.com/photo-1558997519-a3ebb7dc2ee4?w=600&h=400&fit=crop',
+  laundryBasket1: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=600&h=400&fit=crop',
   showerShelf1: 'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=600&h=400&fit=crop',
   vanityStool1: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=600&h=400&fit=crop',
   // Office
@@ -53,7 +53,7 @@ const PHOTOS = {
     'https://images.unsplash.com/photo-1593642634315-48f5414c3ad9?w=600&h=400&fit=crop',
   standingDesk2:
     'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=400&fit=crop',
-  officeChair1: 'https://images.unsplash.com/photo-1589301760014-a3cbca7d7a83?w=600&h=400&fit=crop',
+  officeChair1: 'https://images.unsplash.com/photo-1596079890744-c1a0462d0975?w=600&h=400&fit=crop',
   officeChair2: 'https://images.unsplash.com/photo-1596079890744-c1a0462d0975?w=600&h=400&fit=crop',
   monitorStand1:
     'https://images.unsplash.com/photo-1593640495253-23196b27a87f?w=600&h=400&fit=crop',
@@ -62,45 +62,46 @@ const PHOTOS = {
   deskOrganizer1:
     'https://images.unsplash.com/photo-1593640495253-23196b27a87f?w=600&h=400&fit=crop',
   // Outdoor
-  gardenSet1: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=400&fit=crop',
+  gardenSet1: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop',
   gardenSet2: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop',
   bistroTable1: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664?w=600&h=400&fit=crop',
-  gardenBench1: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=400&fit=crop',
+  gardenBench1: 'https://images.unsplash.com/photo-1521747116042-5a810fda9664?w=600&h=400&fit=crop',
   planterBox1: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop',
   // Decor
-  wallArt1: 'https://images.unsplash.com/photo-1513694203232-719a280e0f5e?w=600&h=400&fit=crop',
+  wallArt1: 'https://images.unsplash.com/photo-1533158326339-7f3cf2404354?w=600&h=400&fit=crop',
   wallArt2: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600&h=400&fit=crop',
   wallArt3: 'https://images.unsplash.com/photo-1533158326339-7f3cf2404354?w=600&h=400&fit=crop',
-  mirror1: 'https://images.unsplash.com/photo-1595407602892-1d19ff5a6a8d?w=600&h=400&fit=crop',
+  mirror1: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&h=400&fit=crop',
   mirror2: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&h=400&fit=crop',
-  vase1: 'https://images.unsplash.com/photo-1567225477277-d59eedde9c5d?w=600&h=400&fit=crop',
+  vase1: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&h=400&fit=crop',
   vase2: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600&h=400&fit=crop',
-  candle1: 'https://images.unsplash.com/photo-1603905763879-af28a9f3613e?w=600&h=400&fit=crop',
+  candle1: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=600&h=400&fit=crop',
   clock1: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=600&h=400&fit=crop',
   // Textiles
   bedding1: 'https://images.unsplash.com/photo-1588614959060-4d144f28b207?w=600&h=400&fit=crop',
   bedding2: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop',
-  pillow1: 'https://images.unsplash.com/photo-1516455207474-71e00e0e95a6?w=600&h=400&fit=crop',
-  pillow2: 'https://images.unsplash.com/photo-1555041469-b8035584d43b?w=600&h=400&fit=crop',
+  pillow1: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&h=400&fit=crop',
+  pillow2: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&h=400&fit=crop',
   throwBlanket1:
     'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=600&h=400&fit=crop',
   curtain1: 'https://images.unsplash.com/photo-1497296690583-da0e2a4ce49a?w=600&h=400&fit=crop',
   tableRunner1: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=600&h=400&fit=crop',
   // Lighting
   pendantLight1:
-    'https://images.unsplash.com/photo-1565814329452-e1f89acb5bb9?w=600&h=400&fit=crop',
+    'https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=600&h=400&fit=crop',
   pendantLight2:
     'https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=600&h=400&fit=crop',
-  wallSconce1: 'https://images.unsplash.com/photo-1507149651823-06db76b17ee3?w=600&h=400&fit=crop',
+  wallSconce1: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600&h=400&fit=crop',
   deskLamp1: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=400&fit=crop',
-  tableLamp1: 'https://images.unsplash.com/photo-1522771739844-6a9a6b0c9571?w=600&h=400&fit=crop',
+  tableLamp1: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=400&fit=crop',
   ledStrip1: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&h=400&fit=crop',
   // Storage
-  coatRack1: 'https://images.unsplash.com/photo-1558997519-a3ebb7dc2ee4?w=600&h=400&fit=crop',
-  storageBasket1: 'https://images.unsplash.com/photo-1558997519-a3ebb7dc2ee4?w=600&h=400&fit=crop',
+  coatRack1: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+  storageBasket1:
+    'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&h=400&fit=crop',
   storageBasket2:
     'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop',
-  wallHook1: 'https://images.unsplash.com/photo-1556909114-a5a5a6a7e6a6?w=600&h=400&fit=crop',
+  wallHook1: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&h=400&fit=crop',
   shoeRack1: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
   storageBox1: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&h=400&fit=crop',
 };
