@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,6 +33,7 @@ export function ProfilePage() {
   const { setUser } = useAuthStore();
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [activeTab, setActiveTab] = useState<'settings' | 'security'>('settings');
 
   const { data: profile, isLoading } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
 
@@ -95,48 +97,84 @@ export function ProfilePage() {
         </Link>
       </div>
 
-      {/* Name */}
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-        <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('settings')}</h2>
-        <form onSubmit={nameForm.handleSubmit(onSaveName)} className="space-y-4">
-          <Input
-            id="name"
-            label={t('form.name')}
-            error={nameForm.formState.errors.name?.message}
-            {...nameForm.register('name')}
-          />
-          <Input id="email" label={t('form.email')} value={profile?.email ?? ''} disabled />
-          <Button type="submit" size="sm" loading={nameForm.formState.isSubmitting}>
-            {t('form.saveChanges')}
-          </Button>
-        </form>
+      {/* Tabs */}
+      <div data-testid="profile-tabs" className="flex border-b border-[var(--border)]">
+        <button
+          data-testid="tab-settings"
+          onClick={() => setActiveTab('settings')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            activeTab === 'settings'
+              ? 'border-accent text-accent'
+              : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+          }`}
+        >
+          {t('tabs.settings')}
+        </button>
+        <button
+          data-testid="tab-security"
+          onClick={() => setActiveTab('security')}
+          className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            activeTab === 'security'
+              ? 'border-accent text-accent'
+              : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+          }`}
+        >
+          {t('tabs.security')}
+        </button>
       </div>
 
-      {/* Change password */}
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-        <h2 className="font-semibold text-[var(--text-primary)] mb-4">
-          {t('form.changePassword')}
-        </h2>
-        <form onSubmit={pwForm.handleSubmit(onChangePassword)} className="space-y-4">
-          <Input
-            id="currentPassword"
-            label={t('form.currentPassword')}
-            type="password"
-            error={pwForm.formState.errors.currentPassword?.message}
-            {...pwForm.register('currentPassword')}
-          />
-          <Input
-            id="newPassword"
-            label={t('form.newPassword')}
-            type="password"
-            error={pwForm.formState.errors.newPassword?.message}
-            {...pwForm.register('newPassword')}
-          />
-          <Button type="submit" size="sm" loading={pwForm.formState.isSubmitting}>
+      {/* Tab: Settings */}
+      {activeTab === 'settings' && (
+        <div
+          data-testid="tab-panel-settings"
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6"
+        >
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('settings')}</h2>
+          <form onSubmit={nameForm.handleSubmit(onSaveName)} className="space-y-4">
+            <Input
+              id="name"
+              label={t('form.name')}
+              error={nameForm.formState.errors.name?.message}
+              {...nameForm.register('name')}
+            />
+            <Input id="email" label={t('form.email')} value={profile?.email ?? ''} disabled />
+            <Button type="submit" size="sm" loading={nameForm.formState.isSubmitting}>
+              {t('form.saveChanges')}
+            </Button>
+          </form>
+        </div>
+      )}
+
+      {/* Tab: Security */}
+      {activeTab === 'security' && (
+        <div
+          data-testid="tab-panel-security"
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6"
+        >
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">
             {t('form.changePassword')}
-          </Button>
-        </form>
-      </div>
+          </h2>
+          <form onSubmit={pwForm.handleSubmit(onChangePassword)} className="space-y-4">
+            <Input
+              id="currentPassword"
+              label={t('form.currentPassword')}
+              type="password"
+              error={pwForm.formState.errors.currentPassword?.message}
+              {...pwForm.register('currentPassword')}
+            />
+            <Input
+              id="newPassword"
+              label={t('form.newPassword')}
+              type="password"
+              error={pwForm.formState.errors.newPassword?.message}
+              {...pwForm.register('newPassword')}
+            />
+            <Button type="submit" size="sm" loading={pwForm.formState.isSubmitting}>
+              {t('form.changePassword')}
+            </Button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

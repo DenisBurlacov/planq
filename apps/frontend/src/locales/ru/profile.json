@@ -1,6 +1,10 @@
 {
   "title": "Профиль",
   "settings": "Настройки",
+  "tabs": {
+    "settings": "Настройки",
+    "security": "Безопасность"
+  },
   "wallet": {
     "title": "Кошелёк",
     "balance": "Баланс",
