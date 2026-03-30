@@ -27,6 +27,7 @@ export function CatalogPage() {
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set());
+  const [priceError, setPriceError] = useState('');
 
   const { data: wishlist } = useQuery({
     queryKey: ['wishlist'],
@@ -158,7 +159,7 @@ export function CatalogPage() {
             </select>
           </div>
 
-          <div className="flex gap-2 items-end">
+          <div className="flex gap-2 items-end col-span-1">
             <div className="flex-1">
               <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
                 {t('filters.minPrice')}
@@ -166,14 +167,18 @@ export function CatalogPage() {
               <input
                 type="number"
                 placeholder="0"
-                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none"
-                onChange={e =>
-                  setQuery(q => ({
-                    ...q,
-                    minPrice: e.target.value ? Number(e.target.value) : undefined,
-                    page: 1,
-                  }))
-                }
+                min="0"
+                className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
+                onChange={e => {
+                  const min = e.target.value ? Number(e.target.value) : undefined;
+                  const max = query.maxPrice;
+                  if (min !== undefined && max !== undefined && min > max) {
+                    setPriceError(t('filters.priceError'));
+                    return;
+                  }
+                  setPriceError('');
+                  setQuery(q => ({ ...q, minPrice: min, page: 1 }));
+                }}
               />
             </div>
             <div className="flex-1">
@@ -183,16 +188,21 @@ export function CatalogPage() {
               <input
                 type="number"
                 placeholder="∞"
-                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none"
-                onChange={e =>
-                  setQuery(q => ({
-                    ...q,
-                    maxPrice: e.target.value ? Number(e.target.value) : undefined,
-                    page: 1,
-                  }))
-                }
+                min="0"
+                className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
+                onChange={e => {
+                  const max = e.target.value ? Number(e.target.value) : undefined;
+                  const min = query.minPrice;
+                  if (min !== undefined && max !== undefined && min > max) {
+                    setPriceError(t('filters.priceError'));
+                    return;
+                  }
+                  setPriceError('');
+                  setQuery(q => ({ ...q, maxPrice: max, page: 1 }));
+                }}
               />
             </div>
+            {priceError && <p className="col-span-2 text-xs text-red-500 mt-1">{priceError}</p>}
           </div>
 
           <div className="flex flex-col gap-2 justify-end">
@@ -223,8 +233,9 @@ export function CatalogPage() {
               variant="ghost"
               size="sm"
               onClick={() => {
-                setQuery({ page: 1, limit: 12 });
+                setQuery({ page: 1, limit: 12, sort: 'newest' });
                 setSearch('');
+                setPriceError('');
               }}
             >
               {t('filters.clear')}
@@ -239,16 +250,17 @@ export function CatalogPage() {
           {data ? `${data.total} products` : ''}
         </span>
         <select
+          value={query.sort ?? 'newest'}
           className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm focus:outline-none"
           onChange={e =>
             setQuery(q => ({
               ...q,
-              sort: (e.target.value as ProductsQuery['sort']) || undefined,
+              sort: e.target.value as ProductsQuery['sort'],
               page: 1,
             }))
           }
         >
-          <option value="">{t('sort.newest')}</option>
+          <option value="newest">{t('sort.newest')}</option>
           <option value="priceAsc">{t('sort.priceAsc')}</option>
           <option value="priceDesc">{t('sort.priceDesc')}</option>
           <option value="rating">{t('sort.rating')}</option>

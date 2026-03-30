@@ -222,7 +222,7 @@ git push origin feature/stage-N-название
 
 ## Текущее состояние
 
-**Версия промта:** v1.7 **Текущий этап:** Этап 6 — Мониторинг **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
+**Версия промта:** v1.7 **Текущий этап:** Этап 6 — CI/CD **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
 
 **Окружение:** Node v22.22.2 (Volta) | pnpm v10.33.0 | Docker v29.3.1 | WebStorm
 
@@ -235,9 +235,9 @@ git push origin feature/stage-N-название
 - [x] Этап 3 — Бэкенд + тесты ✅
 - [x] Этап 4 — WebSocket ✅
 - [x] Этап 5 — Фронтенд ✅
-- [ ] Этап 6 — Мониторинг
-- [ ] Этап 7 — Интеграция
-- [ ] Этап 8 — CI/CD
+- [ ] Этап 6 — CI/CD
+- [ ] Этап 7 — Мониторинг
+- [ ] Этап 8 — Интеграция
 - [ ] Этап 9 — Документация
 
 **planq-tests-js (студенческий этап — вне скоупа команды):**
@@ -253,9 +253,9 @@ git push origin feature/stage-N-название
 |3|`feature/stage-3-backend`|создана, в работе|
 |4|`feature/stage-4-websocket`|создана, в работе|
 |5|`feature/stage-5-frontend`|не создана|
-|6|`feature/stage-6-monitoring`|не создана|
-|7|`feature/stage-7-integration`|не создана|
-|8|`feature/stage-8-cicd`|не создана|
+|6|`feature/stage-6-cicd`|не создана|
+|7|`feature/stage-7-monitoring`|не создана|
+|8|`feature/stage-8-integration`|не создана|
 |9|`feature/stage-9-docs`|не создана|
 |10|`feature/stage-10-tests-js`|не создана|
 
@@ -1301,8 +1301,10 @@ WCAG AA. Семантический HTML, ARIA, клавиатура, focus visi
 - `POST /api/test/reset` — сброс к seed, `X-Reset-Token`
 - Swagger актуален
 - детерминированный seed с edge cases
-- `/login` и `/checkout` полностью `data-testid`
-- toast, модалки, WebSocket элементы имеют `data-testid`
+- **Стратегия `data-testid`:**
+  - Страницы **С** `data-testid` (показывают правильный подход): `/login`, `/checkout`, `/cart`, `/orders/:id`, toast, модалки, WebSocket элементы
+  - Страницы **БЕЗ** `data-testid` (студенты практикуют локаторы): `/catalog`, `/catalog/:id`, `/profile`, `/wishlist`, `/wallet`
+  - Цель: часть страниц — эталон; часть — задача на составление локаторов по тексту, роли, CSS
 - `VITE_SHOW_TEST_CREDENTIALS=true` → demo accounts
 - Grafana auto-provisioning
 - `X-Request-ID` в каждом ответе
@@ -1344,11 +1346,21 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 
 **Этап 5 — Фронтенд** дизайн система + темы, логотип, компоненты, страницы, React Query + polling, WebSocket клиент, Optimistic UI, i18n EN/RU, responsive, WCAG AA, error boundary, offline баннер, 404/500
 
-**Этап 6 — Мониторинг** Grafana + Loki + Promtail, docker-compose profile, дашборд auto-provisioning
+_UI-компоненты для QA-практики (обязательно присутствуют на страницах):_
+- **Попапы / Модальные окна** — confirm dialog, form modal, info modal
+- **Dropdown** — searchable select, multi-select (например, фильтры каталога)
+- **Checkboxes** — фильтры "On Sale", "In Stock"; настройки уведомлений
+- **Tables** — история заказов (динамическая), транзакции кошелька (статическая)
+- **Навигационная панель** — navbar с dropdown-меню пользователя, sidebar с collapse
+- **Toast-уведомления** — success / error / warning / info (уже есть)
+- **Stepper / Прогресс-бар** — статус заказа (Pending → Processing → Shipped → Delivered)
 
-**Этап 7 — Интеграция + UI ревью** E2E проверка всех флоу, отладка, дизайн ревью через Claude in Chrome если доступен
+**Этап 6 — CI/CD** GitHub Actions (lint → tests → build → push), GitHub Container Registry, защита веток
+⚠️ _Урок: CI/CD должен идти сразу после Backend (Этап 3). Три раза обсуждалось — не зафиксировали. Исправлено в плане._
 
-**Этап 8 — CI/CD** GitHub Actions (lint → tests → build → push), GitHub Container Registry, защита веток
+**Этап 7 — Мониторинг** Grafana + Loki + Promtail, docker-compose profile, дашборд auto-provisioning
+
+**Этап 8 — Интеграция + UI ревью** E2E проверка всех флоу, отладка, дизайн ревью через Claude in Chrome если доступен
 
 **Этап 9 — Документация** полный комплект docs/, CHANGELOG v1.0, LICENSE, SECURITY.md
 
@@ -1598,7 +1610,37 @@ FRONTEND:
 - Wishlist/favorites state всегда инициализировать с сервера, не с пустого Set
 ```
 
-### Этап 6 — Мониторинг
+### Ретро заказчика после Этапа 5 (2026-03-30)
+
+```
+Замечания заказчика (Denis):
+
+1. CI/CD порядок — КРИТИЧНО
+   Заказчик трижды спрашивал про архитектуру и план.
+   Команда обсуждала, но не зафиксировала: CI/CD должен идти сразу после Backend (Этап 3).
+   Исправлено: CI/CD перенесён на Этап 6 (был Этап 8).
+   Правило: любое обсуждённое решение — немедленно фиксируется в промте.
+
+2. UI-компоненты для QA-практики — не задокументировано
+   Обсуждалось добавить попапы, дропдауны, чекбоксы, таблицы, navbar dropdown.
+   Никто не записал. Теперь зафиксировано в плане Этапа 5.
+   Правило: QA (или Tech Writer) обязан фиксировать требования к UI-компонентам в промте.
+
+3. Стратегия data-testid — обсуждалось, не зафиксировано
+   Часть страниц — с data-testid (эталон для студентов).
+   Часть страниц — без data-testid (практика локаторов).
+   Теперь зафиксировано в разделе «Требования к тестируемости».
+
+4. Фиксы по замечаниям заказчика (применены в сессии):
+   - Sort dropdown: добавлен value={query.sort ?? 'newest'}, опция value='newest'
+   - Clear Filters: теперь сбрасывает sort + priceError
+   - Price range: валидация min > max (красная рамка + сообщение)
+   - WalletPage: amount input получил step="0.01" min="0.01", Zod min(0.01)
+   - Rate limiting: NODE_ENV=test → лимит 1000 (не блокирует тесты)
+   - Backend sort: явный enum ['newest', 'priceAsc', 'priceDesc', 'rating']
+```
+
+### Этап 6 — CI/CD
 
 ```
 Что сработало отлично:
@@ -1614,7 +1656,7 @@ FRONTEND:
 [заполняется после завершения]
 ```
 
-### Этап 7 — Интеграция
+### Этап 7 — Мониторинг
 
 ```
 Что сработало отлично:
@@ -1630,7 +1672,7 @@ FRONTEND:
 [заполняется после завершения]
 ```
 
-### Этап 8 — CI/CD
+### Этап 8 — Интеграция
 
 ```
 Что сработало отлично:
