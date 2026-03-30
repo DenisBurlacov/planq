@@ -20,3 +20,13 @@ desktop.ini
 .claude/
 *.swp
 *.tsbuildinfo
+# Frontend tsc artifacts (should not be compiled to src/)
+apps/frontend/src/**/*.js
+apps/frontend/src/**/*.js.map
+apps/frontend/src/**/*.d.ts
+apps/frontend/src/**/*.d.ts.map
+# Backend tsc artifacts in src/
+apps/backend/prisma/*.js
+apps/backend/prisma/*.js.map
+apps/backend/prisma/*.d.ts
+apps/backend/prisma/*.d.ts.map
