@@ -69,7 +69,7 @@ const PHOTOS = {
   planterBox1: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop',
   // Decor
   wallArt1: 'https://images.unsplash.com/photo-1513694203232-719a280e0f5e?w=600&h=400&fit=crop',
-  wallArt2: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=400&fit=crop',
+  wallArt2: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=600&h=400&fit=crop',
   wallArt3: 'https://images.unsplash.com/photo-1533158326339-7f3cf2404354?w=600&h=400&fit=crop',
   mirror1: 'https://images.unsplash.com/photo-1595407602892-1d19ff5a6a8d?w=600&h=400&fit=crop',
   mirror2: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&h=400&fit=crop',
@@ -92,9 +92,9 @@ const PHOTOS = {
   pendantLight2:
     'https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=600&h=400&fit=crop',
   wallSconce1: 'https://images.unsplash.com/photo-1507149651823-06db76b17ee3?w=600&h=400&fit=crop',
-  deskLamp1: 'https://images.unsplash.com/photo-1532456745301-b2c645d8b80d?w=600&h=400&fit=crop',
+  deskLamp1: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=400&fit=crop',
   tableLamp1: 'https://images.unsplash.com/photo-1522771739844-6a9a6b0c9571?w=600&h=400&fit=crop',
-  ledStrip1: 'https://images.unsplash.com/photo-1565814329452-e1f89acb5bb9?w=600&h=400&fit=crop',
+  ledStrip1: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&h=400&fit=crop',
   // Storage
   coatRack1: 'https://images.unsplash.com/photo-1558997519-a3ebb7dc2ee4?w=600&h=400&fit=crop',
   storageBasket1: 'https://images.unsplash.com/photo-1558997519-a3ebb7dc2ee4?w=600&h=400&fit=crop',
