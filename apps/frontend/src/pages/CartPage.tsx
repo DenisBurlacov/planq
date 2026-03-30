@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@components/ui/Button';
+import { Modal } from '@components/ui/Modal';
 import { Skeleton } from '@components/ui/Skeleton';
 import { cartApi } from '@api/cart';
 import { promotionsApi } from '@api/promotions';
@@ -23,6 +24,7 @@ export function CartPage() {
   const [promoDiscount, setPromoDiscount] = useState<number | null>(null);
   const [applyingPromo, setApplyingPromo] = useState(false);
   const [updatingItem, setUpdatingItem] = useState<string | null>(null);
+  const [removeConfirmId, setRemoveConfirmId] = useState<string | null>(null);
 
   const { data: cart, isLoading } = useQuery({
     queryKey: ['cart'],
@@ -152,7 +154,7 @@ export function CartPage() {
                     </Link>
                     <button
                       data-testid="cart-item-remove"
-                      onClick={() => handleRemove(item.productId)}
+                      onClick={() => setRemoveConfirmId(item.productId)}
                       disabled={updatingItem === item.productId}
                       className="ml-2 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
                     >
@@ -256,6 +258,23 @@ export function CartPage() {
           </Button>
         </div>
       </div>
+
+      <Modal
+        open={removeConfirmId !== null}
+        title={t('cart.removeConfirmTitle')}
+        confirmLabel={t('cart.removeConfirmYes')}
+        cancelLabel={t('cart.removeConfirmNo')}
+        onConfirm={() => {
+          if (removeConfirmId) {
+            handleRemove(removeConfirmId);
+            setRemoveConfirmId(null);
+          }
+        }}
+        onCancel={() => setRemoveConfirmId(null)}
+        danger
+      >
+        {t('cart.removeConfirmBody')}
+      </Modal>
     </div>
   );
 }

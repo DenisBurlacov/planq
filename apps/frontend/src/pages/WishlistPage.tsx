@@ -55,7 +55,10 @@ export function WishlistPage() {
 
   if (!data?.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
+      <div
+        data-testid="empty-state"
+        className="flex flex-col items-center justify-center py-24 gap-4"
+      >
         <Heart className="h-16 w-16 text-[var(--text-secondary)]" />
         <h2 className="text-xl font-bold text-[var(--text-primary)]">Wishlist is empty</h2>
         <Link to="/catalog" className="text-accent hover:underline text-sm">
@@ -70,7 +73,10 @@ export function WishlistPage() {
       <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">
         Wishlist ({data.length})
       </h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div
+        data-testid="wishlist-grid"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+      >
         {data.map(({ product }) => (
           <ProductCard
             key={product.id}
