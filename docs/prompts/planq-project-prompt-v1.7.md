@@ -235,8 +235,8 @@ git push origin feature/stage-N-название
 - [x] Этап 3 — Бэкенд + тесты ✅
 - [x] Этап 4 — WebSocket ✅
 - [x] Этап 5 — Фронтенд ✅
-- [ ] Этап 6 — CI/CD
-- [ ] Этап 7 — Мониторинг
+- [x] Этап 6 — CI/CD ✅
+- [x] Этап 7 — Мониторинг ✅
 - [ ] Этап 8 — Интеграция
 - [ ] Этап 9 — Документация
 
@@ -1358,7 +1358,7 @@ _UI-компоненты для QA-практики (обязательно пр
 **Этап 6 — CI/CD** GitHub Actions (lint → tests → build → push), GitHub Container Registry, защита веток
 ⚠️ _Урок: CI/CD должен идти сразу после Backend (Этап 3). Три раза обсуждалось — не зафиксировали. Исправлено в плане._
 
-**Этап 7 — Мониторинг** Grafana + Loki + Promtail, docker-compose profile, дашборд auto-provisioning
+**Этап 7 — Мониторинг** ✅ Grafana + Loki + Promtail, docker-compose `--profile monitoring`, Promtail Docker SD scraping, Grafana datasource + dashboard auto-provisioning
 
 **Этап 8 — Интеграция + UI ревью** E2E проверка всех флоу, отладка, дизайн ревью через Claude in Chrome если доступен
 

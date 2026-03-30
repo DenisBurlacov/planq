@@ -61,6 +61,7 @@ services:
     image: grafana/loki:latest
     profiles: ['monitoring']
     restart: unless-stopped
+    command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./docker/monitoring/loki:/etc/loki
       - loki_data:/loki
@@ -69,9 +70,10 @@ services:
     image: grafana/promtail:latest
     profiles: ['monitoring']
     restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail.yaml
     volumes:
       - ./docker/monitoring/promtail:/etc/promtail
-      - /var/log:/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   postgres_data:
