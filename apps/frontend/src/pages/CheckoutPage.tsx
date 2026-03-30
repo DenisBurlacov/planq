@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Input } from '@components/ui/Input';
 import { Button } from '@components/ui/Button';
+import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { cartApi } from '@api/cart';
 import { ordersApi } from '@api/orders';
 import { profileApi } from '@api/profile';
@@ -69,6 +70,9 @@ export function CheckoutPage() {
 
   return (
     <div className="max-w-lg mx-auto">
+      <Breadcrumb
+        items={[{ label: 'Home', to: '/' }, { label: 'Cart', to: '/cart' }, { label: 'Checkout' }]}
+      />
       <h1
         data-testid="checkout-title"
         className="text-2xl font-bold text-[var(--text-primary)] mb-6"

@@ -1,0 +1,242 @@
+# PLANQ — QA Locators Reference
+
+This document lists all `data-testid` attributes used throughout the frontend, organized by page/component. Use these as stable selectors in automated tests.
+
+> **Convention:** `data-testid` values are kebab-case and describe the role or content of the element.
+> Dynamic suffixes use `-{slug}` or `-{index}` patterns.
+
+---
+
+## Layout / Navigation
+
+### `<Navbar>`
+
+| Locator              | Element    | Notes                                         |
+| -------------------- | ---------- | --------------------------------------------- |
+| `navbar`             | `<nav>`    | Top navigation bar                            |
+| `navbar-logo`        | `<Link>`   | PLANQ logo / home link                        |
+| `nav-catalog`        | `<Link>`   | "Catalog" desktop link                        |
+| `nav-orders`         | `<Link>`   | "Orders" desktop link (auth only)             |
+| `lang-toggle`        | `<button>` | EN/RU language switcher                       |
+| `theme-toggle`       | `<button>` | Light/Dark theme toggle                       |
+| `nav-wishlist`       | `<Link>`   | Wishlist icon link                            |
+| `nav-cart`           | `<Link>`   | Cart icon link                                |
+| `cart-badge`         | `<span>`   | Cart item count badge (absent when count = 0) |
+| `nav-profile-button` | `<button>` | Profile dropdown trigger (auth only)          |
+| `nav-profile-link`   | `<Link>`   | "Profile" link inside dropdown                |
+| `nav-orders-link`    | `<Link>`   | "Orders" link inside dropdown                 |
+| `nav-logout-button`  | `<button>` | Logout button inside dropdown                 |
+| `nav-login-button`   | `<Link>`   | "Sign in" button (guest only)                 |
+
+---
+
+## Pages
+
+### HomePage (`/`)
+
+| Locator                | Element     | Notes                                                      |
+| ---------------------- | ----------- | ---------------------------------------------------------- |
+| `hero-section`         | `<section>` | Main hero banner                                           |
+| `hero-cta`             | `<Link>`    | "Shop Now" call-to-action button                           |
+| `sale-banner`          | `<section>` | Sale promo banner at bottom                                |
+| `sale-banner-cta`      | `<Link>`    | "Shop Sale" button                                         |
+| `categories-section`   | `<section>` | Category tiles grid                                        |
+| `category-tile-{slug}` | `<Link>`    | Individual category tile, e.g. `category-tile-living-room` |
+| `best-sellers-section` | `<section>` | Best sellers product grid                                  |
+| `new-arrivals-section` | `<section>` | New arrivals product grid                                  |
+
+---
+
+### CatalogPage (`/catalog`)
+
+| Locator                    | Element                  | Notes                                                          |
+| -------------------------- | ------------------------ | -------------------------------------------------------------- |
+| `search-input`             | `<input>`                | Product search input                                           |
+| `sort-select`              | `<select>`               | Sort dropdown                                                  |
+| `filter-sale`              | `<input[type=checkbox]>` | "On Sale" filter checkbox                                      |
+| `filter-stock`             | `<input[type=checkbox]>` | "In Stock" filter checkbox                                     |
+| `category-filter`          | `<div>`                  | Container for category checkboxes                              |
+| `category-checkbox-{slug}` | `<input[type=checkbox]>` | Individual category checkbox, e.g. `category-checkbox-bedroom` |
+| `product-grid`             | `<div>`                  | Products grid                                                  |
+| `pagination-prev`          | `<button>`               | Previous page button                                           |
+| `pagination-next`          | `<button>`               | Next page button                                               |
+| `empty-state`              | `<div>`                  | Shown when no products match                                   |
+
+---
+
+### ProductPage (`/catalog/:id`)
+
+| Locator                     | Element      | Notes                                          |
+| --------------------------- | ------------ | ---------------------------------------------- |
+| `breadcrumb`                | `<nav>`      | Breadcrumb navigation                          |
+| `breadcrumb-item-{index}`   | `<li>`       | Individual breadcrumb item (0-based)           |
+| `product-gallery`           | `<div>`      | Image gallery wrapper                          |
+| `product-image-main`        | `<div>`      | Main (large) product image container           |
+| `product-thumbnails`        | `<div>`      | Thumbnail strip (absent if only 1 image)       |
+| `thumbnail-{index}`         | `<button>`   | Thumbnail button, 0-based                      |
+| `product-name`              | `<h1>`       | Product name heading                           |
+| `product-rating`            | `<div>`      | Star rating + review count row                 |
+| `product-price`             | `<div>`      | Price display (includes sale price)            |
+| `product-stock`             | `<p>`        | Stock availability text                        |
+| `add-to-cart-button`        | `<button>`   | "Add to Cart" CTA (disabled when out of stock) |
+| `wishlist-toggle-button`    | `<button>`   | Heart toggle button                            |
+| `product-accordion`         | `<div>`      | Accordion wrapper                              |
+| `accordion`                 | `<div>`      | Accordion component root                       |
+| `accordion-item-{index}`    | `<div>`      | Accordion section (0-based)                    |
+| `accordion-trigger-{index}` | `<button>`   | Section header / toggle                        |
+| `accordion-content-{index}` | `<div>`      | Section content (absent when collapsed)        |
+| `reviews-section`           | `<section>`  | Reviews section                                |
+| `review-form`               | `<form>`     | Write-a-review form (auth only)                |
+| `review-stars`              | `<div>`      | Star picker container                          |
+| `star-{1–5}`                | `<button>`   | Individual star button                         |
+| `review-comment`            | `<textarea>` | Review text input                              |
+| `review-submit`             | `<button>`   | Submit review button                           |
+| `reviews-list`              | `<div>`      | List of existing reviews                       |
+| `review-item`               | `<div>`      | Single review card                             |
+| `reviews-empty`             | `<p>`        | "No reviews yet" message                       |
+
+---
+
+### CartPage (`/cart`)
+
+| Locator              | Element    | Notes                                         |
+| -------------------- | ---------- | --------------------------------------------- |
+| `cart-title`         | `<h1>`     | "My Cart" heading                             |
+| `cart-empty`         | `<div>`    | Empty cart state (absent when cart has items) |
+| `cart-item`          | `<div>`    | Individual cart item row (multiple)           |
+| `cart-item-decrease` | `<button>` | "−" quantity button (disabled at qty=1)       |
+| `cart-item-quantity` | `<span>`   | Current quantity value                        |
+| `cart-item-increase` | `<button>` | "+" quantity button                           |
+| `cart-item-remove`   | `<button>` | Trash / remove button                         |
+| `cart-summary`       | `<div>`    | Order summary card                            |
+| `promo-input`        | `<input>`  | Promo code input                              |
+| `promo-apply`        | `<button>` | Apply promo button                            |
+| `checkout-button`    | `<button>` | Proceed to checkout CTA                       |
+
+---
+
+### CheckoutPage (`/checkout`)
+
+| Locator              | Element               | Notes                                          |
+| -------------------- | --------------------- | ---------------------------------------------- |
+| `breadcrumb`         | `<nav>`               | Home → Cart → Checkout breadcrumb              |
+| `checkout-title`     | `<h1>`                | "Checkout" heading                             |
+| `address-input`      | `<input>`             | Shipping address field                         |
+| `payment-card`       | `<input[type=radio]>` | Card payment option                            |
+| `payment-wallet`     | `<input[type=radio]>` | Wallet payment option                          |
+| `card-number-input`  | `<input>`             | Card number field (visible when CARD selected) |
+| `place-order-button` | `<button>`            | Submit / place order button                    |
+
+---
+
+### ProfilePage (`/profile`)
+
+| Locator              | Element    | Notes                |
+| -------------------- | ---------- | -------------------- |
+| `profile-tabs`       | `<div>`    | Tabs container       |
+| `tab-settings`       | `<button>` | "Settings" tab       |
+| `tab-security`       | `<button>` | "Security" tab       |
+| `tab-panel-settings` | `<div>`    | Settings tab content |
+| `tab-panel-security` | `<div>`    | Security tab content |
+
+---
+
+### WishlistPage (`/wishlist`)
+
+| Locator         | Element | Notes                             |
+| --------------- | ------- | --------------------------------- |
+| `wishlist-grid` | `<div>` | Products grid (absent when empty) |
+| `empty-state`   | `<div>` | Empty wishlist state              |
+
+---
+
+### OrdersPage (`/orders`)
+
+| Locator       | Element | Notes                                  |
+| ------------- | ------- | -------------------------------------- |
+| `orders-list` | `<div>` | Order list wrapper (absent when empty) |
+| `order-item`  | `<a>`   | Single order row link (multiple)       |
+| `empty-state` | `<div>` | Empty orders state                     |
+
+---
+
+### NotFoundPage (`*`)
+
+| Locator                  | Element  | Notes                    |
+| ------------------------ | -------- | ------------------------ |
+| `not-found-page`         | `<div>`  | Page root                |
+| `not-found-code`         | `<p>`    | "404" display text       |
+| `not-found-title`        | `<h1>`   | "Page Not Found" heading |
+| `not-found-message`      | `<p>`    | Description text         |
+| `not-found-home-link`    | `<Link>` | "Go Home" button         |
+| `not-found-catalog-link` | `<Link>` | "Browse Catalog" button  |
+
+---
+
+## Shared Components
+
+### `<ProductCard>`
+
+| Locator              | Element    | Notes                                                      |
+| -------------------- | ---------- | ---------------------------------------------------------- |
+| `product-card`       | `<div>`    | Card root                                                  |
+| `add-to-cart-button` | `<button>` | Add to cart (disabled when out of stock)                   |
+| `wishlist-button`    | `<button>` | Heart toggle (present only if `onToggleWishlist` provided) |
+| `quick-view-button`  | `<button>` | Quick view overlay (visible on hover)                      |
+
+---
+
+### `<Modal>`
+
+| Locator         | Element    | Notes                      |
+| --------------- | ---------- | -------------------------- |
+| `modal-overlay` | `<div>`    | Backdrop overlay           |
+| `modal`         | `<div>`    | Modal dialog box           |
+| `modal-title`   | `<h2>`     | Dialog title               |
+| `modal-body`    | `<div>`    | Dialog body content        |
+| `modal-confirm` | `<button>` | Confirm action button      |
+| `modal-cancel`  | `<button>` | Cancel action button       |
+| `modal-close`   | `<button>` | ✕ close button (top-right) |
+
+---
+
+### `<Breadcrumb>`
+
+| Locator                   | Element | Notes                                               |
+| ------------------------- | ------- | --------------------------------------------------- |
+| `breadcrumb`              | `<nav>` | Breadcrumb navigation                               |
+| `breadcrumb-item-{index}` | `<li>`  | Individual item (0-based), last item = current page |
+
+---
+
+### `<Accordion>`
+
+| Locator                     | Element    | Notes                                 |
+| --------------------------- | ---------- | ------------------------------------- |
+| `accordion`                 | `<div>`    | Accordion root                        |
+| `accordion-item-{index}`    | `<div>`    | Item wrapper                          |
+| `accordion-trigger-{index}` | `<button>` | Toggle button (aria-expanded)         |
+| `accordion-content-{index}` | `<div>`    | Content panel (absent when collapsed) |
+
+---
+
+## Intentionally Absent Locators
+
+Some elements do **not** have `data-testid` by design — they should be located via semantic selectors or role-based queries:
+
+- Navigation links in mobile menu (use text or `href`)
+- Footer links (use text or `href`)
+- Form `<label>` elements (use `for` / `htmlFor`)
+- `<img>` elements (use `alt` attribute)
+- Page titles in `<h1>` (use heading role)
+
+---
+
+## Test Account Credentials
+
+| Role         | Email                 | Password     |
+| ------------ | --------------------- | ------------ |
+| Regular user | `alice@example.com`   | `Password1!` |
+| Regular user | `bob@example.com`     | `Password1!` |
+| Admin        | `admin@planq.com`     | `Password1!` |
+| Blocked user | `blocked@example.com` | `Password1!` |

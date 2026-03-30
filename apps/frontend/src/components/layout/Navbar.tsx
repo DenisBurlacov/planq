@@ -28,11 +28,18 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg-card)] backdrop-blur">
+    <nav
+      data-testid="navbar"
+      className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg-card)] backdrop-blur"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-accent">
+          <Link
+            data-testid="navbar-logo"
+            to="/"
+            className="flex items-center gap-2 font-bold text-xl text-accent"
+          >
             <svg viewBox="0 0 24 24" className="h-7 w-7 fill-current" aria-hidden="true">
               <rect x="2" y="2" width="9" height="9" rx="1" />
               <rect x="13" y="2" width="9" height="9" rx="1" opacity="0.6" />
@@ -45,6 +52,7 @@ export function Navbar() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             <Link
+              data-testid="nav-catalog"
               to="/catalog"
               className="px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
             >
@@ -52,6 +60,7 @@ export function Navbar() {
             </Link>
             {accessToken && (
               <Link
+                data-testid="nav-orders"
                 to="/orders"
                 className="px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
               >
@@ -63,6 +72,7 @@ export function Navbar() {
           {/* Right actions */}
           <div className="flex items-center gap-1">
             <button
+              data-testid="lang-toggle"
               onClick={toggleLang}
               className="px-2 py-1 text-xs font-medium rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
               aria-label="Toggle language"
@@ -71,6 +81,7 @@ export function Navbar() {
             </button>
 
             <button
+              data-testid="theme-toggle"
               onClick={toggle}
               className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
               aria-label={isDark ? t('theme.light') : t('theme.dark')}
@@ -79,6 +90,7 @@ export function Navbar() {
             </button>
 
             <Link
+              data-testid="nav-wishlist"
               to="/wishlist"
               className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
               aria-label={t('nav.wishlist')}
@@ -87,13 +99,17 @@ export function Navbar() {
             </Link>
 
             <Link
+              data-testid="nav-cart"
               to="/cart"
               className="relative p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
               aria-label={t('nav.cart')}
             >
               <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                <span
+                  data-testid="cart-badge"
+                  className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white"
+                >
                   {itemCount > 9 ? '9+' : itemCount}
                 </span>
               )}
@@ -102,6 +118,7 @@ export function Navbar() {
             {accessToken ? (
               <div className="relative group">
                 <button
+                  data-testid="nav-profile-button"
                   className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors text-sm"
                   aria-label={t('nav.profile')}
                 >
@@ -118,18 +135,21 @@ export function Navbar() {
                 </button>
                 <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                   <Link
+                    data-testid="nav-profile-link"
                     to="/profile"
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--bg-sidebar)] rounded-t-xl"
                   >
                     <User className="h-4 w-4" /> {t('nav.profile')}
                   </Link>
                   <Link
+                    data-testid="nav-orders-link"
                     to="/orders"
                     className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--bg-sidebar)]"
                   >
                     <Package className="h-4 w-4" /> {t('nav.orders')}
                   </Link>
                   <button
+                    data-testid="nav-logout-button"
                     onClick={handleLogout}
                     className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-[var(--bg-sidebar)] rounded-b-xl"
                   >
@@ -139,6 +159,7 @@ export function Navbar() {
               </div>
             ) : (
               <Link
+                data-testid="nav-login-button"
                 to="/login"
                 className="ml-1 px-4 py-2 text-sm font-medium rounded-lg bg-accent text-white hover:bg-accent-hover transition-colors"
               >
