@@ -17,7 +17,7 @@ export type CheckoutInput = z.infer<typeof CheckoutSchema>;
 const CARD_SCENARIOS: Record<string, 'success' | 'declined' | 'insufficient'> = {
   '4242424242424242': 'success',
   '4000000000000002': 'declined',
-  '4000000000000995': 'insufficient',
+  '4000000000009995': 'insufficient',
 };
 
 export async function getOrders(userId: string, page = 1, limit = 10) {
