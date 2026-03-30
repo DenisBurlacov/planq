@@ -11,6 +11,10 @@
     "promoPlaceholder": "Enter promo code",
     "applyPromo": "Apply",
     "removeItem": "Remove",
+    "removeConfirmTitle": "Remove item",
+    "removeConfirmBody": "Are you sure you want to remove this item from your cart?",
+    "removeConfirmYes": "Remove",
+    "removeConfirmNo": "Keep",
     "checkout": "Proceed to Checkout"
   },
   "steps": {

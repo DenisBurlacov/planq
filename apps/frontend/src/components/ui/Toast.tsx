@@ -22,6 +22,13 @@ const icons: Record<ToastType, ReactNode> = {
   info: <Info className="h-5 w-5 text-blue-500" />,
 };
 
+const borderAccent: Record<ToastType, string> = {
+  success: 'border-l-green-500',
+  error: 'border-l-red-500',
+  warning: 'border-l-yellow-500',
+  info: 'border-l-blue-500',
+};
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -44,7 +51,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             data-testid={`toast-${t.type}`}
-            className="flex items-start gap-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] p-4 shadow-lg animate-in slide-in-from-right"
+            className={`flex items-start gap-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] border-l-4 ${borderAccent[t.type]} p-4 shadow-lg animate-in slide-in-from-right`}
           >
             {icons[t.type]}
             <p className="flex-1 text-sm text-[var(--text-primary)]">{t.message}</p>
