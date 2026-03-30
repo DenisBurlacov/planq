@@ -175,9 +175,14 @@ git commit -m "feat(cart): добавить валидацию промокод�
 8. повторяем 4-7
 
 Завершение этапа:
-9. git push origin feature/stage-N-название
-10. создать PR в develop (через gh или вручную)
-11. обновить "Текущее состояние" в этом файле
+9. QA-прогон по чеклисту (обязательно перед коммитом ретроспективы):
+   - Проверить каждый frontend API-файл (/src/api/*.ts) — URL и метод совпадают с backend роутами?
+   - Протестировать все критические флоу: добавить в корзину, оформить заказ, профиль, wishlist
+   - Проверить navigate state между страницами (передаются ли данные между экранами)
+   - Backend: каждый query param из фронтенда есть в схеме и обрабатывается в where/orderBy?
+10. git push origin feature/stage-N-название
+11. создать PR в develop (через gh или вручную)
+12. обновить "Текущее состояние" в этом файле
 ```
 
 ### Работа с GitHub
@@ -1525,6 +1530,43 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 - apiFetch<void>: в strict TS void нельзя как generic arg — использовать undefined
 - Path aliases: добавлять одновременно в vite.config.ts И tsconfig.json — иначе Vite
   разрешает, а TypeScript ругается (или наоборот)
+```
+
+### QA-прогон после Этапа 5 (2026-03-30) — 6 критических багов
+
+```
+Найденные и исправленные баги:
+
+FRONTEND:
+1. Cart API — все 3 операции на несуществующих URL /cart/items/*
+   add: POST /cart/items → POST /cart
+   update: PATCH /cart/items/:itemId → PATCH /cart/:productId
+   remove: DELETE /cart/items/:itemId → DELETE /cart/:productId
+   Причина: frontend написан по предположению, не сверен с роутами backend
+
+2. CartPage передавал item.id (CartItem ID) вместо item.productId
+   Причина: update/remove handler принимал itemId, а backend ожидает productId
+
+3. Checkout не отображал скидку от промокода
+   Причина: CartPage передавал только promoCode в navigate state, не promoDiscount %.
+   Checkout вычислял total из корзины без скидки, но правильно отправлял promoCode на backend.
+
+BACKEND:
+4. Карта «Insufficient funds» 4000000000009995 проходила как успешная
+   Причина: опечатка в CARD_SCENARIOS: '4000000000000995' вместо '4000000000009995'
+
+5. Фильтр onSale=true возвращал все 30 товаров
+   Причина: onSale отсутствовал в ProductsQuerySchema и в where-клаузе
+
+6. Сортировка priceAsc/priceDesc/rating не работала (всегда newest)
+   Причина: sort отсутствовал в ProductsQuerySchema, orderBy не был реализован
+
+Что добавить в процесс для следующих этапов:
+- После каждого этапа — QA-прогон по чеклисту ВСЕХ API endpoint (URL, метод, параметры)
+- Сверять frontend API-клиент (/src/api/*.ts) с backend роутами перед коммитом
+- Проверять navigate state между страницами (cart→checkout, checkout→success)
+- Backend: проверять все query params схемы — есть ли поле, есть ли обработка в where/orderBy
+- Тест-карты: сверять номера в CARD_SCENARIOS с документацией и frontend тест-хинтами
 ```
 
 ### Этап 6 — Мониторинг
