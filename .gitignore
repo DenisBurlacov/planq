@@ -17,5 +17,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+.claude/
 *.swp
 *.tsbuildinfo

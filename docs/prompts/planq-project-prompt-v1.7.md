@@ -217,7 +217,7 @@ git push origin feature/stage-N-название
 
 ## Текущее состояние
 
-**Версия промта:** v1.7 **Текущий этап:** Этап 3 — Бэкенд + тесты **Последняя сессия:** 2026-03-29 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
+**Версия промта:** v1.7 **Текущий этап:** Этап 6 — Мониторинг **Последняя сессия:** 2026-03-30 **Система:** macOS Darwin arm64 **gh CLI:** v2.89.0 (авторизован) **GitHub репо:** DenisBurlacov/Planq (private) **URL репо:** git@github.com:DenisBurlacov/Planq.git
 
 **Окружение:** Node v22.22.2 (Volta) | pnpm v10.33.0 | Docker v29.3.1 | WebStorm
 
@@ -227,9 +227,9 @@ git push origin feature/stage-N-название
 
 - [x] Этап 1 — Инфраструктура ✅
 - [x] Этап 2 — База данных ✅
-- [ ] Этап 3 — Бэкенд + тесты
-- [ ] Этап 4 — WebSocket
-- [ ] Этап 5 — Фронтенд
+- [x] Этап 3 — Бэкенд + тесты ✅
+- [x] Этап 4 — WebSocket ✅
+- [x] Этап 5 — Фронтенд ✅
 - [ ] Этап 6 — Мониторинг
 - [ ] Этап 7 — Интеграция
 - [ ] Этап 8 — CI/CD
@@ -245,8 +245,8 @@ git push origin feature/stage-N-название
 |---|---|---|
 |1|`feature/stage-1-infrastructure`|завершена, запушена|
 |2|`feature/stage-2-database`|PR #1 создан|
-|3|`feature/stage-3-backend`|не создана|
-|4|`feature/stage-4-websocket`|не создана|
+|3|`feature/stage-3-backend`|создана, в работе|
+|4|`feature/stage-4-websocket`|создана, в работе|
 |5|`feature/stage-5-frontend`|не создана|
 |6|`feature/stage-6-monitoring`|не создана|
 |7|`feature/stage-7-integration`|не создана|
@@ -273,6 +273,15 @@ git push origin feature/stage-N-название
 - **`POST /api/test/reset`:** реальный сброс к seed, защищён X-Reset-Token с первого дня
 - **Каждый сервис → сразу юнит тест.** Каждый endpoint → сразу интеграционный тест + Swagger
 - **Security с первого endpoint:** helmet, CORS, rate limiting, JWT refresh rotation, Zod валидация
+
+### Решения команды перед Этапом 4
+
+- **PM чеклист старта этапа:** перед стартом нового этапа обязательно проверить что предыдущая ветка замержена в develop
+- **WebSocket сервер:** отдельный `src/ws/` модуль с handler'ами для каждого события
+- **JWT аутентификация WS:** `?token=accessToken` в URL при connect, сразу отклонять невалидные соединения
+- **Три события:** `payment.result`, `order.status.updated`, `cart.updated` — определены в Этапе 3
+- **Симуляция оплаты:** payment processing происходит в WebSocket handler после checkout, не в REST endpoint
+- **Юнит тест для WS сервиса:** написать сразу вместе с реализацией
 
 ### Известные баги и технический долг
 
@@ -1402,52 +1411,120 @@ README, ARCHITECTURE, API, ASYNC, TEST_ACCOUNTS, LOCATORS, MONITORING, I18N, CON
 - Seed: использовать throw вместо non-null assertion для поиска по данным
 ```
 
-### Этап 3 — Бэкенд + тесты
+### Этап 3 — Бэкенд + тесты ✅ (2026-03-30)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- AppError + централизованный errorHandler — единый формат ошибок с requestId из коробки
+- getAuthUser() utility вместо req.user! — решило ESLint no-non-null-assertion элегантно
+- Сервисный слой отделён от роутов — юнит тесты пишутся легко и чисто
+- 14 юнит тестов написаны и проходят, /health возвращает реальный db ping
 
-Что создало проблемы:
-[заполняется после завершения]
+Что создало проблемы (13 ошибок):
+1. Stage 2 не замержена в develop перед стартом Stage 3 — PM checklist провал.
+   Пришлось: git stash → merge stage-2 → push → rebase stage-3
+2. tsconfig rootDir + tests/ конфликт (TS6059) — rootDir: "src" несовместим
+   с tests/ вне src/. Решение: убрать rootDir из tsconfig.json
+3. Prisma v6: $use middleware удалён — soft delete через централизованный middleware
+   невозможен. Пришлось добавлять deletedAt: null вручную в каждый запрос
+4. Неправильные имена relation в schema — писали orderItems/cartItems, в схеме items.
+   Причина: не прочитали schema.prisma до написания сервисов
+5. Express 5 Router TS2742 — каждый роут файл требует явную аннотацию
+   const router: ExpressRouter = Router()
+6. Express 5 req.params — тип string | string[], нужен явный as string cast
+7. tsconfig "types" массив блокирует @types/bcrypt — пришлось добавить "bcrypt"
+   и "swagger-jsdoc" явно в массив types
+8. @types/jest + @jest/globals конфликт — убрать все @jest/globals импорты,
+   оставить только @types/jest глобальный
+9. jest.config.ts требует ts-node которого нет — переименовать в jest.config.cjs
+   с module.exports = {...}
+10. moduleNameMapper не убирает .js суффикс из path aliases — нужен optional .js:
+    '^@utils/(.*?)(\\.js)?': '<rootDir>/src/utils/$1'
+11. tsx --tsconfig флаг перед watch — правильно: tsx watch --tsconfig tsconfig.json
+    (subcommand watch должен идти первым)
+12. dotenv не загружается автоматически — Prisma Client читает process.env, не .env.
+    Нужен import 'dotenv/config' как ПЕРВЫЙ импорт в server.ts
+13. NODE_OPTIONS подход для --tsconfig не работал с tsx — только dotenv решение
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- Добавить в PM чеклист: перед стартом нового этапа — проверить что предыдущий
+  замержен в develop
+- Читать Prisma CHANGELOG при переходе на новую major версию
+- Читать schema.prisma ПЕРЕД написанием сервисов, не угадывать имена relation
+- Создавать jest.config.cjs сразу, а не переименовывать потом
+- Добавить import 'dotenv/config' в server.ts шаблон этапа 3
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- Prisma v6: $use удалён → soft delete только через explicit deletedAt: null
+- Jest: jest.config.cjs (module.exports), ESM мок дефолтного экспорта требует __esModule: true
+- tsx: флаг --tsconfig ПОСЛЕ subcommand watch
+- dotenv: import 'dotenv/config' — первый импорт в server.ts, иначе DATABASE_URL пустой
+- Express 5: req.params всегда as string
+- tsconfig split: основной без rootDir, tsconfig.build.json с rootDir только для сборки
+- читать schema.prisma перед написанием сервисов
 ```
 
-### Этап 4 — WebSocket
+### Этап 4 — WebSocket ✅ (2026-03-30)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- WsServer singleton pattern — чистый DI, сервисы импортируют и используют без конфигурации
+- jest.useFakeTimers() + runAllTimersAsync() — schedulePaymentResult протестирован без реального setTimeout
+- @ws/* alias уже был настроен в tsconfig и jest.config.cjs — ноль дополнительной конфигурации
+- 22 тестов, всё зелёное с первого запуска
 
-Что создало проблемы:
-[заполняется после завершения]
+Что создало проблемы (1 ошибка):
+1. eslint.config.js ignores: паттерн '*.config.cjs' не матчит файл в поддиректории.
+   Нужен '**/*.config.cjs' — globstar для рекурсивного поиска
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- Добавить **/*.config.cjs в eslint ignores сразу при создании jest.config.cjs (Этап 3)
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- ESLint ignores: паттерны для файлов в поддиректориях требуют **/ префикс (globstar)
+- jest.useFakeTimers() — стандарт для тестирования setTimeout/setInterval логики
 ```
 
-### Этап 5 — Фронтенд
+### Этап 5 — Фронтенд ✅ (2026-03-30)
 
 ```
 Что сработало отлично:
-[заполняется после завершения]
+- Zustand persist + devtools — store готов за 10 минут, SSR hydration не нужна
+- React Query v5 placeholderData prev → prev — плавная пагинация без единой строки extra кода
+- apiFetch с 401 auto-refresh — реализовано однократно, работает для всех 18 API-файлов
+- useWebSocket hook с reconnect — изолирован, страницы checkout/order-detail подключили без дублирования
+- data-testid на всех интерактивных элементах с первого коммита — zero QA долг
+- Husky + lint-staged сработали сразу: prettier + eslint --fix на каждый коммит
 
-Что создало проблемы:
-[заполняется после завершения]
+Что создало проблемы (5 ошибок):
+1. Алиас @types конфликтует с зарезервированным namespace TypeScript.
+   TypeScript трактует @types/* как пространство имён деклараций, не как path alias.
+   Ошибка TS6137 во всех 18 файлах с импортами.
+   Решение: переименовать alias в vite.config.ts и tsconfig.json: @types → @appTypes,
+   затем bulk replace в src/ через sed.
+2. import.meta.env даёт TS2339 — vite/client типы не подключены.
+   Решение: создать src/vite-env.d.ts с /// <reference types="vite/client" />.
+3. Alias @ws/* не добавлен во frontend vite.config.ts и tsconfig.json —
+   присутствовал только в backend. Ошибка TS2307 в useWebSocket import.
+   Решение: добавить '@ws' в оба конфига frontend.
+4. Импорт { useState } в CheckoutPage — объявлен, не использован (TS6133/ESLint).
+   Решение: удалить строку импорта.
+5. @typescript-eslint/no-invalid-void-type — apiFetch<void> запрещён в strict режиме.
+   void валиден только как return type, не как generic аргумент.
+   Решение: заменить apiFetch<void> → apiFetch<undefined> во всех API-файлах.
 
 Что сделали бы иначе:
-[заполняется после завершения]
+- Сразу называть alias @appTypes, не @types — TypeScript reserved namespace известен
+- Создавать vite-env.d.ts в шаблоне этапа 5, не добавлять постфактум
+- Добавлять @ws alias во frontend конфиг одновременно с backend (один шаблон)
+- Использовать apiFetch<undefined> вместо apiFetch<void> с первого файла
 
 Что добавить в универсальный промт:
-[заполняется после завершения]
+- Vite/TS: alias @types/* — зарезервировано TypeScript, использовать @appTypes или @models
+- Vite/TS frontend: всегда создавать vite-env.d.ts с /// <reference types="vite/client" />
+- apiFetch<void>: в strict TS void нельзя как generic arg — использовать undefined
+- Path aliases: добавлять одновременно в vite.config.ts И tsconfig.json — иначе Vite
+  разрешает, а TypeScript ругается (или наоборот)
 ```
 
 ### Этап 6 — Мониторинг
