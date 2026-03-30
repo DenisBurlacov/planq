@@ -107,49 +107,51 @@ const PHOTOS = {
 };
 
 async function main() {
-  const passwordHash = await hashPassword('Test1234!');
+  const passwordHash = await hashPassword('Password1!');
 
   // ─── Users ───────────────────────────────────────────────────────────────
 
   const userRegular = await prisma.user.upsert({
-    where: { email: 'user@planq.dev' },
+    where: { email: 'alice@example.com' },
     update: {},
     create: {
-      email: 'user@planq.dev',
+      email: 'alice@example.com',
       password: passwordHash,
-      name: 'Test User',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user',
-      walletBalance: 50,
+      name: 'Alice',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alice',
+      walletBalance: 150,
     },
   });
 
   const userNew = await prisma.user.upsert({
-    where: { email: 'new@planq.dev' },
+    where: { email: 'bob@example.com' },
     update: {},
     create: {
-      email: 'new@planq.dev',
+      email: 'bob@example.com',
       password: passwordHash,
-      name: 'New User',
+      name: 'Bob',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=bob',
       walletBalance: 0,
     },
   });
 
   const userRich = await prisma.user.upsert({
-    where: { email: 'rich@planq.dev' },
+    where: { email: 'admin@planq.com' },
     update: {},
     create: {
-      email: 'rich@planq.dev',
+      email: 'admin@planq.com',
       password: passwordHash,
-      name: 'Rich User',
+      name: 'Admin',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
       walletBalance: 999,
     },
   });
 
   await prisma.user.upsert({
-    where: { email: 'blocked@planq.dev' },
+    where: { email: 'blocked@example.com' },
     update: {},
     create: {
-      email: 'blocked@planq.dev',
+      email: 'blocked@example.com',
       password: passwordHash,
       name: 'Blocked User',
       isBlocked: true,
@@ -1135,10 +1137,10 @@ async function main() {
   // ─── Promo Codes ──────────────────────────────────────────────────────────
 
   await prisma.promoCode.upsert({
-    where: { code: 'WELCOME10' },
+    where: { code: 'SAVE10' },
     update: {},
     create: {
-      code: 'WELCOME10',
+      code: 'SAVE10',
       discountPercent: 10,
       validFrom: new Date('2026-01-01'),
       validUntil: new Date('2027-12-31'),
@@ -1149,24 +1151,24 @@ async function main() {
   });
 
   await prisma.promoCode.upsert({
-    where: { code: 'EXPIRED20' },
+    where: { code: 'WELCOME20' },
     update: {},
     create: {
-      code: 'EXPIRED20',
+      code: 'WELCOME20',
       discountPercent: 20,
-      validFrom: new Date('2025-01-01'),
-      validUntil: new Date('2025-12-31'),
+      validFrom: new Date('2026-01-01'),
+      validUntil: new Date('2027-12-31'),
       maxUses: 500,
-      currentUses: 500,
-      isActive: false,
+      currentUses: 0,
+      isActive: true,
     },
   });
 
   await prisma.promoCode.upsert({
-    where: { code: 'BIG30' },
+    where: { code: 'FLASH30' },
     update: {},
     create: {
-      code: 'BIG30',
+      code: 'FLASH30',
       discountPercent: 30,
       validFrom: new Date('2026-01-01'),
       validUntil: new Date('2027-06-30'),
