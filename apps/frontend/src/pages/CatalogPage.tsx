@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
+import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Button } from '@components/ui/Button';
 import { productsApi, type ProductsQuery } from '@api/products';
 import { cartApi } from '@api/cart';
@@ -110,6 +111,7 @@ export function CatalogPage() {
 
   return (
     <div>
+      <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Catalog' }]} />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
         <button

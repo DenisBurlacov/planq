@@ -94,14 +94,14 @@ const PHOTOS = {
   wallSconce1: 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600&h=400&fit=crop',
   deskLamp1: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=400&fit=crop',
   tableLamp1: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=400&fit=crop',
-  ledStrip1: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&h=400&fit=crop',
+  ledStrip1: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&h=400&fit=crop',
   // Storage
   coatRack1: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
   storageBasket1:
     'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&h=400&fit=crop',
   storageBasket2:
     'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop',
-  wallHook1: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&h=400&fit=crop',
+  wallHook1: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=600&h=400&fit=crop',
   shoeRack1: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
   storageBox1: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&h=400&fit=crop',
 };
