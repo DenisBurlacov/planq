@@ -240,9 +240,9 @@ git push origin feature/stage-N-название
 - [ ] Этап 8 — CI/CD
 - [ ] Этап 9 — Документация
 
-**planq-tests-js:**
+**planq-tests-js (студенческий этап — вне скоупа команды):**
 
-- [ ] Этап 10 — E2E + API тесты
+- [ ] Этап 10 — E2E + API тесты (пишут студенты самостоятельно)
 
 ### Ветки
 
@@ -1567,6 +1567,35 @@ BACKEND:
 - Проверять navigate state между страницами (cart→checkout, checkout→success)
 - Backend: проверять все query params схемы — есть ли поле, есть ли обработка в where/orderBy
 - Тест-карты: сверять номера в CARD_SCENARIOS с документацией и frontend тест-хинтами
+```
+
+### Код-ревью после Этапа 5 (2026-03-30)
+
+```
+Исправлено в ходе ревью:
+
+BACKEND:
+1. getProductById — не фильтровал deletedAt: null → удалённый товар был виден по прямой ссылке
+2. LoginSchema — password min(1) вместо min(8) → несоответствие с RegisterSchema
+3. cart.service.ts — floating point на total (Math.round * 100 / 100)
+4. orders.service.ts — floating point на total и promo discount (round2 helper)
+
+FRONTEND:
+5. CartPage.tsx — floating point на subtotal/discountAmount/total
+6. CheckoutPage.tsx — floating point на subtotal/discountAmount/total
+7. CatalogPage.tsx — wishlistedIds не синхронизировался с сервером (только локальный Set).
+   Добавлен useQuery(['wishlist']) + useEffect для инициализации Set из ответа API.
+
+Намеренно оставлено (для студентов):
+- CARD_SCENARIOS в orders.service.ts — захардкожены, это ожидаемо для демо
+- race condition в refresh token — допустимо для учебного проекта
+- Login password min(8) теперь совпадает с Register → тест min(1) стал негативным кейсом
+
+Правила для следующих этапов:
+- При добавлении soft-delete поля — сразу везде в where добавлять deletedAt: null
+- Схемы Zod для register/login должны быть идентичны по password constraints
+- Math.round(n * 100) / 100 на всех price calculations (нет смысла тащить библиотеку decimal)
+- Wishlist/favorites state всегда инициализировать с сервера, не с пустого Set
 ```
 
 ### Этап 6 — Мониторинг

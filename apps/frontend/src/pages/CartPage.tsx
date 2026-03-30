@@ -36,14 +36,17 @@ export function CartPage() {
     }
   }, [cart, setItemCount]);
 
-  const subtotal =
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+
+  const subtotal = round2(
     cart?.items.reduce((sum, item) => {
       const price = item.product.salePrice ?? item.product.price;
       return sum + price * item.quantity;
-    }, 0) ?? 0;
+    }, 0) ?? 0
+  );
 
-  const discountAmount = promoDiscount ? subtotal * (promoDiscount / 100) : 0;
-  const total = subtotal - discountAmount;
+  const discountAmount = promoDiscount ? round2(subtotal * (promoDiscount / 100)) : 0;
+  const total = round2(subtotal - discountAmount);
 
   const handleUpdateQuantity = async (productId: string, newQty: number) => {
     if (newQty < 1) return;
