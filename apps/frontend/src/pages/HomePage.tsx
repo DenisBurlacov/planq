@@ -180,6 +180,9 @@ export function HomePage() {
           </div>
         </section>
 
+        {/* ── All sections below hero — solid warm background ──────────────── */}
+        <div className="rounded-2xl bg-[var(--bg-page)] space-y-16 px-1 pb-2">
+
         {/* ── Category tiles ────────────────────────────────────────────────── */}
         {categories && categories.length > 0 && (
           <section data-testid="categories-section">
@@ -286,8 +289,9 @@ export function HomePage() {
             </Link>
           </div>
         </section>
-      </div>
-      {/* end z-10 wrapper */}
+
+        </div>{/* end below-hero wrapper */}
+      </div>{/* end z-10 wrapper */}
     </div>
   );
 }
