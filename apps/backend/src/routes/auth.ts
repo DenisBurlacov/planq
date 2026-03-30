@@ -15,7 +15,7 @@ const router: ExpressRouter = Router();
 
 const loginLimiter = rateLimit({
   windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 900000,
-  max: Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 5,
+  max: process.env.NODE_ENV === 'test' ? 1000 : Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 5,
   message: { error: 'TOO_MANY_REQUESTS', message: 'Too many login attempts', statusCode: 429 },
   standardHeaders: true,
   legacyHeaders: false,
