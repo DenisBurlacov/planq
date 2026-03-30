@@ -105,12 +105,11 @@ export function HomePage() {
         backgroundAttachment: 'fixed',
       }}
     >
-      {/* Page-wide overlay — warm coffee → red-brown tint */}
+      {/* Page-wide overlay — subtle warm tint, photo clearly visible */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background:
-            'linear-gradient(160deg, rgba(30,18,10,0.90) 0%, rgba(45,15,10,0.88) 50%, rgba(60,12,8,0.86) 100%)',
+          background: 'linear-gradient(160deg, rgba(15,8,4,0.60) 0%, rgba(35,10,5,0.55) 100%)',
         }}
       />
 
