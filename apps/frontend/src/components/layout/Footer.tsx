@@ -91,7 +91,8 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  to="/500"
+                  to="/catalog"
+                  data-testid="footer-support-link"
                   className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   Support
@@ -99,7 +100,17 @@ export function Footer() {
               </li>
               <li>
                 <Link
+                  to="/500"
+                  data-testid="footer-500-link"
+                  className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  Server Error (test)
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/login"
+                  data-testid="footer-signin-link"
                   className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   Sign In
