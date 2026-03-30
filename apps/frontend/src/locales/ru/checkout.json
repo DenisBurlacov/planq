@@ -1,0 +1,59 @@
+{
+  "cart": {
+    "title": "Корзина",
+    "empty": "Корзина пуста",
+    "browseCatalog": "Перейти в каталог",
+    "summary": "Итого",
+    "subtotal": "Подытог",
+    "discount": "Скидка",
+    "total": "Итого",
+    "promoCode": "Промокод",
+    "promoPlaceholder": "Введите промокод",
+    "applyPromo": "Применить",
+    "removeItem": "Удалить",
+    "checkout": "Оформить заказ"
+  },
+  "steps": {
+    "address": "Адрес",
+    "payment": "Оплата",
+    "confirm": "Подтверждение"
+  },
+  "address": {
+    "title": "Адрес доставки",
+    "placeholder": "Улица, город, почтовый индекс"
+  },
+  "payment": {
+    "title": "Способ оплаты",
+    "card": "Карта",
+    "wallet": "Кошелёк",
+    "walletBalance": "Баланс: {{amount}}",
+    "walletInsufficient": "Недостаточно средств",
+    "cardNumber": "Номер карты",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiry": "Срок",
+    "cvv": "CVV",
+    "testCards": "Тестовые карты",
+    "cardSuccess": "4242 4242 4242 4242 — Успех",
+    "cardDeclined": "4000 0000 0000 0002 — Отклонена",
+    "cardInsufficient": "4000 0000 0000 9995 — Недостаточно средств"
+  },
+  "processing": {
+    "title": "Обработка платежа",
+    "subtitle": "Подождите, обрабатываем ваш платёж...",
+    "doNotClose": "Не закрывайте это окно"
+  },
+  "success": {
+    "title": "Заказ оформлен!",
+    "subtitle": "Ваш заказ подтверждён.",
+    "orderId": "Номер заказа: {{id}}",
+    "viewOrder": "Просмотреть заказ",
+    "continueShopping": "Продолжить покупки"
+  },
+  "failed": {
+    "title": "Ошибка оплаты",
+    "subtitle": "Не удалось обработать платёж.",
+    "tryAgain": "Попробовать снова",
+    "reason": "Причина: {{reason}}"
+  },
+  "placeOrder": "Подтвердить заказ"
+}

@@ -501,7 +501,14 @@ v1.1 → v1.2
 ### Frontend Senior
 
 ```
-[заполняется после завершения PLANQ]
+- v1.1 (PLANQ Stage 5): alias @types/* — зарезервировано TypeScript (TS6137).
+  Использовать @appTypes или @models — никогда не @types
+- v1.1 (PLANQ Stage 5): vite-env.d.ts — создавать с первого файла:
+  /// <reference types="vite/client" />, иначе import.meta.env даёт TS2339
+- v1.1 (PLANQ Stage 5): apiFetch<void> запрещён в strict TS (no-invalid-void-type).
+  void валиден только как return type — использовать undefined для "нет тела ответа"
+- v1.1 (PLANQ Stage 5): path aliases — добавлять синхронно в vite.config.ts
+  И tsconfig.json. Один без другого → runtime OK, TypeScript ругается (или наоборот)
 ```
 
 ### Designer Senior
