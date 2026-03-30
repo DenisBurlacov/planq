@@ -238,7 +238,7 @@ git push origin feature/stage-N-название
 - [x] Этап 6 — CI/CD ✅
 - [x] Этап 7 — Мониторинг ✅
 - [x] Этап 8 — UI + Контент ✅
-- [ ] Этап 9 — Документация + LOCATORS.md
+- [x] Этап 9 — Документация ✅
 
 **planq-tests-js (студенческий этап — вне скоупа команды):**
 
@@ -1383,7 +1383,13 @@ _Выполнено (8.2):_
 
 ⚠️ _Урок: часть Unsplash ID даёт 404. Проверять через curl с User-Agent браузера перед коммитом seed._
 
-**Этап 9 — Документация + LOCATORS.md** полный комплект docs/, CHANGELOG v1.0, LICENSE, SECURITY.md, LOCATORS.md
+**Этап 9 — Документация** ✅ Закрыт 2026-03-30. v1.0.0 — все этапы завершены.
+- ✅ README.md — полный обзор проекта, quick start, QA guide, тестовые аккаунты
+- ✅ docs/ARCHITECTURE.md — архитектура, стек, DB-схема, auth flow, CI/CD
+- ✅ CHANGELOG.md — история всех 9 этапов, формат Keep-a-Changelog
+- ✅ LICENSE — MIT
+- ✅ SECURITY.md — политика уязвимостей, практики безопасности
+- ✅ docs/LOCATORS.md — 70+ data-testid локаторов (выполнено в Этапе 8)
 
 **Этап 10 — planq-tests-js** инфраструктура тестового репо, POM, fixtures, helpers, E2E тесты, API тесты, CI
 
