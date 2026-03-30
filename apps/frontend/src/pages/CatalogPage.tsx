@@ -57,14 +57,14 @@ export function CatalogPage() {
     setQuery(q => ({ ...q, search, page: 1 }));
   };
 
-  const handleAddToCart = async (product: Product) => {
+  const handleAddToCart = async (product: Product, quantity = 1) => {
     if (!accessToken) {
       navigate('/login', { state: { from: location } });
       return;
     }
     try {
-      await cartApi.add(product.id);
-      increment();
+      await cartApi.add(product.id, quantity);
+      increment(quantity);
       toast('success', `${product.name} added to cart`);
     } catch (err) {
       toast('error', err instanceof ApiException ? err.message : 'Failed to add to cart');

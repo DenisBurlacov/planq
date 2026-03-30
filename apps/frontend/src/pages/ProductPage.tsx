@@ -8,6 +8,7 @@ import { Badge } from '@components/ui/Badge';
 import { Skeleton } from '@components/ui/Skeleton';
 import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Accordion } from '@components/ui/Accordion';
+import { AddToCartModal } from '@components/ui/AddToCartModal';
 import { productsApi } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
@@ -28,6 +29,7 @@ export function ProductPage() {
 
   const [activeImage, setActiveImage] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [cartModalOpen, setCartModalOpen] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
@@ -53,16 +55,21 @@ export function ProductPage() {
     refetchInterval: 60_000,
   });
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!accessToken) {
       navigate('/login', { state: { from: location } });
       return;
     }
+    setCartModalOpen(true);
+  };
+
+  const handleCartModalConfirm = async (quantity: number) => {
     setAddingToCart(true);
     try {
-      await cartApi.add(id ?? '');
-      increment();
+      await cartApi.add(id ?? '', quantity);
+      increment(quantity);
       toast('success', 'Added to cart');
+      setCartModalOpen(false);
     } catch (err) {
       toast('error', err instanceof ApiException ? err.message : 'Failed');
     } finally {
@@ -189,6 +196,15 @@ export function ProductPage() {
 
   return (
     <div>
+      {product && (
+        <AddToCartModal
+          product={product}
+          open={cartModalOpen}
+          loading={addingToCart}
+          onConfirm={handleCartModalConfirm}
+          onCancel={() => setCartModalOpen(false)}
+        />
+      )}
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
