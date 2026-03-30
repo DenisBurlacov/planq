@@ -10,7 +10,8 @@
     "maxPrice": "Max",
     "onSale": "On Sale",
     "inStock": "In Stock",
-    "clear": "Clear Filters"
+    "clear": "Clear Filters",
+    "priceError": "Min price cannot exceed max price"
   },
   "sort": {
     "label": "Sort by",

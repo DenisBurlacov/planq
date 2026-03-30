@@ -14,7 +14,7 @@ import { ApiException } from '@api/client';
 import type { Transaction } from '@appTypes/api';
 
 const schema = z.object({
-  amount: z.number().min(1).max(10000),
+  amount: z.number().min(0.01, 'Minimum €0.01').max(10000),
   cardNumber: z.string().min(16, 'Enter card number'),
 });
 type FormData = z.infer<typeof schema>;
@@ -84,6 +84,8 @@ export function WalletPage() {
             label={t('wallet.topUpAmount')}
             type="number"
             placeholder={t('wallet.topUpPlaceholder')}
+            min="0.01"
+            step="0.01"
             error={errors.amount?.message}
             {...register('amount', { valueAsNumber: true })}
           />
