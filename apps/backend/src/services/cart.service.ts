@@ -27,10 +27,13 @@ export async function getCart(userId: string) {
     include: { product: true },
   });
 
-  const total = cartItems.reduce((sum, item) => {
-    const price = item.product.salePrice ?? item.product.price;
-    return sum + price * item.quantity;
-  }, 0);
+  const total =
+    Math.round(
+      cartItems.reduce((sum, item) => {
+        const price = item.product.salePrice ?? item.product.price;
+        return sum + price * item.quantity;
+      }, 0) * 100
+    ) / 100;
 
   return { id: cart.id, items: cartItems, total };
 }

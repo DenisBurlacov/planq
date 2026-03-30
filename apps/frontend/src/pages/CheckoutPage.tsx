@@ -25,7 +25,8 @@ export function CheckoutPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const promoCode = (location.state as { promoCode?: string })?.promoCode;
+  const { promoCode, promoDiscount } =
+    (location.state as { promoCode?: string; promoDiscount?: number }) ?? {};
 
   const { data: cart } = useQuery({ queryKey: ['cart'], queryFn: cartApi.get });
   const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
@@ -41,11 +42,15 @@ export function CheckoutPage() {
   });
 
   const paymentMethod = watch('paymentMethod');
-  const total =
+  const round2 = (n: number) => Math.round(n * 100) / 100;
+  const subtotal = round2(
     cart?.items.reduce((sum, item) => {
       const price = item.product.salePrice ?? item.product.price;
       return sum + price * item.quantity;
-    }, 0) ?? 0;
+    }, 0) ?? 0
+  );
+  const discountAmount = promoDiscount ? round2(subtotal * (promoDiscount / 100)) : 0;
+  const total = round2(subtotal - discountAmount);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -144,7 +149,21 @@ export function CheckoutPage() {
         </div>
 
         {/* Order summary */}
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6 space-y-2">
+          {promoDiscount && (
+            <>
+              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                <span>{t('cart.subtotal')}</span>
+                <span>€{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-green-600">
+                <span>
+                  {t('cart.discount')} ({promoDiscount}%)
+                </span>
+                <span>-€{discountAmount.toFixed(2)}</span>
+              </div>
+            </>
+          )}
           <div className="flex justify-between font-bold text-[var(--text-primary)]">
             <span>{t('cart.total')}</span>
             <span>€{total.toFixed(2)}</span>
