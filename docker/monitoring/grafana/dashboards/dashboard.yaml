@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: planq
+    orgId: 1
+    folder: Planq
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
