@@ -41,7 +41,8 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>
 const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600&h=900&fit=crop&q=80',
   'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1600&h=900&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1600&h=900&fit=crop&q=80',
+  // Page background — warm wood/terracotta interior
+  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&h=1200&fit=crop&q=80',
 ];
 
 export function HomePage() {
@@ -104,8 +105,14 @@ export function HomePage() {
         backgroundAttachment: 'fixed',
       }}
     >
-      {/* Page-wide overlay so content stays readable */}
-      <div className="absolute inset-0 bg-[var(--bg-page)]/88 pointer-events-none" />
+      {/* Page-wide overlay — warm coffee → red-brown tint */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(160deg, rgba(30,18,10,0.90) 0%, rgba(45,15,10,0.88) 50%, rgba(60,12,8,0.86) 100%)',
+        }}
+      />
 
       <div className="relative z-10 space-y-16">
         {/* ── Hero with parallax ────────────────────────────────────────────── */}
