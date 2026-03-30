@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,18 @@ export function CatalogPage() {
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set());
+
+  const { data: wishlist } = useQuery({
+    queryKey: ['wishlist'],
+    queryFn: wishlistApi.get,
+    enabled: !!accessToken,
+  });
+
+  useEffect(() => {
+    if (wishlist) {
+      setWishlistedIds(new Set(wishlist.map(w => w.productId)));
+    }
+  }, [wishlist]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['products', query],
