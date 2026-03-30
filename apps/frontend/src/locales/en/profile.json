@@ -1,0 +1,49 @@
+{
+  "title": "Profile",
+  "settings": "Settings",
+  "wallet": {
+    "title": "Wallet",
+    "balance": "Balance",
+    "topUp": "Top Up",
+    "topUpAmount": "Amount",
+    "topUpPlaceholder": "50.00",
+    "transactions": "Transaction History",
+    "noTransactions": "No transactions yet",
+    "types": {
+      "TOPUP": "Top Up",
+      "PURCHASE": "Purchase",
+      "REFUND": "Refund"
+    }
+  },
+  "orders": {
+    "title": "My Orders",
+    "empty": "No orders yet",
+    "viewAll": "View All Orders"
+  },
+  "form": {
+    "name": "Full Name",
+    "email": "Email",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "saveChanges": "Save Changes",
+    "changePassword": "Change Password"
+  },
+  "auth": {
+    "login": "Sign In",
+    "register": "Sign Up",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to your account",
+    "registerTitle": "Create account",
+    "registerSubtitle": "Start shopping today",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "demoAccounts": "Demo Accounts",
+    "resetPassword": "Reset Password",
+    "resetSent": "Check your email for reset instructions"
+  }
+}

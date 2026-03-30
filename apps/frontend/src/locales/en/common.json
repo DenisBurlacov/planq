@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "catalog": "Catalog",
+    "cart": "Cart",
+    "orders": "Orders",
+    "profile": "Profile",
+    "wishlist": "Wishlist",
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "register": "Sign Up"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "back": "Back",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "retry": "Retry"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "PROCESSING": "Processing",
+    "SHIPPED": "Shipped",
+    "DELIVERED": "Delivered",
+    "CANCELLED": "Cancelled"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Page not found",
+    "unauthorized": "Please sign in to continue",
+    "network": "Network error. Check your connection."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "currency": "€",
+  "sale": "SALE",
+  "outOfStock": "Out of stock",
+  "inStock": "In stock",
+  "items": "{{count}} item",
+  "items_other": "{{count}} items"
+}

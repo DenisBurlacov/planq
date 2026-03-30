@@ -1,0 +1,35 @@
+{
+  "title": "Каталог",
+  "search": "Поиск мебели...",
+  "filters": {
+    "title": "Фильтры",
+    "category": "Категория",
+    "allCategories": "Все категории",
+    "price": "Цена",
+    "minPrice": "От",
+    "maxPrice": "До",
+    "onSale": "Со скидкой",
+    "inStock": "В наличии",
+    "clear": "Сбросить"
+  },
+  "sort": {
+    "label": "Сортировка",
+    "newest": "Новинки",
+    "priceAsc": "Цена: по возрастанию",
+    "priceDesc": "Цена: по убыванию",
+    "rating": "По рейтингу"
+  },
+  "product": {
+    "addToCart": "В корзину",
+    "addToWishlist": "В избранное",
+    "removeFromWishlist": "Убрать из избранного",
+    "reviews": "{{count}} отзыв",
+    "reviews_other": "{{count}} отзывов",
+    "noReviews": "Нет отзывов",
+    "description": "Описание",
+    "relatedProducts": "Похожие товары",
+    "stockStatus": "Осталось {{count}} шт."
+  },
+  "empty": "Товары не найдены. Попробуйте изменить фильтры.",
+  "loading": "Загрузка товаров..."
+}

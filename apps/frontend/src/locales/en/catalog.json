@@ -1,0 +1,35 @@
+{
+  "title": "Catalog",
+  "search": "Search furniture...",
+  "filters": {
+    "title": "Filters",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "price": "Price",
+    "minPrice": "Min",
+    "maxPrice": "Max",
+    "onSale": "On Sale",
+    "inStock": "In Stock",
+    "clear": "Clear Filters"
+  },
+  "sort": {
+    "label": "Sort by",
+    "newest": "Newest",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low",
+    "rating": "Best Rated"
+  },
+  "product": {
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist",
+    "reviews": "{{count}} review",
+    "reviews_other": "{{count}} reviews",
+    "noReviews": "No reviews yet",
+    "description": "Description",
+    "relatedProducts": "You may also like",
+    "stockStatus": "{{count}} left in stock"
+  },
+  "empty": "No products found. Try adjusting your filters.",
+  "loading": "Loading products..."
+}

@@ -1,0 +1,49 @@
+{
+  "title": "Профиль",
+  "settings": "Настройки",
+  "wallet": {
+    "title": "Кошелёк",
+    "balance": "Баланс",
+    "topUp": "Пополнить",
+    "topUpAmount": "Сумма",
+    "topUpPlaceholder": "50.00",
+    "transactions": "История операций",
+    "noTransactions": "Операций пока нет",
+    "types": {
+      "TOPUP": "Пополнение",
+      "PURCHASE": "Покупка",
+      "REFUND": "Возврат"
+    }
+  },
+  "orders": {
+    "title": "Мои заказы",
+    "empty": "Заказов пока нет",
+    "viewAll": "Все заказы"
+  },
+  "form": {
+    "name": "Полное имя",
+    "email": "Email",
+    "currentPassword": "Текущий пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "saveChanges": "Сохранить",
+    "changePassword": "Изменить пароль"
+  },
+  "auth": {
+    "login": "Войти",
+    "register": "Зарегистрироваться",
+    "loginTitle": "С возвращением",
+    "loginSubtitle": "Войдите в аккаунт",
+    "registerTitle": "Создать аккаунт",
+    "registerSubtitle": "Начните покупки сегодня",
+    "email": "Email",
+    "password": "Пароль",
+    "name": "Полное имя",
+    "forgotPassword": "Забыли пароль?",
+    "noAccount": "Нет аккаунта?",
+    "hasAccount": "Уже есть аккаунт?",
+    "demoAccounts": "Тестовые аккаунты",
+    "resetPassword": "Сбросить пароль",
+    "resetSent": "Проверьте почту для инструкций"
+  }
+}
