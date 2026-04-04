@@ -24,9 +24,21 @@ export function CatalogPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [query, setQuery] = useState<ProductsQuery>({ page: 1, limit: 12 });
+  // Read initial filters from URL query params
+  const searchParams = new URLSearchParams(location.search);
+  const initialQuery: ProductsQuery = {
+    page: 1,
+    limit: 12,
+    categoryId: searchParams.get('categoryId') ?? undefined,
+    onSale: searchParams.get('onSale') === 'true' || undefined,
+    sort: (searchParams.get('sort') as ProductsQuery['sort']) ?? undefined,
+  };
+
+  const [query, setQuery] = useState<ProductsQuery>(initialQuery);
   const [search, setSearch] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(
+    !!initialQuery.categoryId || !!initialQuery.onSale
+  );
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set());
   const [priceError, setPriceError] = useState('');
 
@@ -35,6 +47,16 @@ export function CatalogPage() {
     queryFn: wishlistApi.get,
     enabled: !!accessToken,
   });
+
+  // Sync filters from URL when navigating from category tiles
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const catId = params.get('categoryId') ?? undefined;
+    const onSale = params.get('onSale') === 'true' || undefined;
+    const sort = (params.get('sort') as ProductsQuery['sort']) ?? undefined;
+    setQuery(q => ({ ...q, categoryId: catId, onSale, sort: sort ?? q.sort, page: 1 }));
+    if (catId || onSale) setShowFilters(true);
+  }, [location.search]);
 
   useEffect(() => {
     if (wishlist) {
