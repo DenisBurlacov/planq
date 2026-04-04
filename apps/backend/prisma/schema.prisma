@@ -9,6 +9,11 @@ datasource db {
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
+enum Role {
+  USER
+  ADMIN
+}
+
 enum OrderStatus {
   PENDING
   PROCESSING
@@ -36,18 +41,32 @@ model User {
   password      String
   name          String
   avatar        String?
+  role          Role      @default(USER)
   walletBalance Float     @default(0)
   isBlocked     Boolean   @default(false)
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  refreshTokens RefreshToken[]
-  cart          Cart?
-  orders        Order[]
-  reviews       Review[]
-  wishlist      Wishlist[]
-  transactions  Transaction[]
+  refreshTokens      RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  cart               Cart?
+  orders             Order[]
+  reviews            Review[]
+  wishlist           Wishlist[]
+  transactions       Transaction[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
 }
 
 model RefreshToken {

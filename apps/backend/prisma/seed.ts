@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { PrismaClient, OrderStatus, PaymentMethod, TransactionType } from '@prisma/client';
+import { PrismaClient, OrderStatus, PaymentMethod, TransactionType, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -137,13 +137,14 @@ async function main() {
 
   const userRich = await prisma.user.upsert({
     where: { email: 'admin@planq.com' },
-    update: {},
+    update: { role: Role.ADMIN },
     create: {
       email: 'admin@planq.com',
       password: passwordHash,
       name: 'Admin',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
       walletBalance: 999,
+      role: Role.ADMIN,
     },
   });
 

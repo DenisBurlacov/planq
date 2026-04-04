@@ -1,11 +1,21 @@
 import prisma from '@utils/prisma.js';
 import { AppError } from '@utils/AppError.js';
 
-export async function getWishlist(userId: string) {
-  return prisma.wishlist.findMany({
-    where: { userId },
-    include: { product: true },
-  });
+export async function getWishlist(userId: string, page = 1, limit = 20) {
+  const skip = (page - 1) * limit;
+
+  const [items, total] = await Promise.all([
+    prisma.wishlist.findMany({
+      where: { userId },
+      include: { product: true },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.wishlist.count({ where: { userId } }),
+  ]);
+
+  return { items, total, page, limit, pages: Math.ceil(total / limit) };
 }
 
 export async function addToWishlist(userId: string, productId: string) {

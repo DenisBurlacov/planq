@@ -12,19 +12,28 @@ router.use(authenticate);
 
 const AddSchema = z.object({ productId: z.string().min(1) });
 
+const PaginationSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(50).default(20),
+});
+
 /**
  * @openapi
  * /wishlist:
  *   get:
  *     tags: [Wishlist]
- *     summary: Get user's wishlist
+ *     summary: Get user's wishlist (paginated)
+ *     parameters:
+ *       - { in: query, name: page, schema: { type: integer, default: 1 } }
+ *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
  *     responses:
  *       200:
- *         description: List of wishlist items
+ *         description: Paginated list of wishlist items
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    ok(res, await wishlistService.getWishlist(getAuthUser(req).userId));
+    const { page, limit } = PaginationSchema.parse(req.query);
+    ok(res, await wishlistService.getWishlist(getAuthUser(req).userId, page, limit));
   } catch (err) {
     next(err);
   }

@@ -41,13 +41,33 @@ export async function logoutHandler(req: Request, res: Response, next: NextFunct
   }
 }
 
+export async function forgotPasswordHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email } = req.body as { email: string };
+    const result = await authService.forgotPassword(email);
+    ok(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resetPasswordHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { token, newPassword } = req.body as { token: string; newPassword: string };
+    const result = await authService.resetPassword(token, newPassword);
+    ok(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function meHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = getAuthUser(req).userId;
     const { default: prisma } = await import('@utils/prisma.js');
     const user = await prisma.user.findFirst({
       where: { id: userId },
-      select: { id: true, email: true, name: true, avatar: true, walletBalance: true },
+      select: { id: true, email: true, name: true, avatar: true, walletBalance: true, role: true },
     });
     ok(res, user);
   } catch (err) {
