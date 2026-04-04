@@ -10,13 +10,18 @@ import {
   Menu,
   X,
   Shield,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@store/auth.store';
 import { useThemeStore } from '@store/theme.store';
 import { useCartStore } from '@store/cart.store';
 import { authApi } from '@api/auth';
+import { productsApi } from '@api/products';
+import { MegaMenu } from './MegaMenu';
 
 export function Navbar() {
   const { t, i18n } = useTranslation('common');
@@ -26,8 +31,26 @@ export function Navbar() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [catalogExpanded, setCatalogExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuItemsRef = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
+  const megaMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { data: categories } = useQuery({
+    queryKey: ['categories'],
+    queryFn: productsApi.getCategories,
+  });
+
+  // Scroll shadow
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     if (refreshToken) {
@@ -52,6 +75,18 @@ export function Navbar() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [dropdownOpen]);
+
+  // Escape closes menus
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMegaMenuOpen(false);
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
 
   // Keyboard navigation for dropdown menu
   const handleDropdownKeyDown = useCallback(
@@ -81,12 +116,31 @@ export function Navbar() {
     [dropdownOpen]
   );
 
+  const handleCatalogMouseEnter = () => {
+    if (megaMenuTimeoutRef.current) {
+      clearTimeout(megaMenuTimeoutRef.current);
+      megaMenuTimeoutRef.current = null;
+    }
+    setMegaMenuOpen(true);
+  };
+
+  const handleCatalogMouseLeave = () => {
+    megaMenuTimeoutRef.current = setTimeout(() => {
+      setMegaMenuOpen(false);
+    }, 300);
+  };
+
   const isAdmin = user?.role === 'ADMIN';
+
+  const navLinkClass =
+    'px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]';
 
   return (
     <nav
       data-testid="navbar"
-      className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg-card)] backdrop-blur"
+      className={`sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--bg-card)] backdrop-blur transition-shadow duration-200 ${
+        isScrolled ? 'shadow-md' : ''
+      }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -107,19 +161,30 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            <Link
-              data-testid="nav-catalog"
-              to="/catalog"
-              className="px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
+            <div
+              className="relative"
+              onMouseEnter={handleCatalogMouseEnter}
+              onMouseLeave={handleCatalogMouseLeave}
             >
-              {t('nav.catalog')}
+              <Link data-testid="nav-catalog" to="/catalog" className={navLinkClass}>
+                {t('nav.catalog')}
+              </Link>
+            </div>
+            <Link data-testid="nav-about" to="/about" className={navLinkClass}>
+              {t('nav.about')}
+            </Link>
+            <Link
+              data-testid="nav-sale"
+              to="/catalog?onSale=true"
+              className="px-3 py-2 text-sm text-red-500 hover:text-red-600 transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
+            >
+              {t('nav.sale')}
+            </Link>
+            <Link data-testid="nav-new-arrivals" to="/catalog?sort=newest" className={navLinkClass}>
+              {t('nav.newArrivals')}
             </Link>
             {accessToken && (
-              <Link
-                data-testid="nav-orders"
-                to="/orders"
-                className="px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
-              >
+              <Link data-testid="nav-orders" to="/orders" className={navLinkClass}>
                 {t('nav.orders')}
               </Link>
             )}
@@ -273,18 +338,77 @@ export function Navbar() {
         {/* Mobile menu */}
         {menuOpen && (
           <div className="md:hidden py-2 border-t border-[var(--border)]">
+            {/* Catalog with accordion */}
+            <div>
+              <button
+                data-testid="mobile-menu-catalog-expand"
+                onClick={() => setCatalogExpanded(!catalogExpanded)}
+                aria-expanded={catalogExpanded}
+                className="flex items-center justify-between w-full px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                style={{ minHeight: '44px' }}
+              >
+                {t('nav.catalog')}
+                {catalogExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+              {catalogExpanded && (
+                <div className="pl-6 pb-2">
+                  <Link
+                    to="/catalog"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  >
+                    {t('catalog:filters.allCategories', { ns: 'catalog' })}
+                  </Link>
+                  {categories?.map(cat => (
+                    <Link
+                      key={cat.id}
+                      to={`/catalog?categoryId=${cat.id}`}
+                      onClick={() => setMenuOpen(false)}
+                      className="block px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <Link
-              to="/catalog"
+              to="/about"
+              data-testid="mobile-menu-about"
               onClick={() => setMenuOpen(false)}
-              className="block px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              className="block px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              style={{ minHeight: '44px' }}
             >
-              {t('nav.catalog')}
+              {t('nav.about')}
+            </Link>
+            <Link
+              to="/catalog?onSale=true"
+              data-testid="mobile-menu-sale"
+              onClick={() => setMenuOpen(false)}
+              className="block px-3 py-2.5 text-sm text-red-500 hover:text-red-600"
+              style={{ minHeight: '44px' }}
+            >
+              {t('nav.sale')}
+            </Link>
+            <Link
+              to="/catalog?sort=newest"
+              data-testid="mobile-menu-new-arrivals"
+              onClick={() => setMenuOpen(false)}
+              className="block px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              style={{ minHeight: '44px' }}
+            >
+              {t('nav.newArrivals')}
             </Link>
             {accessToken && (
               <Link
                 to="/orders"
                 onClick={() => setMenuOpen(false)}
-                className="block px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                className="block px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                style={{ minHeight: '44px' }}
               >
                 {t('nav.orders')}
               </Link>
@@ -294,7 +418,8 @@ export function Navbar() {
                 to="/admin"
                 data-testid="nav-admin-mobile"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-accent"
+                className="flex items-center gap-1 px-3 py-2.5 text-sm text-accent"
+                style={{ minHeight: '44px' }}
               >
                 <Shield className="h-4 w-4" />
                 {t('nav.admin')}
@@ -302,6 +427,15 @@ export function Navbar() {
             )}
           </div>
         )}
+      </div>
+
+      {/* Mega Menu */}
+      <div onMouseEnter={handleCatalogMouseEnter} onMouseLeave={handleCatalogMouseLeave}>
+        <MegaMenu
+          categories={categories ?? []}
+          open={megaMenuOpen}
+          onClose={() => setMegaMenuOpen(false)}
+        />
       </div>
     </nav>
   );

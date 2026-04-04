@@ -1,10 +1,11 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Heart, ShoppingCart, Star, ImageOff, Eye } from 'lucide-react';
+import { Heart, ShoppingCart, Star, ImageOff, Eye, ArrowLeftRight } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
+import { useCompareStore } from '@store/compare.store';
 import type { Product } from '@appTypes/api';
 
 interface ProductCardProps {
@@ -12,6 +13,8 @@ interface ProductCardProps {
   isWishlisted?: boolean;
   onAddToCart?: (product: Product, quantity: number) => Promise<void>;
   onToggleWishlist?: (productId: string) => void;
+  onQuickView?: (product: Product) => void;
+  onAddToCompare?: (product: Product) => void;
 }
 
 export function ProductCard({
@@ -19,6 +22,7 @@ export function ProductCard({
   isWishlisted,
   onAddToCart,
   onToggleWishlist,
+  onQuickView,
 }: ProductCardProps) {
   const { t } = useTranslation('catalog');
   const navigate = useNavigate();
@@ -27,6 +31,7 @@ export function ProductCard({
   const [addingToCart, setAddingToCart] = useState(false);
   const [wishlistPending, setWishlistPending] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const { addProduct, removeProduct, hasProduct, productIds } = useCompareStore();
 
   const handleAddToCart = () => {
     if (!onAddToCart) return;
@@ -48,10 +53,34 @@ export function ProductCard({
     setWishlistPending(false);
   };
 
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hasProduct(product.id)) {
+      removeProduct(product.id);
+    } else if (productIds.length < 4) {
+      addProduct(product.id);
+    }
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onQuickView) {
+      onQuickView(product);
+    } else {
+      navigate(`/catalog/${product.id}`, { state: { from: location } });
+    }
+  };
+
   const hasImage = product.images.length > 0 && !imgError;
   const price = product.salePrice ?? product.price;
   const isOnSale = product.salePrice !== null;
   const isOutOfStock = product.stock === 0;
+  const isInCompare = hasProduct(product.id);
+  const discountPercent =
+    isOnSale && product.salePrice !== null
+      ? Math.round((1 - product.salePrice / product.price) * 100)
+      : 0;
 
   return (
     <>
@@ -94,19 +123,47 @@ export function ProductCard({
               </div>
             )}
 
-            {/* Quick View overlay */}
-            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            {/* Compare button — hidden on mobile */}
+            <div className="hidden md:block absolute top-2 left-2 mt-7">
               <button
-                data-testid="quick-view-button"
-                onClick={e => {
-                  e.preventDefault();
-                  navigate(`/catalog/${product.id}`, { state: { from: location } });
-                }}
-                className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-white transition-colors"
+                data-testid="compare-button"
+                onClick={handleCompare}
+                className={`p-1.5 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100 ${
+                  isInCompare ? 'opacity-100' : ''
+                }`}
+                aria-label={isInCompare ? 'Remove from compare' : 'Add to compare'}
               >
-                <Eye className="h-3.5 w-3.5" />
-                {t('product.quickView')}
+                <ArrowLeftRight
+                  className={`h-4 w-4 ${isInCompare ? 'text-accent' : 'text-[var(--text-secondary)]'}`}
+                />
               </button>
+            </div>
+
+            {/* Hover overlay with info */}
+            <div
+              data-testid="product-card-overlay"
+              className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3"
+            >
+              <div className="hidden md:flex flex-wrap gap-1 mb-2">
+                {product.category && (
+                  <span
+                    data-testid="product-card-material"
+                    className="text-xs text-white bg-white/20 rounded px-2 py-0.5"
+                  >
+                    {product.category.name}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center justify-center">
+                <button
+                  data-testid="quick-view-button"
+                  onClick={handleQuickView}
+                  className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-white transition-colors"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                  {t('product.quickView')}
+                </button>
+              </div>
             </div>
           </div>
         </Link>
@@ -160,6 +217,21 @@ export function ProductCard({
               </span>
             )}
           </div>
+
+          {/* Enhanced sale display */}
+          {isOnSale && (
+            <div className="mt-1 flex items-center gap-2">
+              <span
+                data-testid="product-card-discount-percent"
+                className="text-xs font-semibold text-red-500 bg-red-50 dark:bg-red-500/10 rounded px-1.5 py-0.5"
+              >
+                -{discountPercent}%
+              </span>
+              <span className="text-xs text-[var(--text-secondary)]">
+                Save €{(product.price - price).toFixed(2)}
+              </span>
+            </div>
+          )}
 
           {/* Add to cart */}
           <Button

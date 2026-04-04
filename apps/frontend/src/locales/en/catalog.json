@@ -44,7 +44,28 @@
     "relatedProducts": "You may also like",
     "stockStatus": "{{count}} left in stock",
     "quickView": "Quick View",
-    "outOfStock": "Out of Stock"
+    "outOfStock": "Out of Stock",
+    "material": "Material",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "color": "Color",
+    "warranty": "Warranty",
+    "sizeGuide": "Size Guide",
+    "viewFullDetails": "View Full Details",
+    "specifications": "Specifications"
+  },
+  "compare": {
+    "title": "Compare Products",
+    "addProduct": "Add a product",
+    "clearAll": "Clear All",
+    "empty": "No products to compare",
+    "emptyHint": "Add products from the catalog to compare them side by side",
+    "max": "Maximum 4 products allowed",
+    "remove": "Remove"
+  },
+  "viewToggle": {
+    "grid": "Grid view",
+    "list": "List view"
   },
   "home": {
     "newCollection": "New Collection 2026",
@@ -65,6 +86,12 @@
     "saleBannerTitle": "Up to 30% off sale items",
     "saleBannerSubtitle": "Don't miss out on our seasonal discounts",
     "shopSale": "Shop Sale"
+  },
+  "wishlist": {
+    "removeTitle": "Remove from Wishlist",
+    "removeMessage": "Are you sure you want to remove this item from your wishlist?",
+    "removeConfirm": "Remove",
+    "removeCancel": "Cancel"
   },
   "empty": "No products found. Try adjusting your filters.",
   "loading": "Loading products..."

@@ -6,12 +6,14 @@ import enCatalog from '@locales/en/catalog.json';
 import enCheckout from '@locales/en/checkout.json';
 import enProfile from '@locales/en/profile.json';
 import enAdmin from '@locales/en/admin.json';
+import enAbout from '@locales/en/about.json';
 
 import ruCommon from '@locales/ru/common.json';
 import ruCatalog from '@locales/ru/catalog.json';
 import ruCheckout from '@locales/ru/checkout.json';
 import ruProfile from '@locales/ru/profile.json';
 import ruAdmin from '@locales/ru/admin.json';
+import ruAbout from '@locales/ru/about.json';
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -21,6 +23,7 @@ i18n.use(initReactI18next).init({
       checkout: enCheckout,
       profile: enProfile,
       admin: enAdmin,
+      about: enAbout,
     },
     ru: {
       common: ruCommon,
@@ -28,6 +31,7 @@ i18n.use(initReactI18next).init({
       checkout: ruCheckout,
       profile: ruProfile,
       admin: ruAdmin,
+      about: ruAbout,
     },
   },
   lng: import.meta.env.VITE_DEFAULT_LOCALE || 'en',

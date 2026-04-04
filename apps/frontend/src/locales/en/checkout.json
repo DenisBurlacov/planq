@@ -24,7 +24,9 @@
   },
   "address": {
     "title": "Shipping Address",
-    "placeholder": "Street, city, postal code"
+    "placeholder": "Street, city, postal code",
+    "selectSaved": "Select a saved address",
+    "enterNew": "Enter new address"
   },
   "payment": {
     "title": "Payment Method",
@@ -59,5 +61,10 @@
     "tryAgain": "Try Again",
     "reason": "Reason: {{reason}}"
   },
-  "placeOrder": "Place Order"
+  "placeOrder": "Place Order",
+  "terms": {
+    "label": "I agree to the",
+    "and": "and",
+    "required": "You must accept the terms to continue"
+  }
 }

@@ -10,7 +10,10 @@
     "register": "Sign Up",
     "admin": "Admin",
     "home": "Home",
-    "support": "Support"
+    "support": "Support",
+    "about": "About",
+    "sale": "Sale",
+    "newArrivals": "New Arrivals"
   },
   "support": {
     "title": "Support",
@@ -50,6 +53,10 @@
     "light": "Light",
     "dark": "Dark"
   },
+  "back": "Back",
+  "viewAll": "View all",
+  "termsLink": "Terms & Conditions",
+  "privacyLink": "Privacy Policy",
   "currency": "€",
   "sale": "SALE",
   "outOfStock": "Out of stock",

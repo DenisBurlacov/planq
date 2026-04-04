@@ -27,6 +27,10 @@
   --table-header-bg: #f0f0ee;
   --table-row-hover: #f7f7f5;
   --table-stripe: #fafaf9;
+
+  /* Timeline */
+  --timeline-line: #e4e4e2;
+  --timeline-dot: var(--accent);
 }
 
 .dark {
@@ -53,6 +57,9 @@
   --table-header-bg: #1c1c1c;
   --table-row-hover: #222222;
   --table-stripe: #181818;
+
+  /* Timeline */
+  --timeline-line: #2a2a2a;
 }
 
 body {

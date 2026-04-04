@@ -44,7 +44,28 @@
     "relatedProducts": "Похожие товары",
     "stockStatus": "Осталось {{count}} шт.",
     "quickView": "Быстрый просмотр",
-    "outOfStock": "Нет в наличии"
+    "outOfStock": "Нет в наличии",
+    "material": "Материал",
+    "dimensions": "Размеры",
+    "weight": "Вес",
+    "color": "Цвет",
+    "warranty": "Гарантия",
+    "sizeGuide": "Таблица размеров",
+    "viewFullDetails": "Все подробности",
+    "specifications": "Характеристики"
+  },
+  "compare": {
+    "title": "Сравнение товаров",
+    "addProduct": "Добавить товар",
+    "clearAll": "Очистить всё",
+    "empty": "Нет товаров для сравнения",
+    "emptyHint": "Добавьте товары из каталога для сравнения",
+    "max": "Максимум 4 товара",
+    "remove": "Удалить"
+  },
+  "viewToggle": {
+    "grid": "Сетка",
+    "list": "Список"
   },
   "home": {
     "newCollection": "Новая коллекция 2026",
@@ -65,6 +86,12 @@
     "saleBannerTitle": "Скидки до 30%",
     "saleBannerSubtitle": "Не пропустите сезонные скидки",
     "shopSale": "К скидкам"
+  },
+  "wishlist": {
+    "removeTitle": "Удалить из избранного",
+    "removeMessage": "Вы уверены, что хотите удалить этот товар из избранного?",
+    "removeConfirm": "Удалить",
+    "removeCancel": "Отмена"
   },
   "empty": "Товары не найдены. Попробуйте изменить фильтры.",
   "loading": "Загрузка товаров..."

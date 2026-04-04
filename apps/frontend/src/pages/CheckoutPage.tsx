@@ -12,14 +12,60 @@ import { ordersApi } from '@api/orders';
 import { profileApi } from '@api/profile';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
-import { CreditCard, Wallet } from 'lucide-react';
+import { CreditCard, Wallet, Check } from 'lucide-react';
 
 const schema = z.object({
   shippingAddress: z.string().min(5, 'Address must be at least 5 characters'),
   paymentMethod: z.enum(['CARD', 'WALLET']),
   cardNumber: z.string().optional(),
+  termsAccepted: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the terms' }),
+  }),
 });
 type FormData = z.infer<typeof schema>;
+
+function StepIndicator({ currentStep }: { currentStep: number }) {
+  const { t } = useTranslation('checkout');
+  const steps = [
+    { label: t('steps.address'), number: 1 },
+    { label: t('steps.payment'), number: 2 },
+    { label: t('steps.confirm', { defaultValue: 'Review' }), number: 3 },
+  ];
+
+  return (
+    <div
+      data-testid="checkout-step-indicator"
+      className="flex items-center justify-center gap-0 mb-8"
+    >
+      {steps.map((step, i) => (
+        <div key={step.number} className="flex items-center">
+          <div className="flex flex-col items-center">
+            <div
+              data-testid={`checkout-step-${step.number}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                step.number < currentStep
+                  ? 'bg-accent text-white'
+                  : step.number === currentStep
+                    ? 'bg-accent text-white'
+                    : 'bg-[var(--border)] text-[var(--text-secondary)]'
+              }`}
+            >
+              {step.number < currentStep ? <Check className="h-4 w-4" /> : step.number}
+            </div>
+            <span className="text-xs mt-1 text-[var(--text-secondary)]">{step.label}</span>
+          </div>
+          {i < steps.length - 1 && (
+            <div
+              className={`w-12 sm:w-20 h-0.5 mx-1 ${
+                step.number < currentStep ? 'bg-accent' : 'bg-[var(--border)]'
+              }`}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function CheckoutPage() {
   const { t } = useTranslation('checkout');
@@ -39,7 +85,7 @@ export function CheckoutPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { paymentMethod: 'CARD' },
+    defaultValues: { paymentMethod: 'CARD', termsAccepted: undefined as unknown as true },
   });
 
   const paymentMethod = watch('paymentMethod');
@@ -80,10 +126,15 @@ export function CheckoutPage() {
         Checkout
       </h1>
 
+      <StepIndicator currentStep={1} />
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Address */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-          <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('address.title')}</h2>
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">
+            <span className="text-accent font-bold mr-2">1</span>
+            {t('address.title')}
+          </h2>
           <Input
             id="address"
             data-testid="checkout-address"
@@ -96,7 +147,10 @@ export function CheckoutPage() {
 
         {/* Payment */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-          <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('payment.title')}</h2>
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">
+            <span className="text-accent font-bold mr-2">2</span>
+            {t('payment.title')}
+          </h2>
 
           <div className="grid grid-cols-2 gap-3 mb-4">
             <label
@@ -154,6 +208,10 @@ export function CheckoutPage() {
 
         {/* Order summary */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6 space-y-2">
+          <h2 className="font-semibold text-[var(--text-primary)] mb-2">
+            <span className="text-accent font-bold mr-2">3</span>
+            {t('cart.summary')}
+          </h2>
           {promoDiscount && (
             <>
               <div className="flex justify-between text-sm text-[var(--text-secondary)]">
@@ -171,6 +229,35 @@ export function CheckoutPage() {
           <div className="flex justify-between font-bold text-[var(--text-primary)]">
             <span>{t('cart.total')}</span>
             <span>€{total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Terms & Conditions */}
+        <div className="flex items-start gap-3 py-4">
+          <input
+            type="checkbox"
+            data-testid="checkout-terms-checkbox"
+            {...register('termsAccepted')}
+            className={`w-5 h-5 rounded border mt-0.5 shrink-0 accent-accent ${
+              errors.termsAccepted ? 'border-red-500' : 'border-[var(--border)]'
+            }`}
+          />
+          <div>
+            <label className="text-sm text-[var(--text-secondary)]">
+              {t('terms.label', { defaultValue: 'I agree to the' })}{' '}
+              <a href="#" className="text-accent hover:underline">
+                {t('common:termsLink', { ns: 'common' })}
+              </a>{' '}
+              {t('terms.and', { defaultValue: 'and' })}{' '}
+              <a href="#" className="text-accent hover:underline">
+                {t('common:privacyLink', { ns: 'common' })}
+              </a>
+            </label>
+            {errors.termsAccepted && (
+              <p data-testid="checkout-terms-error" className="text-xs text-red-500 mt-1">
+                {t('terms.required', { defaultValue: 'You must accept the terms to continue' })}
+              </p>
+            )}
           </div>
         </div>
 

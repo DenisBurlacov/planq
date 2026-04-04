@@ -9,6 +9,9 @@ import { Skeleton } from '@components/ui/Skeleton';
 import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Accordion } from '@components/ui/Accordion';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
+import { BackButton } from '@components/ui/BackButton';
+import { SpecsTable } from '@components/ui/SpecsTable';
+import { Modal } from '@components/ui/Modal';
 import { productsApi } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
@@ -34,6 +37,7 @@ export function ProductPage() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', id],
@@ -142,7 +146,15 @@ export function ProductPage() {
     { label: product.name },
   ];
 
-  const specRows: Array<{ label: string; value: string }> = [
+  const specsTableRows = [
+    {
+      label: t('product.material', { defaultValue: 'Material' }),
+      value: product.category?.name ?? '—',
+    },
+    { label: t('product.dimensions', { defaultValue: 'Dimensions' }), value: '120 x 60 x 75 cm' },
+    { label: t('product.weight', { defaultValue: 'Weight' }), value: '18.5 kg' },
+    { label: t('product.color', { defaultValue: 'Color' }), value: 'Natural' },
+    { label: t('product.warranty', { defaultValue: 'Warranty' }), value: '2 years' },
     { label: 'SKU', value: product.id.slice(0, 8).toUpperCase() },
     { label: 'Category', value: product.category?.name ?? '—' },
     {
@@ -153,19 +165,6 @@ export function ProductPage() {
   ];
 
   const accordionItems = [
-    {
-      title: 'Specifications',
-      content: (
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 mt-1">
-          {specRows.map(row => (
-            <div key={row.label} className="contents">
-              <dt className="font-medium text-[var(--text-primary)]">{row.label}</dt>
-              <dd>{row.value}</dd>
-            </div>
-          ))}
-        </dl>
-      ),
-    },
     {
       title: 'Description',
       content: <p className="leading-relaxed">{product.description}</p>,
@@ -205,6 +204,66 @@ export function ProductPage() {
           onCancel={() => setCartModalOpen(false)}
         />
       )}
+
+      {/* Size Guide Modal */}
+      <Modal
+        open={sizeGuideOpen}
+        title={t('product.sizeGuide', { defaultValue: 'Size Guide' })}
+        onConfirm={() => setSizeGuideOpen(false)}
+        onCancel={() => setSizeGuideOpen(false)}
+        confirmLabel="Close"
+        cancelLabel="Close"
+      >
+        <div data-testid="size-guide-modal">
+          <p className="text-sm text-[var(--text-secondary)] mb-3">
+            Product Type: {product.category?.name ?? 'Furniture'}
+          </p>
+          <table
+            data-testid="size-guide-table"
+            className="w-full text-sm border border-[var(--border)] rounded-lg overflow-hidden"
+          >
+            <thead>
+              <tr className="bg-[var(--table-header-bg)]">
+                <th className="px-3 py-2 text-left">Size</th>
+                <th className="px-3 py-2 text-left">W</th>
+                <th className="px-3 py-2 text-left">D</th>
+                <th className="px-3 py-2 text-left">H</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2">Small</td>
+                <td className="px-3 py-2">80</td>
+                <td className="px-3 py-2">50</td>
+                <td className="px-3 py-2">75</td>
+              </tr>
+              <tr className="bg-[var(--table-stripe)]">
+                <td className="px-3 py-2">Medium</td>
+                <td className="px-3 py-2">120</td>
+                <td className="px-3 py-2">60</td>
+                <td className="px-3 py-2">75</td>
+              </tr>
+              <tr>
+                <td className="px-3 py-2">Large</td>
+                <td className="px-3 py-2">160</td>
+                <td className="px-3 py-2">80</td>
+                <td className="px-3 py-2">75</td>
+              </tr>
+              <tr className="bg-[var(--table-stripe)]">
+                <td className="px-3 py-2">XL</td>
+                <td className="px-3 py-2">200</td>
+                <td className="px-3 py-2">90</td>
+                <td className="px-3 py-2">75</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="text-xs text-[var(--text-secondary)] mt-3">
+            All dimensions in centimeters.
+          </p>
+        </div>
+      </Modal>
+
+      <BackButton fallbackTo="/catalog" className="mb-3" />
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -344,6 +403,11 @@ export function ProductPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Specs Table */}
+      <div className="mb-12">
+        <SpecsTable rows={specsTableRows} onSizeGuide={() => setSizeGuideOpen(true)} />
       </div>
 
       {/* Accordion */}

@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
+import { Modal } from '@components/ui/Modal';
 import { wishlistApi } from '@api/wishlist';
 import { cartApi } from '@api/cart';
 import { useCartStore } from '@store/cart.store';
@@ -16,6 +18,7 @@ export function WishlistPage() {
   const { increment } = useCartStore();
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [pendingRemoveProduct, setPendingRemoveProduct] = useState<Product | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ['wishlist'], queryFn: wishlistApi.get });
 
@@ -29,14 +32,23 @@ export function WishlistPage() {
     }
   };
 
-  const handleRemove = async (productId: string) => {
-    // Optimistic: invalidate after
+  const handleRemoveRequest = (productId: string) => {
+    const item = data?.find(w => w.productId === productId || w.product.id === productId);
+    if (item) {
+      setPendingRemoveProduct(item.product);
+    }
+  };
+
+  const handleRemoveConfirm = async () => {
+    if (!pendingRemoveProduct) return;
     try {
-      await wishlistApi.remove(productId);
+      await wishlistApi.remove(pendingRemoveProduct.id);
       await qc.invalidateQueries({ queryKey: ['wishlist'] });
       toast('success', 'Removed from wishlist');
     } catch {
       toast('error', 'Failed to remove');
+    } finally {
+      setPendingRemoveProduct(null);
     }
   };
 
@@ -83,10 +95,43 @@ export function WishlistPage() {
             product={product}
             isWishlisted
             onAddToCart={handleAddToCart}
-            onToggleWishlist={handleRemove}
+            onToggleWishlist={handleRemoveRequest}
           />
         ))}
       </div>
+
+      {/* Remove Confirmation Modal */}
+      <Modal
+        open={!!pendingRemoveProduct}
+        title={t('wishlist.removeTitle', { defaultValue: 'Remove from Wishlist' })}
+        onConfirm={handleRemoveConfirm}
+        onCancel={() => setPendingRemoveProduct(null)}
+        confirmLabel={t('wishlist.removeConfirm', { defaultValue: 'Remove' })}
+        cancelLabel={t('wishlist.removeCancel', { defaultValue: 'Cancel' })}
+        danger
+      >
+        <div data-testid="wishlist-remove-modal">
+          {pendingRemoveProduct && (
+            <>
+              {pendingRemoveProduct.images.length > 0 && (
+                <img
+                  src={pendingRemoveProduct.images[0]}
+                  alt={pendingRemoveProduct.name}
+                  className="w-16 h-16 rounded-lg object-cover mx-auto mb-3"
+                />
+              )}
+              <p className="font-medium text-[var(--text-primary)] text-center">
+                {pendingRemoveProduct.name}
+              </p>
+              <p className="text-sm text-[var(--text-secondary)] text-center mt-2">
+                {t('wishlist.removeMessage', {
+                  defaultValue: 'Are you sure you want to remove this item from your wishlist?',
+                })}
+              </p>
+            </>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }

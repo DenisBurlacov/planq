@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Crafting spaces that inspire",
+    "subtitle": "We believe every home deserves furniture that tells a story — pieces that blend timeless Scandinavian design with everyday functionality.",
+    "cta": "Browse Collection"
+  },
+  "values": {
+    "title": "Our Mission",
+    "sustainability": {
+      "title": "Sustainability",
+      "text": "We source responsibly, choosing materials that respect the environment and last for generations."
+    },
+    "quality": {
+      "title": "Quality",
+      "text": "Every piece undergoes rigorous quality control. We stand behind our craftsmanship with generous warranties."
+    },
+    "design": {
+      "title": "Design",
+      "text": "Scandinavian simplicity meets modern living. Clean lines, natural materials, and functional beauty."
+    }
+  },
+  "timeline": {
+    "title": "Our Journey",
+    "founded": "Founded in Stockholm",
+    "firstStore": "First flagship store",
+    "onlineLaunch": "Online store launch",
+    "milestone10k": "10,000 orders milestone",
+    "expansion": "European expansion"
+  },
+  "team": {
+    "title": "Meet the Team"
+  }
+}

@@ -25,6 +25,8 @@ import { ProfilePage } from '@pages/ProfilePage';
 import { WalletPage } from '@pages/WalletPage';
 import { WishlistPage } from '@pages/WishlistPage';
 import { SupportPage } from '@pages/SupportPage';
+import { AboutPage } from '@pages/AboutPage';
+import { ComparePage } from '@pages/ComparePage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { ServerErrorPage } from '@pages/ServerErrorPage';
 import { AdminDashboardPage } from '@pages/admin/AdminDashboardPage';
@@ -76,6 +78,8 @@ export default function App() {
                 <Route path="/catalog" element={<CatalogPage />} />
                 <Route path="/catalog/:id" element={<ProductPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/compare" element={<ComparePage />} />
                 <Route path="/support" element={<SupportPage />} />
 
                 {/* Protected */}

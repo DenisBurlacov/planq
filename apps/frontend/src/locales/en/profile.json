@@ -3,7 +3,39 @@
   "settings": "Settings",
   "tabs": {
     "settings": "Settings",
-    "security": "Security"
+    "security": "Security",
+    "notifications": "Notifications",
+    "addresses": "Addresses"
+  },
+  "notifications": {
+    "title": "Notification Preferences",
+    "email": "Email Notifications",
+    "emailDesc": "Receive order updates and promotions via email",
+    "push": "Push Notifications",
+    "pushDesc": "Browser notifications for order status changes",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Weekly deals and new arrivals digest",
+    "marketing": "Marketing",
+    "marketingDesc": "Personalized product recommendations",
+    "save": "Save Preferences"
+  },
+  "addresses": {
+    "title": "Shipping Addresses",
+    "add": "Add Address",
+    "edit": "Edit Address",
+    "delete": "Delete",
+    "setDefault": "Set as Default",
+    "default": "Default",
+    "empty": "No addresses yet",
+    "emptyHint": "Add your first shipping address",
+    "form": {
+      "name": "Full Name",
+      "street": "Street Address",
+      "city": "City",
+      "zip": "Zip / Postal Code",
+      "country": "Country",
+      "isDefault": "Set as default address"
+    }
   },
   "wallet": {
     "title": "Wallet",

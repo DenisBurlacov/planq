@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowLeftRight } from 'lucide-react';
 import { ProductCard } from '@components/features/ProductCard';
+import { ProductCardList } from '@components/features/ProductCardList';
+import { QuickViewModal } from '@components/features/QuickViewModal';
+import { MobileFilterModal } from '@components/features/MobileFilterModal';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Button } from '@components/ui/Button';
+import { ViewToggle } from '@components/ui/ViewToggle';
 import { CategoryBar } from '@components/features/CategoryBar';
 import { productsApi, type ProductsQuery } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
 import { useCartStore } from '@store/cart.store';
 import { useAuthStore } from '@store/auth.store';
+import { useCompareStore } from '@store/compare.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
 import type { Product } from '@appTypes/api';
@@ -21,6 +26,7 @@ export function CatalogPage() {
   const { t } = useTranslation('catalog');
   const { accessToken } = useAuthStore();
   const { increment } = useCartStore();
+  const compareStore = useCompareStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,8 +44,17 @@ export function CatalogPage() {
   const [query, setQuery] = useState<ProductsQuery>(initialQuery);
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set());
   const [priceError, setPriceError] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    try {
+      return (localStorage.getItem('planq-view-mode') as 'grid' | 'list') ?? 'grid';
+    } catch {
+      return 'grid';
+    }
+  });
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   const { data: wishlist } = useQuery({
     queryKey: ['wishlist'],
@@ -61,6 +76,15 @@ export function CatalogPage() {
       setWishlistedIds(new Set(wishlist.map(w => w.productId)));
     }
   }, [wishlist]);
+
+  // Persist view mode
+  useEffect(() => {
+    try {
+      localStorage.setItem('planq-view-mode', viewMode);
+    } catch {
+      // ignore
+    }
+  }, [viewMode]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['products', query],
@@ -154,6 +178,21 @@ export function CatalogPage() {
     navigate(`/catalog?${params.toString()}`, { replace: true });
   };
 
+  const handleFilterToggle = () => {
+    // On mobile, open modal; on desktop, toggle inline
+    if (window.innerWidth < 768) {
+      setMobileFilterOpen(true);
+    } else {
+      setShowFilters(!showFilters);
+    }
+  };
+
+  const handleMobileFilterApply = (newQuery: ProductsQuery) => {
+    setQuery(newQuery);
+  };
+
+  const compareCount = compareStore.productIds.length;
+
   return (
     <div>
       <Breadcrumb items={breadcrumbItems} />
@@ -163,7 +202,7 @@ export function CatalogPage() {
         </h1>
         <button
           data-testid="catalog-filter-toggle"
-          onClick={() => setShowFilters(!showFilters)}
+          onClick={handleFilterToggle}
           className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -195,11 +234,11 @@ export function CatalogPage() {
         </Button>
       </form>
 
-      {/* Filters (price/sale/stock only — category removed) */}
+      {/* Desktop Filters */}
       {showFilters && (
         <div
           data-testid="catalog-filter-panel"
-          className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="hidden md:grid mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 grid-cols-1 md:grid-cols-3 gap-4"
         >
           <div className="flex gap-2 items-end col-span-1">
             <div className="flex-1">
@@ -294,31 +333,44 @@ export function CatalogPage() {
         </div>
       )}
 
-      {/* Sort */}
+      {/* Mobile Filter Modal */}
+      <MobileFilterModal
+        open={mobileFilterOpen}
+        onClose={() => setMobileFilterOpen(false)}
+        categories={categories ?? []}
+        query={query}
+        onApply={handleMobileFilterApply}
+        resultCount={data?.total}
+      />
+
+      {/* Sort + View Toggle */}
       <div className="mb-4 flex items-center justify-between">
         <span className="text-sm text-[var(--text-secondary)]">
           {data ? t('common:items', { count: data.total }) : ''}
         </span>
-        <select
-          value={query.sort ?? 'newest'}
-          aria-label={t('sort.label')}
-          className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm focus:outline-none"
-          onChange={e =>
-            setQuery(q => ({
-              ...q,
-              sort: e.target.value as ProductsQuery['sort'],
-              page: 1,
-            }))
-          }
-        >
-          <option value="newest">{t('sort.newest')}</option>
-          <option value="priceAsc">{t('sort.priceAsc')}</option>
-          <option value="priceDesc">{t('sort.priceDesc')}</option>
-          <option value="rating">{t('sort.rating')}</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <ViewToggle value={viewMode} onChange={setViewMode} />
+          <select
+            value={query.sort ?? 'newest'}
+            aria-label={t('sort.label')}
+            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm focus:outline-none"
+            onChange={e =>
+              setQuery(q => ({
+                ...q,
+                sort: e.target.value as ProductsQuery['sort'],
+                page: 1,
+              }))
+            }
+          >
+            <option value="newest">{t('sort.newest')}</option>
+            <option value="priceAsc">{t('sort.priceAsc')}</option>
+            <option value="priceDesc">{t('sort.priceDesc')}</option>
+            <option value="rating">{t('sort.rating')}</option>
+          </select>
+        </div>
       </div>
 
-      {/* Grid */}
+      {/* Products */}
       {isLoading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 12 }).map((_, i) => (
@@ -329,17 +381,34 @@ export function CatalogPage() {
         <div className="py-24 text-center text-[var(--text-secondary)]">{t('empty')}</div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {data.items.map(product => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isWishlisted={wishlistedIds.has(product.id)}
-                onAddToCart={handleAddToCart}
-                onToggleWishlist={handleToggleWishlist}
-              />
-            ))}
-          </div>
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {data.items.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  isWishlisted={wishlistedIds.has(product.id)}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  onQuickView={setQuickViewProduct}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {data.items.map(product => (
+                <ProductCardList
+                  key={product.id}
+                  product={product}
+                  isWishlisted={wishlistedIds.has(product.id)}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  onQuickView={setQuickViewProduct}
+                  onAddToCompare={p => compareStore.addProduct(p.id)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           {data.pages > 1 && (
@@ -366,6 +435,36 @@ export function CatalogPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Quick View Modal */}
+      <QuickViewModal
+        product={quickViewProduct}
+        open={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onAddToCart={handleAddToCart}
+      />
+
+      {/* Compare Floating Bar */}
+      {compareCount > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-card)] border-t border-[var(--border)] shadow-lg px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ArrowLeftRight className="h-4 w-4 text-accent" />
+              <span className="text-sm font-medium text-[var(--text-primary)]">
+                {compareCount} {compareCount === 1 ? 'product' : 'products'} to compare
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => compareStore.clearAll()}>
+                {t('compare.clearAll', { defaultValue: 'Clear All' })}
+              </Button>
+              <Link to="/compare">
+                <Button size="sm">{t('compare.title', { defaultValue: 'Compare' })}</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
