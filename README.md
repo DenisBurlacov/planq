@@ -13,8 +13,10 @@ PLANQ is a full-stack web application with a realistic e-commerce flow: product 
 | **Catalog**         | 62 products · 10 categories · search · sort · filters (category, sale, stock)      |
 | **Product page**    | Photo gallery · accordion (specs / description / delivery / care) · reviews        |
 | **Cart & Checkout** | Add/remove/quantity · promo codes · card & wallet payment · WebSocket confirmation |
-| **User account**    | Register · login · profile tabs · wallet top-up · order history                    |
+| **User account**    | Register · login · profile tabs · wallet top-up · order history · password reset   |
+| **Admin panel**     | Dashboard with stats · product CRUD · order management · user management           |
 | **Wishlist**        | Add/remove · persisted per user                                                    |
+| **Auth & Security** | Role-based access (USER/ADMIN) · rate limiting (100 req/min, 20 on auth)           |
 | **Monitoring**      | Grafana + Loki + Promtail — optional Docker Compose profile                        |
 | **i18n**            | English / Russian toggle                                                           |
 | **Dark mode**       | Full light/dark theme                                                              |
@@ -56,7 +58,7 @@ pnpm dev          # starts frontend + backend concurrently
 
 ```bash
 docker compose --profile monitoring up
-# Grafana: http://localhost:3001  (admin / admin)
+# Grafana: http://localhost:3200  (admin / admin)
 ```
 
 ---
@@ -80,7 +82,9 @@ Promo codes: `SAVE10` · `WELCOME20` · `FLASH30`
 | -------------- | ----------------------------------------------------------------------------------- |
 | Frontend       | React 18 · Vite · TypeScript · Tailwind CSS · React Query · Zustand · react-i18next |
 | Backend        | Node.js · Express · Prisma ORM · PostgreSQL · WebSocket (ws) · JWT                  |
+| Shared         | `@planq/types` — shared TypeScript types between frontend and backend               |
 | Quality        | ESLint · Prettier · Husky · lint-staged · TypeScript strict                         |
+| Testing        | Playwright (E2E) · Jest (backend unit)                                              |
 | Monitoring     | Grafana · Loki · Promtail                                                           |
 | Infrastructure | pnpm workspaces · Docker Compose · GitHub Actions CI/CD · GHCR                      |
 
@@ -92,7 +96,20 @@ Promo codes: `SAVE10` · `WELCOME20` · `FLASH30`
 Planq/
 ├── apps/
 │   ├── frontend/          # React SPA (Vite)
+│   │   ├── src/
+│   │   │   ├── pages/
+│   │   │   │   ├── admin/         # Admin panel pages (Dashboard, Products, Orders, Users)
+│   │   │   │   └── ...            # Public pages (Home, Catalog, Cart, etc.)
+│   │   │   └── components/
+│   │   │       ├── layout/        # Navbar, Footer, AdminLayout, AdminRoute, ProtectedRoute
+│   │   │       └── ui/            # Button, Input, Modal, DataTable, StatCard, etc.
+│   │   └── tests/e2e/             # Playwright E2E tests
 │   └── backend/           # Express API + Prisma
+│       └── src/routes/
+│           ├── admin/             # Admin CRUD routes (products, orders, users)
+│           └── ...                # Public routes (auth, products, cart, etc.)
+├── packages/
+│   └── types/             # Shared TypeScript types (@planq/types)
 ├── docker/
 │   ├── monitoring/        # Grafana + Loki + Promtail configs
 │   ├── backend.Dockerfile
@@ -119,6 +136,11 @@ pnpm format:fix                   # Prettier fix
 pnpm --filter @planq/backend test # Backend unit tests
 pnpm --filter @planq/backend db:seed   # Seed database
 pnpm --filter @planq/backend db:reset  # Reset + re-seed database
+
+# E2E tests (Playwright — requires running backend + frontend)
+pnpm --filter @planq/frontend exec playwright test              # Run all E2E tests
+pnpm --filter @planq/frontend exec playwright test --ui         # Open Playwright UI
+pnpm --filter @planq/frontend exec playwright test --project=chromium  # Chromium only
 ```
 
 ---
@@ -139,6 +161,8 @@ PLANQ is designed to be automation-friendly:
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [QA Locators Reference](docs/LOCATORS.md)
+- [Contributing](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
 
 ---
 
