@@ -61,7 +61,8 @@ export function ProfilePage() {
     email: true,
     push: false,
     newsletter: true,
-    marketing: false,
+    orderUpdates: true,
+    promotions: false,
   });
   const [savingNotifs, setSavingNotifs] = useState(false);
 
@@ -379,13 +380,22 @@ export function ProfilePage() {
                 description={t('notifications.newsletterDesc')}
               />
             </div>
+            <div className="py-4 border-t border-[var(--border)]">
+              <Toggle
+                data-testid="toggle-order-updates"
+                checked={notifPrefs.orderUpdates}
+                onChange={v => setNotifPrefs(p => ({ ...p, orderUpdates: v }))}
+                label={t('notifications.orderUpdates')}
+                description={t('notifications.orderUpdatesDesc')}
+              />
+            </div>
             <div className="py-4 last:pb-0">
               <Toggle
-                data-testid="toggle-marketing"
-                checked={notifPrefs.marketing}
-                onChange={v => setNotifPrefs(p => ({ ...p, marketing: v }))}
-                label={t('notifications.marketing')}
-                description={t('notifications.marketingDesc')}
+                data-testid="toggle-promotions"
+                checked={notifPrefs.promotions}
+                onChange={v => setNotifPrefs(p => ({ ...p, promotions: v }))}
+                label={t('notifications.promotions')}
+                description={t('notifications.promotionsDesc')}
               />
             </div>
           </div>

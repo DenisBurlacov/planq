@@ -14,7 +14,6 @@ interface ProductCardProps {
   onAddToCart?: (product: Product, quantity: number) => Promise<void>;
   onToggleWishlist?: (productId: string) => void;
   onQuickView?: (product: Product) => void;
-  onAddToCompare?: (product: Product) => void;
 }
 
 export function ProductCard({

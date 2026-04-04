@@ -32,10 +32,9 @@ export function QuickViewModal({ product, open, onClose, onAddToCart }: QuickVie
         );
         first?.focus();
       }
+    } else {
+      previousFocusRef.current?.focus();
     }
-    return () => {
-      if (!open) previousFocusRef.current?.focus();
-    };
   }, [open]);
 
   useEffect(() => {

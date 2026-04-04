@@ -15,8 +15,10 @@
     "pushDesc": "Browser notifications for order status changes",
     "newsletter": "Newsletter",
     "newsletterDesc": "Weekly deals and new arrivals digest",
-    "marketing": "Marketing",
-    "marketingDesc": "Personalized product recommendations",
+    "orderUpdates": "Order Updates",
+    "orderUpdatesDesc": "Get notified about your order status changes",
+    "promotions": "Promotions",
+    "promotionsDesc": "Personalized deals and product recommendations",
     "save": "Save Preferences"
   },
   "addresses": {

@@ -4,15 +4,16 @@ export interface NotificationPreferences {
   email: boolean;
   push: boolean;
   newsletter: boolean;
-  marketing: boolean;
+  orderUpdates: boolean;
+  promotions: boolean;
 }
 
 export const notificationsApi = {
   get: () => apiFetch<NotificationPreferences>('/api/v1/profile/notifications'),
 
-  update: (prefs: NotificationPreferences) =>
+  update: (prefs: Partial<NotificationPreferences>) =>
     apiFetch<NotificationPreferences>('/api/v1/profile/notifications', {
-      method: 'PATCH',
+      method: 'PUT',
       body: JSON.stringify(prefs),
     }),
 };
