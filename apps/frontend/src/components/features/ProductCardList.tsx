@@ -55,15 +55,13 @@ export function ProductCardList({
         onConfirm={handleModalConfirm}
         onCancel={() => setModalOpen(false)}
       />
-      <div
+      <Link
+        to={`/catalog/${product.id}`}
         data-testid="product-card-list"
-        className="flex flex-col sm:flex-row rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden hover:shadow-lg transition-all"
+        className="flex flex-col sm:flex-row rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden hover:shadow-lg transition-all block"
       >
         {/* Image */}
-        <Link
-          to={`/catalog/${product.id}`}
-          className="shrink-0 w-full sm:w-48 h-40 sm:h-36 relative"
-        >
+        <div className="shrink-0 w-full sm:w-48 h-40 sm:h-36 relative">
           {hasImage ? (
             <img
               src={product.images[0]}
@@ -82,16 +80,14 @@ export function ProductCardList({
               <Badge variant="sale">{t('common:sale', { ns: 'common' })}</Badge>
             </div>
           )}
-        </Link>
+        </div>
 
         {/* Content */}
         <div className="flex-1 p-4 flex flex-col justify-between">
           <div>
-            <Link to={`/catalog/${product.id}`}>
-              <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2 hover:text-accent transition-colors">
-                {product.name}
-              </h3>
-            </Link>
+            <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2">
+              {product.name}
+            </h3>
             <div className="mt-1 flex items-center gap-1">
               <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
               <span className="text-xs text-[var(--text-secondary)]">
@@ -106,14 +102,22 @@ export function ProductCardList({
             <Button
               size="sm"
               disabled={isOutOfStock}
-              onClick={() => onAddToCart && setModalOpen(true)}
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onAddToCart) setModalOpen(true);
+              }}
             >
               <ShoppingCart className="h-4 w-4" />
               {t('product.addToCart')}
             </Button>
             {onToggleWishlist && (
               <button
-                onClick={() => onToggleWishlist(product.id)}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleWishlist(product.id);
+                }}
                 className="p-1.5 rounded-full hover:bg-[var(--bg-sidebar)]"
                 aria-label={
                   isWishlisted ? t('product.removeFromWishlist') : t('product.addToWishlist')
@@ -126,7 +130,11 @@ export function ProductCardList({
             )}
             {onAddToCompare && (
               <button
-                onClick={() => onAddToCompare(product)}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAddToCompare(product);
+                }}
                 className="p-1.5 rounded-full hover:bg-[var(--bg-sidebar)]"
                 aria-label="Add to compare"
               >
@@ -135,7 +143,11 @@ export function ProductCardList({
             )}
             {onQuickView && (
               <button
-                onClick={() => onQuickView(product)}
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onQuickView(product);
+                }}
                 className="p-1.5 rounded-full hover:bg-[var(--bg-sidebar)]"
                 aria-label={t('product.quickView')}
               >
@@ -161,7 +173,7 @@ export function ProductCardList({
             )}
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }

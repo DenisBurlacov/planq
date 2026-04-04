@@ -45,7 +45,9 @@ export function ProductCard({
     setModalOpen(false);
   };
 
-  const handleWishlist = async () => {
+  const handleWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!onToggleWishlist) return;
     setWishlistPending(true);
     await Promise.resolve(onToggleWishlist(product.id));
@@ -90,82 +92,81 @@ export function ProductCard({
         onConfirm={handleModalConfirm}
         onCancel={() => setModalOpen(false)}
       />
-      <div
+      <Link
+        to={`/catalog/${product.id}`}
         data-testid="product-card"
-        className="group relative rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        className="group relative rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block"
         aria-label={isOutOfStock ? `${product.name} — ${t('product.outOfStock')}` : product.name}
       >
         {/* Image */}
-        <Link to={`/catalog/${product.id}`}>
-          <div className="relative h-48 bg-[var(--bg-sidebar)] overflow-hidden">
-            {hasImage ? (
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                loading="lazy"
-                onError={() => setImgError(true)}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center">
-                <ImageOff className="h-12 w-12 text-[var(--text-secondary)]" />
-              </div>
-            )}
-            {isOnSale && (
-              <div className="absolute top-2 left-2">
-                <Badge variant="sale">{t('common:sale', { ns: 'common' })}</Badge>
-              </div>
-            )}
-            {isOutOfStock && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <span className="text-white text-sm font-medium">{t('product.outOfStock')}</span>
-              </div>
-            )}
+        <div className="relative h-48 bg-[var(--bg-sidebar)] overflow-hidden">
+          {hasImage ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              loading="lazy"
+              onError={() => setImgError(true)}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <ImageOff className="h-12 w-12 text-[var(--text-secondary)]" />
+            </div>
+          )}
+          {isOnSale && (
+            <div className="absolute top-2 left-2">
+              <Badge variant="sale">{t('common:sale', { ns: 'common' })}</Badge>
+            </div>
+          )}
+          {isOutOfStock && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="text-white text-sm font-medium">{t('product.outOfStock')}</span>
+            </div>
+          )}
 
-            {/* Compare button — hidden on mobile */}
-            <div className="hidden md:block absolute top-2 left-2 mt-7">
+          {/* Compare button — hidden on mobile */}
+          <div className="hidden md:block absolute top-2 left-2 mt-7">
+            <button
+              data-testid="compare-button"
+              onClick={handleCompare}
+              className={`p-1.5 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100 ${
+                isInCompare ? 'opacity-100' : ''
+              }`}
+              aria-label={isInCompare ? 'Remove from compare' : 'Add to compare'}
+            >
+              <ArrowLeftRight
+                className={`h-4 w-4 ${isInCompare ? 'text-accent' : 'text-[var(--text-secondary)]'}`}
+              />
+            </button>
+          </div>
+
+          {/* Hover overlay with info */}
+          <div
+            data-testid="product-card-overlay"
+            className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3"
+          >
+            <div className="hidden md:flex flex-wrap gap-1 mb-2">
+              {product.category && (
+                <span
+                  data-testid="product-card-material"
+                  className="text-xs text-white bg-white/20 rounded px-2 py-0.5"
+                >
+                  {product.category.name}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center justify-center">
               <button
-                data-testid="compare-button"
-                onClick={handleCompare}
-                className={`p-1.5 rounded-full bg-white/80 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100 ${
-                  isInCompare ? 'opacity-100' : ''
-                }`}
-                aria-label={isInCompare ? 'Remove from compare' : 'Add to compare'}
+                data-testid="quick-view-button"
+                onClick={handleQuickView}
+                className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-white transition-colors"
               >
-                <ArrowLeftRight
-                  className={`h-4 w-4 ${isInCompare ? 'text-accent' : 'text-[var(--text-secondary)]'}`}
-                />
+                <Eye className="h-3.5 w-3.5" />
+                {t('product.quickView')}
               </button>
             </div>
-
-            {/* Hover overlay with info */}
-            <div
-              data-testid="product-card-overlay"
-              className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3"
-            >
-              <div className="hidden md:flex flex-wrap gap-1 mb-2">
-                {product.category && (
-                  <span
-                    data-testid="product-card-material"
-                    className="text-xs text-white bg-white/20 rounded px-2 py-0.5"
-                  >
-                    {product.category.name}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center justify-center">
-                <button
-                  data-testid="quick-view-button"
-                  onClick={handleQuickView}
-                  className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-white transition-colors"
-                >
-                  <Eye className="h-3.5 w-3.5" />
-                  {t('product.quickView')}
-                </button>
-              </div>
-            </div>
           </div>
-        </Link>
+        </div>
 
         {/* Wishlist button */}
         {onToggleWishlist && (
@@ -191,11 +192,9 @@ export function ProductCard({
 
         {/* Content */}
         <div className="p-4">
-          <Link to={`/catalog/${product.id}`}>
-            <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2 hover:text-accent transition-colors">
-              {product.name}
-            </h3>
-          </Link>
+          <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2">
+            {product.name}
+          </h3>
 
           {/* Rating */}
           <div className="mt-1 flex items-center gap-1">
@@ -238,13 +237,17 @@ export function ProductCard({
             size="sm"
             className="mt-3 w-full"
             disabled={isOutOfStock}
-            onClick={handleAddToCart}
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddToCart();
+            }}
           >
             <ShoppingCart className="h-4 w-4" />
             {t('product.addToCart')}
           </Button>
         </div>
-      </div>
+      </Link>
     </>
   );
 }
