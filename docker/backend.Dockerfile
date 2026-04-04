@@ -23,10 +23,18 @@ RUN apk add --no-cache curl
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
-COPY --from=builder /app/apps/backend/dist ./dist
-COPY --from=builder /app/apps/backend/package.json ./
-COPY --from=builder /app/apps/backend/prisma ./prisma
-COPY --from=builder /app/node_modules ./node_modules
+# Copy workspace config + package files for prod install
+COPY pnpm-workspace.yaml pnpm-lock.yaml* package.json ./
+COPY apps/backend/package.json apps/backend/
+COPY packages/types/package.json packages/types/
+RUN pnpm install --frozen-lockfile --filter @planq/backend --prod
+
+# Copy built output, prisma schema, and generated client
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
+COPY --from=builder /app/node_modules/.pnpm/@prisma+client*/node_modules/.prisma ./node_modules/.prisma
+
+WORKDIR /app/apps/backend
 
 EXPOSE 4000
 
