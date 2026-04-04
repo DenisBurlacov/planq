@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart,
   Heart,
@@ -29,6 +29,7 @@ export function Navbar() {
   const { isDark, toggle } = useThemeStore();
   const itemCount = useCartStore(s => s.itemCount);
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
@@ -132,8 +133,19 @@ export function Navbar() {
 
   const isAdmin = user?.role === 'ADMIN';
 
-  const navLinkClass =
-    'px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]';
+  const pathname = location.pathname;
+  const search = location.search;
+
+  const navLinkClass = (path: string, matchSearch?: string) => {
+    const isActive = matchSearch
+      ? pathname === path.split('?')[0] && search.includes(matchSearch)
+      : pathname === path && !search;
+    return `px-3 py-2 text-sm transition-colors rounded-lg ${
+      isActive
+        ? 'text-accent font-medium bg-accent/5'
+        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)]'
+    }`;
+  };
 
   return (
     <nav
@@ -166,25 +178,33 @@ export function Navbar() {
               onMouseEnter={handleCatalogMouseEnter}
               onMouseLeave={handleCatalogMouseLeave}
             >
-              <Link data-testid="nav-catalog" to="/catalog" className={navLinkClass}>
+              <Link data-testid="nav-catalog" to="/catalog" className={navLinkClass('/catalog')}>
                 {t('nav.catalog')}
               </Link>
             </div>
-            <Link data-testid="nav-about" to="/about" className={navLinkClass}>
+            <Link data-testid="nav-about" to="/about" className={navLinkClass('/about')}>
               {t('nav.about')}
             </Link>
             <Link
               data-testid="nav-sale"
               to="/catalog?onSale=true"
-              className="px-3 py-2 text-sm text-red-500 hover:text-red-600 transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
+              className={`${navLinkClass('/catalog', 'onSale=true')} ${
+                pathname === '/catalog' && search.includes('onSale=true')
+                  ? '!text-red-500 !font-medium'
+                  : 'text-red-500 hover:text-red-600'
+              }`}
             >
               {t('nav.sale')}
             </Link>
-            <Link data-testid="nav-new-arrivals" to="/catalog?sort=newest" className={navLinkClass}>
+            <Link
+              data-testid="nav-new-arrivals"
+              to="/catalog?sort=newest"
+              className={navLinkClass('/catalog', 'sort=newest')}
+            >
               {t('nav.newArrivals')}
             </Link>
             {accessToken && (
-              <Link data-testid="nav-orders" to="/orders" className={navLinkClass}>
+              <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
                 {t('nav.orders')}
               </Link>
             )}
