@@ -46,6 +46,26 @@
     "quickView": "Quick View",
     "outOfStock": "Out of Stock"
   },
+  "home": {
+    "newCollection": "New Collection 2026",
+    "heroTitle1": "Furniture that tells",
+    "heroTitle2": "your story",
+    "heroSubtitle": "Scandinavian design meets everyday comfort. Discover our curated collection of premium home furniture and decor.",
+    "shopNow": "Shop Now",
+    "viewSale": "View Sale",
+    "products": "Products",
+    "categoriesCount": "Categories",
+    "avgRating": "Avg. Rating",
+    "shopByCategory": "Shop by Category",
+    "allCategories": "All categories",
+    "bestSellers": "Best Sellers",
+    "newArrivals": "New Arrivals",
+    "viewAll": "View all",
+    "saleBannerLabel": "Limited Time",
+    "saleBannerTitle": "Up to 30% off sale items",
+    "saleBannerSubtitle": "Don't miss out on our seasonal discounts",
+    "shopSale": "Shop Sale"
+  },
   "empty": "No products found. Try adjusting your filters.",
   "loading": "Loading products..."
 }

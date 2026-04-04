@@ -11,6 +11,7 @@ import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
 import type { Product } from '@appTypes/api';
 import { ApiException } from '@api/client';
+import { useTranslation } from 'react-i18next';
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '@constants/categoryIcons';
 
 // Verified Unsplash hero images (Scandinavian interior)
@@ -22,6 +23,7 @@ const HERO_IMAGES = [
 ];
 
 export function HomePage() {
+  const { t } = useTranslation('catalog');
   const { accessToken } = useAuthStore();
   const { increment } = useCartStore();
   const { toast } = useToast();
@@ -95,39 +97,36 @@ export function HomePage() {
         <div className="relative h-full flex flex-col justify-center px-8 md:px-14">
           <div className="max-w-xl">
             <span className="inline-block rounded-full bg-white/15 backdrop-blur-sm border border-white/20 px-3 py-1 text-xs font-semibold text-white/90 mb-4 tracking-widest uppercase">
-              New Collection 2026
+              {t('home.newCollection')}
             </span>
             <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight drop-shadow-md">
-              Furniture that tells
+              {t('home.heroTitle1')}
               <br />
-              <span className="text-accent">your story</span>
+              <span className="text-accent">{t('home.heroTitle2')}</span>
             </h1>
-            <p className="mt-4 max-w-md text-white/75 leading-relaxed">
-              Scandinavian design meets everyday comfort. Discover our curated collection of premium
-              home furniture and decor.
-            </p>
+            <p className="mt-4 max-w-md text-white/75 leading-relaxed">{t('home.heroSubtitle')}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 data-testid="hero-cta"
                 to="/catalog"
                 className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white hover:bg-accent-hover transition-colors shadow-lg shadow-black/30"
               >
-                Shop Now <ArrowRight className="h-4 w-4" />
+                {t('home.shopNow')} <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/catalog?onSale=true"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/30 backdrop-blur-sm px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors"
               >
-                View Sale
+                {t('home.viewSale')}
               </Link>
             </div>
 
             {/* Stats */}
             <div className="mt-10 flex gap-8">
               {[
-                { value: '60+', label: 'Products' },
-                { value: '10', label: 'Categories' },
-                { value: '4.8★', label: 'Avg. Rating' },
+                { value: '60+', label: t('home.products') },
+                { value: '10', label: t('home.categoriesCount') },
+                { value: '4.8★', label: t('home.avgRating') },
               ].map(stat => (
                 <div key={stat.label}>
                   <p className="text-xl font-bold text-white drop-shadow">{stat.value}</p>
@@ -143,12 +142,14 @@ export function HomePage() {
       {categories && categories.length > 0 && (
         <section data-testid="categories-section">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">Shop by Category</h2>
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">
+              {t('home.shopByCategory')}
+            </h2>
             <Link
               to="/catalog"
               className="text-sm text-accent hover:underline flex items-center gap-1"
             >
-              All categories <ArrowRight className="h-3.5 w-3.5" />
+              {t('home.allCategories')} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -165,7 +166,7 @@ export function HomePage() {
                     <Icon className="h-5 w-5 text-[var(--text-secondary)] group-hover:text-accent transition-colors" />
                   </div>
                   <span className="text-xs font-medium text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] leading-tight transition-colors">
-                    {cat.name}
+                    {t(`categories.${cat.slug}`, { defaultValue: cat.name })}
                   </span>
                 </Link>
               );
@@ -177,12 +178,12 @@ export function HomePage() {
       {/* ── Best Sellers ──────────────────────────────────────────────────── */}
       <section data-testid="best-sellers-section">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">Best Sellers</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">{t('home.bestSellers')}</h2>
           <Link
             to="/catalog?sort=rating"
             className="text-sm text-accent hover:underline flex items-center gap-1"
           >
-            View all <ArrowRight className="h-3.5 w-3.5" />
+            {t('home.viewAll')} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -197,12 +198,12 @@ export function HomePage() {
       {/* ── New Arrivals ──────────────────────────────────────────────────── */}
       <section data-testid="new-arrivals-section">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">New Arrivals</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">{t('home.newArrivals')}</h2>
           <Link
             to="/catalog"
             className="text-sm text-accent hover:underline flex items-center gap-1"
           >
-            View all <ArrowRight className="h-3.5 w-3.5" />
+            {t('home.viewAll')} <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -231,17 +232,17 @@ export function HomePage() {
         <div className="relative p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold text-red-400 uppercase tracking-widest mb-1">
-              Limited Time
+              {t('home.saleBannerLabel')}
             </p>
-            <h3 className="text-2xl font-bold text-white">Up to 30% off sale items</h3>
-            <p className="text-sm text-white/60 mt-1">Don't miss out on our seasonal discounts</p>
+            <h3 className="text-2xl font-bold text-white">{t('home.saleBannerTitle')}</h3>
+            <p className="text-sm text-white/60 mt-1">{t('home.saleBannerSubtitle')}</p>
           </div>
           <Link
             data-testid="sale-banner-cta"
             to="/catalog?onSale=true"
             className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-900 hover:bg-white/90 transition-colors shadow-lg"
           >
-            Shop Sale <ArrowRight className="h-4 w-4" />
+            {t('home.shopSale')} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

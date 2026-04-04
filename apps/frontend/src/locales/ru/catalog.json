@@ -46,6 +46,26 @@
     "quickView": "Быстрый просмотр",
     "outOfStock": "Нет в наличии"
   },
+  "home": {
+    "newCollection": "Новая коллекция 2026",
+    "heroTitle1": "Мебель, которая",
+    "heroTitle2": "расскажет вашу историю",
+    "heroSubtitle": "Скандинавский дизайн и повседневный комфорт. Откройте нашу коллекцию премиальной мебели и декора.",
+    "shopNow": "В каталог",
+    "viewSale": "Скидки",
+    "products": "Товаров",
+    "categoriesCount": "Категорий",
+    "avgRating": "Ср. рейтинг",
+    "shopByCategory": "Категории",
+    "allCategories": "Все категории",
+    "bestSellers": "Бестселлеры",
+    "newArrivals": "Новинки",
+    "viewAll": "Смотреть все",
+    "saleBannerLabel": "Ограниченное время",
+    "saleBannerTitle": "Скидки до 30%",
+    "saleBannerSubtitle": "Не пропустите сезонные скидки",
+    "shopSale": "К скидкам"
+  },
   "empty": "Товары не найдены. Попробуйте изменить фильтры.",
   "loading": "Загрузка товаров..."
 }
