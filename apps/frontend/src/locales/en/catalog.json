@@ -29,7 +29,9 @@
     "noReviews": "No reviews yet",
     "description": "Description",
     "relatedProducts": "You may also like",
-    "stockStatus": "{{count}} left in stock"
+    "stockStatus": "{{count}} left in stock",
+    "quickView": "Quick View",
+    "outOfStock": "Out of Stock"
   },
   "empty": "No products found. Try adjusting your filters.",
   "loading": "Loading products..."

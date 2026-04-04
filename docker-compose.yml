@@ -29,9 +29,19 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-planq}:${POSTGRES_PASSWORD:-planq_secret}@postgres:5432/${POSTGRES_DB:-planq_db}
       CORS_ORIGIN: http://localhost:3000
       RESET_TOKEN: ${RESET_TOKEN:-super_secret_reset_token_change_in_production}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev_access_secret_change_in_production_32}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production_32}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:4000/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   frontend:
     build:
@@ -41,7 +51,8 @@ services:
     ports:
       - '3000:80'
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   # Monitoring stack (optional)
   # Start with: docker compose --profile monitoring up
@@ -50,7 +61,7 @@ services:
     profiles: ['monitoring']
     restart: unless-stopped
     ports:
-      - '${GRAFANA_PORT:-3100}:3000'
+      - '${GRAFANA_PORT:-3200}:3000'
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
     volumes:
@@ -61,6 +72,8 @@ services:
     image: grafana/loki:latest
     profiles: ['monitoring']
     restart: unless-stopped
+    ports:
+      - '${LOKI_PORT:-3100}:3100'
     command: -config.file=/etc/loki/loki.yaml
     volumes:
       - ./docker/monitoring/loki:/etc/loki

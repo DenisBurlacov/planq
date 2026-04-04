@@ -21,6 +21,9 @@ scrape_configs:
         target_label: service
       - source_labels: [__meta_docker_container_label_com_docker_compose_project]
         target_label: project
+      # Add environment label from NODE_ENV container env var
+      - source_labels: [__meta_docker_container_env_NODE_ENV]
+        target_label: environment
       - action: keep
         source_labels: [service]
         regex: 'backend|frontend|postgres'

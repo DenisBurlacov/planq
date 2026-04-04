@@ -1,0 +1,35 @@
+# Dependencies (installed inside container via npm ci / pnpm install)
+node_modules
+**/node_modules
+
+# Build outputs (rebuilt inside container)
+**/dist
+**/build
+
+# Dev & editor files
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.md
+LICENSE
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test artifacts
+**/coverage
+**/playwright-report
+**/test-results
+
+# Docker files (avoid recursive COPY)
+docker-compose*.yml
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -7,8 +7,10 @@
     "wishlist": "Wishlist",
     "login": "Sign In",
     "logout": "Sign Out",
-    "register": "Sign Up"
+    "register": "Sign Up",
+    "admin": "Admin"
   },
+  "dismissNotification": "Dismiss notification",
   "actions": {
     "save": "Save",
     "cancel": "Cancel",

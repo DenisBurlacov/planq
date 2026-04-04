@@ -1,0 +1,66 @@
+{
+  "sidebar": {
+    "title": "Admin",
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "users": "Users",
+    "backToStore": "Back to Store"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalOrders": "Total Orders",
+    "revenueToday": "Revenue Today",
+    "pendingOrders": "Pending Orders",
+    "activeUsers": "Active Users",
+    "recentOrders": "Recent Orders"
+  },
+  "products": {
+    "title": "Products",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "deleteProduct": "Delete Product",
+    "deleteConfirm": "Are you sure you want to delete this product? This action cannot be undone.",
+    "search": "Search products...",
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "salePrice": "Sale Price",
+    "stock": "Stock",
+    "category": "Category",
+    "images": "Image URLs (one per line)",
+    "actions": "Actions"
+  },
+  "orders": {
+    "title": "Orders",
+    "orderId": "Order ID",
+    "customer": "Customer",
+    "items": "Items",
+    "total": "Total",
+    "status": "Status",
+    "date": "Date",
+    "filterStatus": "Filter by status",
+    "allStatuses": "All Statuses",
+    "search": "Search orders..."
+  },
+  "users": {
+    "title": "Users",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "search": "Search by name or email...",
+    "blockUser": "Block User",
+    "unblockUser": "Unblock User",
+    "blockConfirm": "Are you sure you want to block this user?",
+    "unblockConfirm": "Are you sure you want to unblock this user?",
+    "active": "Active",
+    "blocked": "Blocked"
+  },
+  "table": {
+    "showing": "Showing {{from}}-{{to}} of {{total}}",
+    "empty": "No data found.",
+    "loading": "Loading..."
+  }
+}

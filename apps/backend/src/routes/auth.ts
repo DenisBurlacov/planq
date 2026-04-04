@@ -7,9 +7,17 @@ import {
   loginHandler,
   refreshHandler,
   logoutHandler,
+  forgotPasswordHandler,
+  resetPasswordHandler,
   meHandler,
 } from '@controllers/auth.controller.js';
-import { RegisterSchema, LoginSchema, RefreshSchema } from '@services/auth.service.js';
+import {
+  RegisterSchema,
+  LoginSchema,
+  RefreshSchema,
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+} from '@services/auth.service.js';
 
 const router: ExpressRouter = Router();
 
@@ -118,6 +126,58 @@ router.post('/refresh', validate(RefreshSchema), refreshHandler);
  *         description: Logged out successfully
  */
 router.post('/logout', validate(RefreshSchema), logoutHandler);
+
+/**
+ * @openapi
+ * /auth/forgot-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Request password reset token
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string, format: email }
+ *     responses:
+ *       200:
+ *         description: Reset token created (token included in dev/test env)
+ */
+router.post(
+  '/forgot-password',
+  loginLimiter,
+  validate(ForgotPasswordSchema),
+  forgotPasswordHandler
+);
+
+/**
+ * @openapi
+ * /auth/reset-password:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Reset password using token
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token, newPassword]
+ *             properties:
+ *               token: { type: string }
+ *               newPassword: { type: string, minLength: 8 }
+ *     responses:
+ *       200:
+ *         description: Password updated
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.post('/reset-password', loginLimiter, validate(ResetPasswordSchema), resetPasswordHandler);
 
 /**
  * @openapi

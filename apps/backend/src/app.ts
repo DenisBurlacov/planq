@@ -2,6 +2,7 @@ import express, { type Express } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import { requestIdMiddleware } from '@middleware/requestId.js';
 import { errorHandler } from '@middleware/errorHandler.js';
@@ -17,6 +18,7 @@ import wishlistRouter from '@routes/wishlist.js';
 import reviewsRouter from '@routes/reviews.js';
 import promoRouter from '@routes/promo.js';
 import profileRouter from '@routes/profile.js';
+import adminRouter from '@routes/admin.js';
 
 const app: Express = express();
 
@@ -30,6 +32,20 @@ app.use(express.json());
 
 // Request ID on every request
 app.use(requestIdMiddleware);
+
+// Global rate limiting — 100 requests per minute on all public API routes
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.NODE_ENV === 'test' ? 10000 : 100,
+  message: {
+    error: 'TOO_MANY_REQUESTS',
+    message: 'Too many requests, please try again later',
+    statusCode: 429,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', globalLimiter);
 
 // Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -45,6 +61,7 @@ app.use('/api/v1/wishlist', wishlistRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/promotions', promoRouter);
 app.use('/api/v1/profile', profileRouter);
+app.use('/api/v1/admin', adminRouter);
 app.use('/api/test', resetRouter);
 
 // Global error handler (must be last)

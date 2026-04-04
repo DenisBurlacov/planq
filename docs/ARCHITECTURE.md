@@ -23,9 +23,11 @@ Planq/
 │   │   │   ├── api/              # apiFetch wrappers (auth, cart, products…)
 │   │   │   ├── components/
 │   │   │   │   ├── features/     # ProductCard
-│   │   │   │   ├── layout/       # Navbar, Footer, Layout, ProtectedRoute
-│   │   │   │   └── ui/           # Button, Input, Modal, Toast, Accordion, Breadcrumb…
-│   │   │   ├── pages/            # Route-level components
+│   │   │   │   ├── layout/       # Navbar, Footer, Layout, ProtectedRoute, AdminLayout, AdminRoute
+│   │   │   │   └── ui/           # Button, Input, Modal, Toast, Accordion, DataTable, StatCard…
+│   │   │   ├── pages/
+│   │   │   │   ├── admin/        # AdminDashboardPage, AdminProductsPage, AdminOrdersPage, AdminUsersPage
+│   │   │   │   └── ...           # Public pages (Home, Catalog, Cart, Checkout, etc.)
 │   │   │   ├── store/            # Zustand stores (auth, cart, theme)
 │   │   │   ├── locales/          # i18n JSON (en / ru)
 │   │   │   ├── types/            # Shared TS interfaces (api.ts)
@@ -37,10 +39,14 @@ Planq/
 │       │   ├── migrations/       # Prisma migrate history
 │       │   └── seed.ts           # Deterministic seed (10 categories, 62 products)
 │       └── src/
-│           ├── routes/           # Express routers (auth, products, cart, orders…)
+│           ├── routes/
+│           │   ├── admin/        # Admin CRUD routers (products, orders, users)
+│           │   └── ...           # Public routers (auth, products, cart, orders…)
 │           ├── services/         # Business logic layer
 │           ├── middlewares/      # auth, error handler, rate-limiter
 │           └── index.ts          # App entry point
+├── packages/
+│   └── types/                    # @planq/types — shared TS types (frontend + backend)
 ├── docker/
 │   ├── monitoring/               # Grafana + Loki + Promtail YAML configs
 │   ├── backend.Dockerfile
@@ -70,6 +76,13 @@ Planq/
 
 React Router v6 with nested routes. Protected routes wrapped in `<ProtectedRoute>` which redirects to `/login` with `state: { from }` for post-login redirect.
 
+Admin routes are wrapped in `<AdminRoute>` which requires both authentication and `role === 'ADMIN'`. Non-admin users are silently redirected to `/`. The admin panel uses `<AdminLayout>` with a sidebar navigation and renders child routes via `<Outlet>`:
+
+- `/admin` — Dashboard (stats + recent orders)
+- `/admin/products` — Product CRUD
+- `/admin/orders` — Order management (status updates)
+- `/admin/users` — User management (block/unblock)
+
 ### State layers
 
 ```
@@ -89,7 +102,7 @@ All requests go through `apiFetch()` in `src/api/client.ts`:
 
 ### Real-time (WebSocket)
 
-`useWebSocket` hook connects to `ws://localhost:4000` after login. Handles three events:
+`useWebSocket` hook connects to `ws://localhost:4000` after login. Reconnects automatically with exponential backoff on disconnect. Handles three events:
 
 - `payment.result` — resolves checkout processing screen
 - `order.status.updated` — updates order detail in real time
@@ -114,44 +127,60 @@ All requests go through `apiFetch()` in `src/api/client.ts`:
 
 ```
 /api/v1/
-  auth/          register · login · refresh · logout
+  auth/          register · login · refresh · logout · forgot-password · reset-password
   products/      list (paginated + filtered) · getById · stock
   categories/    list
   cart/          get · add · update · remove
   orders/        checkout · list · getById
   reviews/       byProduct · create · delete
-  wishlist/      get · add · remove
+  wishlist/      get (paginated) · add · remove
   profile/       get · update · changePassword
   promotions/    validate promo code
-  admin/         users list (admin only)
+  admin/
+    products/    list · create · update · soft-delete     (ADMIN only)
+    orders/      list (filterable) · update status         (ADMIN only)
+    users/       list · block/unblock                      (ADMIN only)
 ```
 
 ### Auth flow
 
 ```
-POST /auth/register  →  hash password → create user → return tokens
-POST /auth/login     →  verify password → issue accessToken (15m) + refreshToken (7d)
-POST /auth/refresh   →  verify refreshToken → rotate → issue new pair
-POST /auth/logout    →  blacklist refreshToken
+POST /auth/register         →  hash password → create user → return tokens
+POST /auth/login            →  verify password → issue accessToken (15m) + refreshToken (7d)
+POST /auth/refresh          →  verify refreshToken → rotate → issue new pair
+POST /auth/logout           →  blacklist refreshToken
+POST /auth/forgot-password  →  generate reset token → (in dev: return token in response)
+POST /auth/reset-password   →  verify token → update password → invalidate token
 ```
 
-Protected routes use `authMiddleware` which verifies the JWT and attaches `req.user`.
+Protected routes use `authMiddleware` which verifies the JWT and attaches `req.user`. Admin routes additionally require `role === 'ADMIN'`.
+
+### Rate limiting
+
+| Scope                      | Limit        | Window   |
+| -------------------------- | ------------ | -------- |
+| Global (all public API)    | 100 requests | 1 minute |
+| Auth endpoints (`/auth/*`) | 20 requests  | 1 minute |
+
+Rate limits are enforced per IP. In `NODE_ENV=test`, limits are raised to 1000 to avoid flaky tests.
 
 ### Database schema (key models)
 
 ```
-User          id · email · name · passwordHash · walletBalance · isBlocked · role
-Category      id · name · slug · image
-Product       id · name · slug · description · price · salePrice · stock · images[] · categoryId
-Cart          id · userId
-CartItem      id · cartId · productId · quantity
-Order         id · userId · status · totalAmount · shippingAddress · paymentMethod
-OrderItem     id · orderId · productId · quantity · priceAtOrder
-Review        id · userId · productId · rating · comment
-Wishlist      id · userId
-WishlistItem  id · wishlistId · productId
-PromoCode     id · code · discountPercent · validFrom · validUntil · minOrderAmount
-Transaction   id · userId · amount · type · description
+enum Role              USER | ADMIN
+
+User                   id · email · name · passwordHash · walletBalance · isBlocked · role(Role)
+Category               id · name · slug · image
+Product                id · name · slug · description · price · salePrice · stock · images[] · categoryId
+Cart                   id · userId
+CartItem               id · cartId · productId · quantity
+Order                  id · userId · status · totalAmount · shippingAddress · paymentMethod
+OrderItem              id · orderId · productId · quantity · priceAtOrder
+Review                 id · userId · productId · rating · comment
+Wishlist               id · userId · productId (direct User↔Product, unique on [userId, productId])
+PromoCode              id · code · discountPercent · validFrom · validUntil · minOrderAmount
+Transaction            id · userId · amount · type · description
+PasswordResetToken     id · userId · token(unique) · expiresAt · createdAt
 ```
 
 ---
@@ -164,7 +193,7 @@ Optional `--profile monitoring` adds three containers:
 | ---------- | ---- | -------------------------------- |
 | `loki`     | 3100 | Log aggregation (TSDB backend)   |
 | `promtail` | —    | Log collector (Docker socket SD) |
-| `grafana`  | 3001 | Dashboard UI                     |
+| `grafana`  | 3200 | Dashboard UI                     |
 
 Promtail uses Docker Socket Service Discovery to scrape logs from `backend`, `frontend`, and `postgres` containers. Labels: `container`, `service`, `project`.
 

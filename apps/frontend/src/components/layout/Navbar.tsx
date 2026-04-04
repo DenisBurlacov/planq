@@ -1,6 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Heart, Package, User, Sun, Moon, LogOut, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import {
+  ShoppingCart,
+  Heart,
+  Package,
+  User,
+  Sun,
+  Moon,
+  LogOut,
+  Menu,
+  X,
+  Shield,
+} from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
 import { useThemeStore } from '@store/theme.store';
@@ -14,6 +25,9 @@ export function Navbar() {
   const itemCount = useCartStore(s => s.itemCount);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuItemsRef = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
 
   const handleLogout = async () => {
     if (refreshToken) {
@@ -26,6 +40,48 @@ export function Navbar() {
   const toggleLang = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'ru' : 'en');
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [dropdownOpen]);
+
+  // Keyboard navigation for dropdown menu
+  const handleDropdownKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!dropdownOpen) return;
+      const items = menuItemsRef.current.filter(Boolean) as HTMLElement[];
+      const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+
+      switch (e.key) {
+        case 'ArrowDown': {
+          e.preventDefault();
+          const next = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+          items[next]?.focus();
+          break;
+        }
+        case 'ArrowUp': {
+          e.preventDefault();
+          const prev = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+          items[prev]?.focus();
+          break;
+        }
+        case 'Escape':
+          setDropdownOpen(false);
+          break;
+      }
+    },
+    [dropdownOpen]
+  );
+
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <nav
@@ -65,6 +121,16 @@ export function Navbar() {
                 className="px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
               >
                 {t('nav.orders')}
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                data-testid="nav-admin"
+                to="/admin"
+                className="flex items-center gap-1 px-3 py-2 text-sm text-accent hover:text-accent-hover transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
+              >
+                <Shield className="h-4 w-4" />
+                {t('nav.admin')}
               </Link>
             )}
           </div>
@@ -116,11 +182,14 @@ export function Navbar() {
             </Link>
 
             {accessToken ? (
-              <div className="relative group">
+              <div className="relative" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>
                 <button
                   data-testid="nav-profile-button"
+                  onClick={() => setDropdownOpen(prev => !prev)}
                   className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors text-sm"
                   aria-label={t('nav.profile')}
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
                 >
                   {user?.avatar ? (
                     <img
@@ -133,29 +202,51 @@ export function Navbar() {
                   )}
                   <span className="hidden lg:block max-w-24 truncate">{user?.name}</span>
                 </button>
-                <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  <Link
-                    data-testid="nav-profile-link"
-                    to="/profile"
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--bg-sidebar)] rounded-t-xl"
+                {dropdownOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg"
                   >
-                    <User className="h-4 w-4" /> {t('nav.profile')}
-                  </Link>
-                  <Link
-                    data-testid="nav-orders-link"
-                    to="/orders"
-                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--bg-sidebar)]"
-                  >
-                    <Package className="h-4 w-4" /> {t('nav.orders')}
-                  </Link>
-                  <button
-                    data-testid="nav-logout-button"
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-[var(--bg-sidebar)] rounded-b-xl"
-                  >
-                    <LogOut className="h-4 w-4" /> {t('nav.logout')}
-                  </button>
-                </div>
+                    <Link
+                      ref={el => {
+                        menuItemsRef.current[0] = el;
+                      }}
+                      role="menuitem"
+                      data-testid="nav-profile-link"
+                      to="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--bg-sidebar)] rounded-t-xl"
+                    >
+                      <User className="h-4 w-4" /> {t('nav.profile')}
+                    </Link>
+                    <Link
+                      ref={el => {
+                        menuItemsRef.current[1] = el;
+                      }}
+                      role="menuitem"
+                      data-testid="nav-orders-link"
+                      to="/orders"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--bg-sidebar)]"
+                    >
+                      <Package className="h-4 w-4" /> {t('nav.orders')}
+                    </Link>
+                    <button
+                      ref={el => {
+                        menuItemsRef.current[2] = el;
+                      }}
+                      role="menuitem"
+                      data-testid="nav-logout-button"
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-[var(--bg-sidebar)] rounded-b-xl"
+                    >
+                      <LogOut className="h-4 w-4" /> {t('nav.logout')}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link
@@ -172,6 +263,7 @@ export function Navbar() {
               onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-sidebar)]"
               aria-label="Menu"
+              aria-expanded={menuOpen}
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -195,6 +287,17 @@ export function Navbar() {
                 className="block px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               >
                 {t('nav.orders')}
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                data-testid="nav-admin-mobile"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-1 px-3 py-2 text-sm text-accent"
+              >
+                <Shield className="h-4 w-4" />
+                {t('nav.admin')}
               </Link>
             )}
           </div>

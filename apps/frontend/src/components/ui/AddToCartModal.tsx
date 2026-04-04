@@ -1,5 +1,5 @@
 import { Minus, Plus, ShoppingCart, X, ImageOff } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import { Button } from './Button';
 import type { Product } from '@appTypes/api';
 
@@ -19,6 +19,67 @@ export function AddToCartModal({
   onCancel,
 }: AddToCartModalProps) {
   const [quantity, setQuantity] = useState(1);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = useId();
+
+  // Focus management
+  useEffect(() => {
+    if (!open) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    const panel = panelRef.current;
+    if (panel) {
+      const first = panel.querySelector<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      first?.focus();
+    }
+    return () => {
+      previousFocusRef.current?.focus();
+    };
+  }, [open]);
+
+  // Escape key
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setQuantity(1);
+        onCancel();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [open, onCancel]);
+
+  // Focus trap
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [open]);
 
   if (!open) return null;
 
@@ -47,7 +108,11 @@ export function AddToCartModal({
       onClick={handleCancel}
     >
       <div
+        ref={panelRef}
         data-testid="add-to-cart-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className="relative w-full max-w-sm rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -78,6 +143,7 @@ export function AddToCartModal({
         {/* Content */}
         <div className="p-5">
           <h3
+            id={titleId}
             data-testid="add-to-cart-modal-name"
             className="text-base font-semibold text-[var(--text-primary)] mb-1 pr-6 line-clamp-2"
           >

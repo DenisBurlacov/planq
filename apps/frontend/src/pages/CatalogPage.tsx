@@ -131,6 +131,7 @@ export function CatalogPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t('search')}
+            aria-label={t('search')}
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
@@ -173,10 +174,14 @@ export function CatalogPage() {
 
           <div className="flex gap-2 items-end col-span-1">
             <div className="flex-1">
-              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
+              <label
+                htmlFor="filter-min-price"
+                className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide"
+              >
                 {t('filters.minPrice')}
               </label>
               <input
+                id="filter-min-price"
                 type="number"
                 placeholder="0"
                 min="0"
@@ -194,10 +199,14 @@ export function CatalogPage() {
               />
             </div>
             <div className="flex-1">
-              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
+              <label
+                htmlFor="filter-max-price"
+                className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide"
+              >
                 {t('filters.maxPrice')}
               </label>
               <input
+                id="filter-max-price"
                 type="number"
                 placeholder="∞"
                 min="0"
@@ -263,6 +272,7 @@ export function CatalogPage() {
         </span>
         <select
           value={query.sort ?? 'newest'}
+          aria-label={t('sort.label')}
           className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm focus:outline-none"
           onChange={e =>
             setQuery(q => ({

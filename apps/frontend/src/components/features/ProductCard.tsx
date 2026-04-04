@@ -26,6 +26,7 @@ export function ProductCard({
   const [modalOpen, setModalOpen] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [wishlistPending, setWishlistPending] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const handleAddToCart = () => {
     if (!onAddToCart) return;
@@ -47,7 +48,7 @@ export function ProductCard({
     setWishlistPending(false);
   };
 
-  const hasImage = product.images.length > 0;
+  const hasImage = product.images.length > 0 && !imgError;
   const price = product.salePrice ?? product.price;
   const isOnSale = product.salePrice !== null;
   const isOutOfStock = product.stock === 0;
@@ -64,6 +65,7 @@ export function ProductCard({
       <div
         data-testid="product-card"
         className="group relative rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        aria-label={isOutOfStock ? `${product.name} — ${t('product.outOfStock')}` : product.name}
       >
         {/* Image */}
         <Link to={`/catalog/${product.id}`}>
@@ -72,6 +74,8 @@ export function ProductCard({
               <img
                 src={product.images[0]}
                 alt={product.name}
+                loading="lazy"
+                onError={() => setImgError(true)}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
@@ -86,7 +90,7 @@ export function ProductCard({
             )}
             {isOutOfStock && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <span className="text-white text-sm font-medium">Out of Stock</span>
+                <span className="text-white text-sm font-medium">{t('product.outOfStock')}</span>
               </div>
             )}
 
@@ -101,7 +105,7 @@ export function ProductCard({
                 className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-900 hover:bg-white transition-colors"
               >
                 <Eye className="h-3.5 w-3.5" />
-                Quick View
+                {t('product.quickView')}
               </button>
             </div>
           </div>

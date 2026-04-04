@@ -29,7 +29,9 @@
     "noReviews": "Нет отзывов",
     "description": "Описание",
     "relatedProducts": "Похожие товары",
-    "stockStatus": "Осталось {{count}} шт."
+    "stockStatus": "Осталось {{count}} шт.",
+    "quickView": "Быстрый просмотр",
+    "outOfStock": "Нет в наличии"
   },
   "empty": "Товары не найдены. Попробуйте изменить фильтры.",
   "loading": "Загрузка товаров..."

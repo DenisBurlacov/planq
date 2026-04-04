@@ -118,6 +118,75 @@ jobs:
       - name: Build all packages
         run: pnpm build
 
+  # E2E tests — runs Playwright against backend + frontend
+  # continue-on-error: true until the E2E suite is stable and covers critical paths.
+  # TODO: Remove continue-on-error once E2E tests are reliable (target: v1.2.0)
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: build
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: planq
+          POSTGRES_PASSWORD: planq_secret
+          POSTGRES_DB: planq_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://planq:planq_secret@localhost:5432/planq_test
+      JWT_ACCESS_SECRET: test_access_secret_min_32_chars_ok
+      JWT_REFRESH_SECRET: test_refresh_secret_min_32_chars_ok
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      RESET_TOKEN: test_reset_token
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @planq/backend exec prisma generate
+
+      - name: Run migrations
+        run: pnpm --filter @planq/backend exec prisma migrate deploy
+
+      - name: Seed database
+        run: pnpm --filter @planq/backend exec prisma db seed
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @planq/frontend exec playwright install --with-deps chromium firefox
+
+      - name: Run Playwright tests
+        run: pnpm --filter @planq/frontend exec playwright test
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: apps/frontend/playwright-report/
+          retention-days: 14
+
   docker:
     name: Docker Build & Push
     runs-on: ubuntu-latest

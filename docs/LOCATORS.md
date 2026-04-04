@@ -27,6 +27,7 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | `nav-orders-link`    | `<Link>`   | "Orders" link inside dropdown                 |
 | `nav-logout-button`  | `<button>` | Logout button inside dropdown                 |
 | `nav-login-button`   | `<Link>`   | "Sign in" button (guest only)                 |
+| `nav-admin-link`     | `<Link>`   | "Admin" link (visible to ADMIN role only)     |
 
 ---
 
@@ -170,6 +171,92 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | `not-found-message`      | `<p>`    | Description text         |
 | `not-found-home-link`    | `<Link>` | "Go Home" button         |
 | `not-found-catalog-link` | `<Link>` | "Browse Catalog" button  |
+
+---
+
+## Admin Panel
+
+### `<AdminLayout>` (sidebar + content)
+
+| Locator               | Element   | Notes                         |
+| --------------------- | --------- | ----------------------------- |
+| `admin-sidebar`       | `<aside>` | Sidebar container             |
+| `admin-content`       | `<main>`  | Content area (renders Outlet) |
+| `admin-nav-dashboard` | `<Link>`  | Dashboard nav item            |
+| `admin-nav-products`  | `<Link>`  | Products nav item             |
+| `admin-nav-orders`    | `<Link>`  | Orders nav item               |
+| `admin-nav-users`     | `<Link>`  | Users nav item                |
+| `admin-nav-back`      | `<Link>`  | "Back to Store" nav item      |
+
+---
+
+### AdminDashboardPage (`/admin`)
+
+| Locator                    | Element  | Notes                           |
+| -------------------------- | -------- | ------------------------------- |
+| `stat-card-total-orders`   | `<div>`  | Total Orders stat card          |
+| `stat-card-revenue-today`  | `<div>`  | Revenue Today stat card         |
+| `stat-card-pending-orders` | `<div>`  | Pending Orders stat card        |
+| `stat-card-active-users`   | `<div>`  | Active Users stat card          |
+| `stat-value`               | `<span>` | Metric value (inside each card) |
+| `stat-change`              | `<span>` | Change badge (inside each card) |
+
+---
+
+### AdminProductsPage (`/admin/products`)
+
+| Locator               | Element    | Notes                            |
+| --------------------- | ---------- | -------------------------------- |
+| `add-product-button`  | `<button>` | "Add Product" button (top right) |
+| `products-table`      | `<div>`    | DataTable container              |
+| `edit-product-{id}`   | `<button>` | Edit button for product row      |
+| `delete-product-{id}` | `<button>` | Delete button for product row    |
+| `product-form`        | `<form>`   | Add/Edit product form (in modal) |
+| `product-form-submit` | `<button>` | Form submit button               |
+
+---
+
+### AdminOrdersPage (`/admin/orders`)
+
+| Locator                         | Element    | Notes                                       |
+| ------------------------------- | ---------- | ------------------------------------------- |
+| `order-filter-status`           | `<select>` | Status filter dropdown                      |
+| `order-filter-search`           | `<input>`  | Search input                                |
+| `order-status-select-{orderId}` | `<select>` | Inline status update dropdown per order row |
+
+---
+
+### AdminUsersPage (`/admin/users`)
+
+| Locator             | Element    | Notes                                    |
+| ------------------- | ---------- | ---------------------------------------- |
+| `user-search-input` | `<input>`  | Search by name or email                  |
+| `block-user-{id}`   | `<button>` | Block user button (non-admin users only) |
+| `unblock-user-{id}` | `<button>` | Unblock user button (blocked users only) |
+
+---
+
+### `<DataTable>` (reusable, used across admin pages)
+
+| Locator                | Element    | Notes                                            |
+| ---------------------- | ---------- | ------------------------------------------------ |
+| `{table-testid}`       | `<div>`    | Container (prop-provided, e.g. `products-table`) |
+| `table-header-{key}`   | `<th>`     | Header cell for column `key`                     |
+| `table-row-{rowKey}`   | `<tr>`     | Body row keyed by `rowKey`                       |
+| `table-sort-{key}`     | `<button>` | Sort toggle button in header                     |
+| `table-page-prev`      | `<button>` | Previous page button                             |
+| `table-page-next`      | `<button>` | Next page button                                 |
+| `table-page-indicator` | `<span>`   | "page / total" text                              |
+
+---
+
+### `<StatCard>` (reusable)
+
+| Locator            | Element  | Notes                           |
+| ------------------ | -------- | ------------------------------- |
+| `stat-card-{slug}` | `<div>`  | Outer container (prop-provided) |
+| `stat-value`       | `<span>` | Metric value display            |
+| `stat-change`      | `<span>` | Change percentage badge         |
 
 ---
 

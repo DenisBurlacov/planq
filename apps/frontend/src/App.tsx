@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from '@components/layout/Layout';
 import { ProtectedRoute } from '@components/layout/ProtectedRoute';
+import { AdminRoute } from '@components/layout/AdminRoute';
+import { AdminLayout } from '@components/layout/AdminLayout';
 import { ErrorBoundary } from '@components/ErrorBoundary';
 import { OfflineBanner } from '@components/OfflineBanner';
 import { ToastProvider } from '@components/ui/Toast';
@@ -24,6 +26,10 @@ import { WalletPage } from '@pages/WalletPage';
 import { WishlistPage } from '@pages/WishlistPage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { ServerErrorPage } from '@pages/ServerErrorPage';
+import { AdminDashboardPage } from '@pages/admin/AdminDashboardPage';
+import { AdminProductsPage } from '@pages/admin/AdminProductsPage';
+import { AdminOrdersPage } from '@pages/admin/AdminOrdersPage';
+import { AdminUsersPage } from '@pages/admin/AdminUsersPage';
 
 import './i18n';
 
@@ -45,6 +51,23 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+              {/* Admin */}
+              <Route element={<Layout />}>
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <AdminLayout />
+                    </AdminRoute>
+                  }
+                >
+                  <Route index element={<AdminDashboardPage />} />
+                  <Route path="products" element={<AdminProductsPage />} />
+                  <Route path="orders" element={<AdminOrdersPage />} />
+                  <Route path="users" element={<AdminUsersPage />} />
+                </Route>
+              </Route>
 
               {/* Main layout */}
               <Route element={<Layout />}>
