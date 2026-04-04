@@ -3,6 +3,7 @@ type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'sale' | 'default
 interface BadgeProps {
   variant?: BadgeVariant;
   children: React.ReactNode;
+  'data-testid'?: string;
 }
 
 const styles: Record<BadgeVariant, string> = {
@@ -14,9 +15,10 @@ const styles: Record<BadgeVariant, string> = {
   default: 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)]',
 };
 
-export function Badge({ variant = 'default', children }: BadgeProps) {
+export function Badge({ variant = 'default', children, ...props }: BadgeProps) {
   return (
     <span
+      data-testid={props['data-testid']}
       className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold ${styles[variant]}`}
     >
       {children}

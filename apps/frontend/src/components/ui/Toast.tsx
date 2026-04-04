@@ -51,6 +51,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             data-testid={`toast-${t.type}`}
+            role={t.type === 'error' ? 'alert' : 'status'}
+            aria-live={t.type === 'error' ? 'assertive' : 'polite'}
             className={`flex items-start gap-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border)] border-l-4 ${borderAccent[t.type]} p-4 shadow-lg animate-in slide-in-from-right`}
           >
             {icons[t.type]}
@@ -58,6 +60,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <button
               onClick={() => remove(t.id)}
               className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              aria-label="Dismiss notification"
             >
               <X className="h-4 w-4" />
             </button>

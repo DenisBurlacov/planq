@@ -7,8 +7,10 @@
     "wishlist": "Избранное",
     "login": "Войти",
     "logout": "Выйти",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "admin": "Админ"
   },
+  "dismissNotification": "Закрыть уведомление",
   "actions": {
     "save": "Сохранить",
     "cancel": "Отмена",

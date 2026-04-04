@@ -13,6 +13,8 @@ export interface PaginatedResponse<T> {
   pages: number;
 }
 
+export type UserRole = 'USER' | 'ADMIN';
+
 export interface User {
   id: string;
   email: string;
@@ -20,6 +22,28 @@ export interface User {
   avatar: string | null;
   walletBalance: number;
   isBlocked: boolean;
+  role: UserRole;
+}
+
+export interface AdminStats {
+  totalOrders: number;
+  totalOrdersChange: number;
+  revenueToday: number;
+  revenueTodayChange: number;
+  pendingOrders: number;
+  pendingOrdersChange: number;
+  activeUsers: number;
+  activeUsersChange: number;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  avatar: string | null;
+  role: UserRole;
+  isBlocked: boolean;
+  createdAt: string;
 }
 
 export interface Category {

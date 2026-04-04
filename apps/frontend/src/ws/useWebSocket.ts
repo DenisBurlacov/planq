@@ -10,19 +10,35 @@ interface UseWebSocketOptions {
 }
 
 const WS_URL = import.meta.env.VITE_WS_URL as string;
-const RECONNECT_DELAY = 3000;
+const MAX_RETRIES = 5;
+const BASE_DELAY = 1000;
 
 export function useWebSocket({ token, onMessage, enabled = true }: UseWebSocketOptions) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onMessageRef = useRef(onMessage);
+  const retriesRef = useRef(0);
+  const enabledRef = useRef(enabled);
   onMessageRef.current = onMessage;
+  enabledRef.current = enabled;
+
+  const clearTimer = () => {
+    if (reconnectTimer.current) {
+      clearTimeout(reconnectTimer.current);
+      reconnectTimer.current = null;
+    }
+  };
 
   const connect = useCallback(() => {
-    if (!token || !enabled) return;
+    if (!token || !enabledRef.current) return;
 
     const ws = new WebSocket(`${WS_URL}?token=${token}`);
     wsRef.current = ws;
+
+    ws.onopen = () => {
+      // Reset retry counter on successful connection
+      retriesRef.current = 0;
+    };
 
     ws.onmessage = event => {
       try {
@@ -34,21 +50,32 @@ export function useWebSocket({ token, onMessage, enabled = true }: UseWebSocketO
     };
 
     ws.onclose = () => {
-      if (enabled && token) {
-        reconnectTimer.current = setTimeout(connect, RECONNECT_DELAY);
+      if (enabledRef.current && token && retriesRef.current < MAX_RETRIES) {
+        const delay = BASE_DELAY * Math.pow(2, retriesRef.current);
+        retriesRef.current += 1;
+        reconnectTimer.current = setTimeout(connect, delay);
       }
     };
 
     ws.onerror = () => {
       ws.close();
     };
-  }, [token, enabled]);
+  }, [token]);
 
   useEffect(() => {
+    retriesRef.current = 0;
     connect();
     return () => {
-      if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      clearTimer();
       wsRef.current?.close();
     };
   }, [connect]);
+
+  // Clean up when enabled changes to false
+  useEffect(() => {
+    if (!enabled) {
+      clearTimer();
+      wsRef.current?.close();
+    }
+  }, [enabled]);
 }

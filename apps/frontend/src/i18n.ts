@@ -5,16 +5,30 @@ import enCommon from '@locales/en/common.json';
 import enCatalog from '@locales/en/catalog.json';
 import enCheckout from '@locales/en/checkout.json';
 import enProfile from '@locales/en/profile.json';
+import enAdmin from '@locales/en/admin.json';
 
 import ruCommon from '@locales/ru/common.json';
 import ruCatalog from '@locales/ru/catalog.json';
 import ruCheckout from '@locales/ru/checkout.json';
 import ruProfile from '@locales/ru/profile.json';
+import ruAdmin from '@locales/ru/admin.json';
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common: enCommon, catalog: enCatalog, checkout: enCheckout, profile: enProfile },
-    ru: { common: ruCommon, catalog: ruCatalog, checkout: ruCheckout, profile: ruProfile },
+    en: {
+      common: enCommon,
+      catalog: enCatalog,
+      checkout: enCheckout,
+      profile: enProfile,
+      admin: enAdmin,
+    },
+    ru: {
+      common: ruCommon,
+      catalog: ruCatalog,
+      checkout: ruCheckout,
+      profile: ruProfile,
+      admin: ruAdmin,
+    },
   },
   lng: import.meta.env.VITE_DEFAULT_LOCALE || 'en',
   fallbackLng: 'en',
