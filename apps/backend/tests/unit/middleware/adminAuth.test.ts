@@ -28,7 +28,7 @@ describe('adminAuth middleware', () => {
     adminAuth(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
-    const error = mockNext.mock.calls[0][0] as AppError;
+    const error = mockNext.mock.calls[0][0] as unknown as AppError;
     expect(error).toBeInstanceOf(AppError);
     expect(error.code).toBe('FORBIDDEN');
     expect(error.statusCode).toBe(403);
@@ -40,7 +40,7 @@ describe('adminAuth middleware', () => {
     adminAuth(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
-    const error = mockNext.mock.calls[0][0] as AppError;
+    const error = mockNext.mock.calls[0][0] as unknown as AppError;
     expect(error).toBeInstanceOf(AppError);
     expect(error.code).toBe('FORBIDDEN');
     expect(error.statusCode).toBe(403);
@@ -52,7 +52,7 @@ describe('adminAuth middleware', () => {
     adminAuth(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
-    const error = mockNext.mock.calls[0][0] as AppError;
+    const error = mockNext.mock.calls[0][0] as unknown as AppError;
     expect(error).toBeInstanceOf(AppError);
     expect(error.code).toBe('UNAUTHORIZED');
     expect(error.statusCode).toBe(401);
