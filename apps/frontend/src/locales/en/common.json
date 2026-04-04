@@ -63,6 +63,39 @@
   "inStock": "In stock",
   "items": "{{count}} item",
   "items_other": "{{count}} items",
+  "tooltips": {
+    "cart": "Shopping Cart",
+    "wishlist": "Wishlist",
+    "theme": "Toggle Theme",
+    "language": "Toggle Language",
+    "notifications": "Notifications"
+  },
+  "copy": {
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyLink": "Copy Link",
+    "copyId": "Copy ID",
+    "copyPromo": "Copy Code"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "viewAll": "View All"
+  },
+  "upload": {
+    "dragDrop": "Drag & drop or click to upload",
+    "maxSize": "Max {{size}}",
+    "formats": "Accepted: {{formats}}",
+    "uploading": "Uploading...",
+    "remove": "Remove",
+    "error": {
+      "tooLarge": "File exceeds {{size}} limit",
+      "invalidType": "Invalid file type",
+      "failed": "Upload failed"
+    }
+  },
   "footer": {
     "tagline": "Scandinavian furniture for modern homes.",
     "shop": "Shop",
@@ -76,5 +109,19 @@
     "builtFor": "Built for QA automation training",
     "logoutTitle": "Sign Out",
     "logoutMessage": "Are you sure you want to sign out?"
+  },
+  "orderDetail": {
+    "title": "Order",
+    "items": "Items",
+    "summary": "Summary",
+    "payment": "Payment",
+    "address": "Address",
+    "total": "Total",
+    "qty": "Qty"
+  },
+  "ordersPage": {
+    "title": "Orders",
+    "empty": "No orders yet",
+    "browseCatalog": "Browse Catalog"
   }
 }

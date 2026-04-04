@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Skeleton } from '@components/ui/Skeleton';
+import { CopyButton } from '@components/ui/CopyButton';
 import { ordersApi } from '@api/orders';
 import { useAuthStore } from '@store/auth.store';
 import { useWebSocket } from '@ws/useWebSocket';
@@ -57,8 +58,13 @@ export function OrderDetailPage() {
     <div data-testid="order-detail">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Order</h1>
-          <p className="text-sm font-mono text-[var(--text-secondary)] mt-1">{order.id}</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+            {t('orderDetail.title')}
+          </h1>
+          <div className="flex items-center gap-1 mt-1">
+            <p className="text-sm font-mono text-[var(--text-secondary)]">{order.id}</p>
+            <CopyButton text={order.id} data-testid="copy-order-id" />
+          </div>
           <p className="text-sm text-[var(--text-secondary)]">
             {new Date(order.createdAt).toLocaleString()}
           </p>
@@ -70,7 +76,9 @@ export function OrderDetailPage() {
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <h2 className="font-semibold text-[var(--text-primary)] mb-3">Items</h2>
+          <h2 className="font-semibold text-[var(--text-primary)] mb-3">
+            {t('orderDetail.items')}
+          </h2>
           <div className="space-y-3">
             {order.items.map(item => (
               <div
@@ -91,7 +99,9 @@ export function OrderDetailPage() {
                     <p className="text-sm font-medium text-[var(--text-primary)]">
                       {item.product.name}
                     </p>
-                    <p className="text-xs text-[var(--text-secondary)]">Qty: {item.quantity}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      {t('orderDetail.qty')}: {item.quantity}
+                    </p>
                   </div>
                   <p className="font-medium text-[var(--text-primary)]">
                     €{(item.priceAtOrder * item.quantity).toFixed(2)}
@@ -104,19 +114,19 @@ export function OrderDetailPage() {
 
         <div>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5 space-y-3">
-            <h2 className="font-semibold text-[var(--text-primary)]">Summary</h2>
+            <h2 className="font-semibold text-[var(--text-primary)]">{t('orderDetail.summary')}</h2>
             <div className="text-sm text-[var(--text-secondary)] space-y-1">
               <div className="flex justify-between">
-                <span>Payment</span>
+                <span>{t('orderDetail.payment')}</span>
                 <span>{order.paymentMethod}</span>
               </div>
               <div className="flex justify-between">
-                <span>Address</span>
+                <span>{t('orderDetail.address')}</span>
                 <span className="text-right max-w-32 truncate">{order.shippingAddress}</span>
               </div>
             </div>
             <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--text-primary)]">
-              <span>Total</span>
+              <span>{t('orderDetail.total')}</span>
               <span>€{order.totalAmount.toFixed(2)}</span>
             </div>
           </div>

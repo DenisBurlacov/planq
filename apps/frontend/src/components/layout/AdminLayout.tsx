@@ -1,8 +1,18 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, ArrowLeft, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '@store/auth.store';
 
-const navItems = [
+interface NavItem {
+  icon: typeof LayoutDashboard;
+  labelKey: string;
+  to: string;
+  end: boolean;
+  testId: string;
+  adminOnly?: boolean;
+}
+
+const navItems: NavItem[] = [
   {
     icon: LayoutDashboard,
     labelKey: 'sidebar.dashboard',
@@ -30,11 +40,24 @@ const navItems = [
     to: '/admin/users',
     end: false,
     testId: 'admin-nav-users',
+    adminOnly: true,
+  },
+  {
+    icon: FileText,
+    labelKey: 'sidebar.audit',
+    to: '/admin/audit',
+    end: false,
+    testId: 'admin-nav-audit',
+    adminOnly: true,
   },
 ];
 
 export function AdminLayout() {
   const { t } = useTranslation('admin');
+  const user = useAuthStore(s => s.user);
+  const isManager = user?.role === 'MANAGER';
+
+  const visibleItems = navItems.filter(item => !item.adminOnly || !isManager);
 
   return (
     <div className="flex min-h-[calc(100vh-12rem)]">
@@ -50,7 +73,7 @@ export function AdminLayout() {
         </div>
 
         <nav className="flex-1 py-2 space-y-1 px-2">
-          {navItems.map(item => (
+          {visibleItems.map(item => (
             <NavLink
               key={item.to}
               to={item.to}

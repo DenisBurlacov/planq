@@ -5,6 +5,7 @@
     "products": "Products",
     "orders": "Orders",
     "users": "Users",
+    "audit": "Audit Log",
     "backToStore": "Back to Store"
   },
   "dashboard": {
@@ -29,7 +30,16 @@
     "stock": "Stock",
     "category": "Category",
     "images": "Image URLs (one per line)",
-    "actions": "Actions"
+    "actions": "Actions",
+    "bulkDelete": "Delete Selected",
+    "selectAll": "Select All",
+    "showDeleted": "Show Deleted",
+    "restore": "Restore",
+    "bulkDeleteConfirm": "Are you sure you want to delete {{count}} products?",
+    "restored": "Product restored",
+    "uploadImages": "Upload Images",
+    "dragImages": "Drag product images here",
+    "deleted": "Deleted"
   },
   "orders": {
     "title": "Orders",
@@ -41,7 +51,15 @@
     "date": "Date",
     "filterStatus": "Filter by status",
     "allStatuses": "All Statuses",
-    "search": "Search orders..."
+    "search": "Search orders...",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "export": "Export",
+    "exportCsv": "Export CSV",
+    "exportPdf": "Export PDF",
+    "bulkStatus": "Update Status",
+    "bulkStatusConfirm": "Update {{count}} orders to {{status}}?",
+    "selectAll": "Select All"
   },
   "users": {
     "title": "Users",
@@ -57,6 +75,18 @@
     "unblockConfirm": "Are you sure you want to unblock this user?",
     "active": "Active",
     "blocked": "Blocked"
+  },
+  "audit": {
+    "title": "Audit Log",
+    "timestamp": "Timestamp",
+    "user": "User",
+    "action": "Action",
+    "resource": "Resource",
+    "details": "Details",
+    "filterAction": "Filter by action",
+    "allActions": "All Actions",
+    "dateFrom": "From",
+    "dateTo": "To"
   },
   "table": {
     "showing": "Showing {{from}}-{{to}} of {{total}}",

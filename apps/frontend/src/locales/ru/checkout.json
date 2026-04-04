@@ -18,13 +18,24 @@
     "checkout": "Оформить заказ"
   },
   "steps": {
-    "address": "Адрес",
+    "address": "Доставка",
     "payment": "Оплата",
-    "confirm": "Подтверждение"
+    "confirm": "Обзор"
+  },
+  "stepper": {
+    "next": "Далее",
+    "back": "Назад",
+    "step": "Шаг {{current}} из {{total}}"
   },
   "address": {
     "title": "Адрес доставки",
-    "placeholder": "Улица, город, почтовый индекс"
+    "placeholder": "Улица, город, почтовый индекс",
+    "selectSaved": "Выберите сохранённый адрес",
+    "enterNew": "Новый адрес",
+    "useSaved": "Сохранённый адрес",
+    "newAddress": "Новый адрес",
+    "country": "Страна",
+    "searchCountry": "Поиск страны..."
   },
   "payment": {
     "title": "Способ оплаты",
@@ -58,6 +69,20 @@
     "subtitle": "Не удалось обработать платёж.",
     "tryAgain": "Попробовать снова",
     "reason": "Причина: {{reason}}"
+  },
+  "review": {
+    "title": "Обзор заказа",
+    "editShipping": "Изменить доставку",
+    "editPayment": "Изменить оплату",
+    "shippingAddress": "Адрес доставки",
+    "paymentMethod": "Способ оплаты",
+    "orderItems": "Товары в заказе"
+  },
+  "testCards": {
+    "title": "Тестовые карты",
+    "success": "4242 4242 4242 4242 — Успех",
+    "declined": "4000 0000 0000 0002 — Отклонена",
+    "timeout": "4000 0000 0000 0069 — Таймаут"
   },
   "checkoutTitle": "Оформление заказа",
   "placeOrder": "Подтвердить заказ",

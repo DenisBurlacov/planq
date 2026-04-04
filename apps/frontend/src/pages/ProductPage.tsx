@@ -2,7 +2,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
+import { Star, ShoppingCart, Heart, ImageOff, Home, Tag, Share2 } from 'lucide-react';
+import { CopyButton } from '@components/ui/CopyButton';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
 import { Skeleton } from '@components/ui/Skeleton';
@@ -403,6 +404,16 @@ export function ProductPage() {
             >
               <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
+          </div>
+
+          {/* Share link */}
+          <div className="flex items-center gap-2 mb-4">
+            <Share2 className="h-4 w-4 text-[var(--text-secondary)]" />
+            <CopyButton
+              text={window.location.href}
+              label={t('common:copy.copyLink', { ns: 'common' })}
+              data-testid="copy-product-link"
+            />
           </div>
 
           {/* Quick stats */}

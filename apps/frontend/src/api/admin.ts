@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { useAuthStore } from '@store/auth.store';
 import type {
   Product,
   Order,
@@ -6,6 +7,7 @@ import type {
   AdminStats,
   PaginatedResponse,
   OrderStatus,
+  AuditLogEntry,
 } from '@appTypes/api';
 
 export interface AdminProductInput {
@@ -22,6 +24,7 @@ export interface AdminProductsQuery {
   page?: number;
   limit?: number;
   search?: string;
+  includeDeleted?: boolean;
 }
 
 export interface AdminOrdersQuery {
@@ -29,6 +32,8 @@ export interface AdminOrdersQuery {
   limit?: number;
   status?: OrderStatus;
   search?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface AdminUsersQuery {
@@ -37,18 +42,30 @@ export interface AdminUsersQuery {
   search?: string;
 }
 
+export interface AuditLogQuery {
+  page?: number;
+  limit?: number;
+  action?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+function buildParams(query: object): string {
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(query)) {
+    if (v !== undefined && v !== '' && v !== false) params.set(k, String(v));
+  }
+  return params.toString();
+}
+
 export const adminApi = {
   // Stats
   getStats: () => apiFetch<AdminStats>('/api/v1/admin/stats'),
 
   // Products
-  listProducts: (query: AdminProductsQuery = {}) => {
-    const params = new URLSearchParams();
-    Object.entries(query).forEach(([k, v]) => {
-      if (v !== undefined && v !== '') params.set(k, String(v));
-    });
-    return apiFetch<PaginatedResponse<Product>>(`/api/v1/admin/products?${params}`);
-  },
+  listProducts: (query: AdminProductsQuery = {}) =>
+    apiFetch<PaginatedResponse<Product>>(`/api/v1/admin/products?${buildParams(query)}`),
 
   createProduct: (input: AdminProductInput) =>
     apiFetch<Product>('/api/v1/admin/products', {
@@ -65,14 +82,18 @@ export const adminApi = {
   deleteProduct: (id: string) =>
     apiFetch<undefined>(`/api/v1/admin/products/${id}`, { method: 'DELETE' }),
 
+  bulkDeleteProducts: (ids: string[]) =>
+    apiFetch<undefined>('/api/v1/admin/products/bulk', {
+      method: 'DELETE',
+      body: JSON.stringify({ ids }),
+    }),
+
+  restoreProduct: (id: string) =>
+    apiFetch<Product>(`/api/v1/admin/products/${id}/restore`, { method: 'PUT' }),
+
   // Orders
-  listOrders: (query: AdminOrdersQuery = {}) => {
-    const params = new URLSearchParams();
-    Object.entries(query).forEach(([k, v]) => {
-      if (v !== undefined && v !== '') params.set(k, String(v));
-    });
-    return apiFetch<PaginatedResponse<Order>>(`/api/v1/admin/orders?${params}`);
-  },
+  listOrders: (query: AdminOrdersQuery = {}) =>
+    apiFetch<PaginatedResponse<Order>>(`/api/v1/admin/orders?${buildParams(query)}`),
 
   updateOrderStatus: (id: string, status: OrderStatus) =>
     apiFetch<Order>(`/api/v1/admin/orders/${id}/status`, {
@@ -80,18 +101,42 @@ export const adminApi = {
       body: JSON.stringify({ status }),
     }),
 
-  // Users
-  listUsers: (query: AdminUsersQuery = {}) => {
-    const params = new URLSearchParams();
-    Object.entries(query).forEach(([k, v]) => {
-      if (v !== undefined && v !== '') params.set(k, String(v));
+  bulkUpdateOrderStatus: (ids: string[], status: OrderStatus) =>
+    apiFetch<undefined>('/api/v1/admin/orders/bulk/status', {
+      method: 'PUT',
+      body: JSON.stringify({ ids, status }),
+    }),
+
+  exportOrders: async (format: 'csv' | 'pdf', query: AdminOrdersQuery = {}) => {
+    const { accessToken } = useAuthStore.getState();
+    const BASE_URL = import.meta.env.VITE_API_URL as string;
+    const params = buildParams({ ...query, format });
+    const res = await fetch(`${BASE_URL}/api/v1/admin/orders/export?${params}`, {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
     });
-    return apiFetch<PaginatedResponse<AdminUser>>(`/api/v1/admin/users?${params}`);
+    if (!res.ok) throw new Error('Export failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders.${format}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   },
+
+  // Users
+  listUsers: (query: AdminUsersQuery = {}) =>
+    apiFetch<PaginatedResponse<AdminUser>>(`/api/v1/admin/users?${buildParams(query)}`),
 
   toggleBlockUser: (id: string, blocked: boolean) =>
     apiFetch<AdminUser>(`/api/v1/admin/users/${id}/block`, {
       method: 'PUT',
       body: JSON.stringify({ blocked }),
     }),
+
+  // Audit Log
+  getAuditLog: (query: AuditLogQuery = {}) =>
+    apiFetch<PaginatedResponse<AuditLogEntry>>(`/api/v1/admin/audit?${buildParams(query)}`),
 };

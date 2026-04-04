@@ -6,12 +6,15 @@ import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@components/ui/Button';
 import { Modal } from '@components/ui/Modal';
 import { Skeleton } from '@components/ui/Skeleton';
+import { DragList } from '@components/ui/DragList';
+import { CopyButton } from '@components/ui/CopyButton';
 import { cartApi } from '@api/cart';
 import { promotionsApi } from '@api/promotions';
 import { useCartStore } from '@store/cart.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
 import { useEffect } from 'react';
+import type { CartItem } from '@appTypes/api';
 
 export function CartPage() {
   const { t } = useTranslation('checkout');
@@ -25,6 +28,7 @@ export function CartPage() {
   const [applyingPromo, setApplyingPromo] = useState(false);
   const [updatingItem, setUpdatingItem] = useState<string | null>(null);
   const [removeConfirmId, setRemoveConfirmId] = useState<string | null>(null);
+  const [orderedItems, setOrderedItems] = useState<CartItem[]>([]);
 
   const { data: cart, isLoading } = useQuery({
     queryKey: ['cart'],
@@ -35,6 +39,7 @@ export function CartPage() {
     if (cart) {
       const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
       setItemCount(count);
+      setOrderedItems(cart.items);
     }
   }, [cart, setItemCount]);
 
@@ -126,74 +131,80 @@ export function CartPage() {
 
       <div className="grid md:grid-cols-3 gap-6">
         {/* Items */}
-        <div className="md:col-span-2 space-y-4">
-          {cart.items.map(item => {
-            const price = item.product.salePrice ?? item.product.price;
-            return (
-              <div
-                key={item.id}
-                data-testid="cart-item"
-                className="flex gap-4 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"
-              >
-                <div className="h-20 w-20 shrink-0 rounded-lg bg-[var(--bg-sidebar)] overflow-hidden">
-                  {item.product.images[0] ? (
-                    <img
-                      src={item.product.images[0]}
-                      alt={item.product.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : null}
-                </div>
-                <div className="flex flex-1 flex-col justify-between">
-                  <div className="flex justify-between">
-                    <Link
-                      to={`/catalog/${item.product.id}`}
-                      className="text-sm font-medium text-[var(--text-primary)] hover:text-accent line-clamp-2"
-                    >
-                      {item.product.name}
-                    </Link>
-                    <button
-                      data-testid="cart-item-remove"
-                      onClick={() => setRemoveConfirmId(item.productId)}
-                      disabled={updatingItem === item.productId}
-                      className="ml-2 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+        <div className="md:col-span-2">
+          <DragList
+            items={orderedItems}
+            keyExtractor={item => item.id}
+            onReorder={setOrderedItems}
+            data-testid="cart-drag-list"
+            renderItem={item => {
+              const price = item.product.salePrice ?? item.product.price;
+              return (
+                <div
+                  data-testid="cart-item"
+                  className="flex gap-4 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"
+                >
+                  <div className="h-20 w-20 shrink-0 rounded-lg bg-[var(--bg-sidebar)] overflow-hidden">
+                    {item.product.images[0] ? (
+                      <img
+                        src={item.product.images[0]}
+                        alt={item.product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : null}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <button
-                        data-testid="cart-item-decrease"
-                        onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
-                        disabled={item.quantity <= 1 || updatingItem === item.productId}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--bg-sidebar)] disabled:opacity-50"
+                  <div className="flex flex-1 flex-col justify-between">
+                    <div className="flex justify-between">
+                      <Link
+                        to={`/catalog/${item.product.id}`}
+                        className="text-sm font-medium text-[var(--text-primary)] hover:text-accent line-clamp-2"
                       >
-                        <Minus className="h-3 w-3" />
-                      </button>
-                      <span
-                        data-testid="cart-item-quantity"
-                        className="text-sm font-medium w-6 text-center"
-                      >
-                        {item.quantity}
-                      </span>
+                        {item.product.name}
+                      </Link>
                       <button
-                        data-testid="cart-item-increase"
-                        onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
+                        data-testid="cart-item-remove"
+                        onClick={() => setRemoveConfirmId(item.productId)}
                         disabled={updatingItem === item.productId}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--bg-sidebar)] disabled:opacity-50"
+                        className="ml-2 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
                       >
-                        <Plus className="h-3 w-3" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
-                    <span className="font-bold text-[var(--text-primary)]">
-                      €{(price * item.quantity).toFixed(2)}
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <button
+                          data-testid="cart-item-decrease"
+                          onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
+                          disabled={item.quantity <= 1 || updatingItem === item.productId}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--bg-sidebar)] disabled:opacity-50"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span
+                          data-testid="cart-item-quantity"
+                          className="text-sm font-medium w-6 text-center"
+                        >
+                          {item.quantity}
+                        </span>
+                        <button
+                          data-testid="cart-item-increase"
+                          onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
+                          disabled={updatingItem === item.productId}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border)] hover:bg-[var(--bg-sidebar)] disabled:opacity-50"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      </div>
+                      <span className="font-bold text-[var(--text-primary)]">
+                        {'\u20AC'}
+                        {(price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }}
+          />
         </div>
 
         {/* Summary */}
@@ -222,6 +233,15 @@ export function CartPage() {
               {t('cart.applyPromo')}
             </Button>
           </div>
+          {promoCode && (
+            <div className="mb-4">
+              <CopyButton
+                text={promoCode}
+                label={t('common:copy.copyPromo', { ns: 'common' })}
+                data-testid="copy-promo"
+              />
+            </div>
+          )}
 
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-[var(--text-secondary)]">

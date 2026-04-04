@@ -11,7 +11,7 @@ export function AdminRoute({ children }: { children: ReactNode }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (user?.role !== 'ADMIN') {
+  if (user?.role !== 'ADMIN' && user?.role !== 'MANAGER') {
     return <Navigate to="/" replace />;
   }
 

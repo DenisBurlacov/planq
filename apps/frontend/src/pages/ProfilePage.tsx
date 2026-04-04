@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Wallet, MapPin, Trash2 } from 'lucide-react';
 import { Input } from '@components/ui/Input';
 import { Button } from '@components/ui/Button';
+import { FileUploadZone } from '@components/ui/FileUploadZone';
 import { Skeleton } from '@components/ui/Skeleton';
 import { Toggle } from '@components/ui/Toggle';
 import { Modal } from '@components/ui/Modal';
@@ -15,6 +16,7 @@ import { Badge } from '@components/ui/Badge';
 import { profileApi } from '@api/profile';
 import { notificationsApi, type NotificationPreferences } from '@api/notifications';
 import { addressesApi, type Address, type AddressInput } from '@api/addresses';
+import { uploadApi } from '@api/upload';
 import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
@@ -79,6 +81,7 @@ export function ProfilePage() {
     isDefault: false,
   });
   const [savingAddress, setSavingAddress] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const { data: profile, isLoading } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
 
@@ -109,6 +112,24 @@ export function ProfilePage() {
     },
     enabled: activeTab === 'addresses',
   });
+
+  const handleAvatarUpload = async (files: File[]) => {
+    if (!files[0]) return;
+    setUploadingAvatar(true);
+    try {
+      const result = await uploadApi.avatar(files[0]);
+      if (profile) {
+        const updated = { ...profile, avatar: result.url };
+        setUser(updated);
+      }
+      await qc.invalidateQueries({ queryKey: ['profile'] });
+      toast('success', t('toast.avatarUpdated'));
+    } catch {
+      toast('error', t('toast.avatarFailed'));
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const nameForm = useForm<NameForm>({
     resolver: zodResolver(nameSchema),
@@ -315,6 +336,33 @@ export function ProfilePage() {
           className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6"
         >
           <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('settings')}</h2>
+
+          {/* Avatar Upload */}
+          <div className="mb-6">
+            <label className="text-sm font-medium text-[var(--text-primary)] block mb-2">
+              {profile?.avatar ? t('avatar.change') : t('avatar.upload')}
+            </label>
+            {uploadingAvatar ? (
+              <p className="text-sm text-[var(--text-secondary)]">
+                {t('common:upload.uploading', { ns: 'common' })}
+              </p>
+            ) : (
+              <FileUploadZone
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                maxSize={2 * 1024 * 1024}
+                maxSizeLabel="2MB"
+                onUpload={handleAvatarUpload}
+                preview={profile?.avatar}
+                onRemove={() => {
+                  if (profile) {
+                    setUser({ ...profile, avatar: null });
+                  }
+                }}
+                data-testid="avatar-upload"
+              />
+            )}
+          </div>
+
           <form onSubmit={nameForm.handleSubmit(onSaveName)} className="space-y-4">
             <Input
               id="name"

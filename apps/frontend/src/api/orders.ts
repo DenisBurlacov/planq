@@ -8,8 +8,20 @@ export interface CheckoutInput {
   cardNumber?: string;
 }
 
+export interface OrdersQuery {
+  page?: number;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
 export const ordersApi = {
-  list: (page = 1) => apiFetch<PaginatedResponse<Order>>(`/api/v1/orders?page=${page}`),
+  list: (query: OrdersQuery = {}) => {
+    const params = new URLSearchParams();
+    if (query.page) params.set('page', String(query.page));
+    if (query.dateFrom) params.set('dateFrom', query.dateFrom);
+    if (query.dateTo) params.set('dateTo', query.dateTo);
+    return apiFetch<PaginatedResponse<Order>>(`/api/v1/orders?${params}`);
+  },
 
   getById: (id: string) => apiFetch<Order>(`/api/v1/orders/${id}`),
 

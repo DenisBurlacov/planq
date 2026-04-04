@@ -18,15 +18,24 @@
     "checkout": "Proceed to Checkout"
   },
   "steps": {
-    "address": "Address",
+    "address": "Shipping",
     "payment": "Payment",
-    "confirm": "Confirm"
+    "confirm": "Review"
+  },
+  "stepper": {
+    "next": "Next",
+    "back": "Back",
+    "step": "Step {{current}} of {{total}}"
   },
   "address": {
     "title": "Shipping Address",
     "placeholder": "Street, city, postal code",
     "selectSaved": "Select a saved address",
-    "enterNew": "Enter new address"
+    "enterNew": "Enter new address",
+    "useSaved": "Use saved address",
+    "newAddress": "New address",
+    "country": "Country",
+    "searchCountry": "Search country..."
   },
   "payment": {
     "title": "Payment Method",
@@ -60,6 +69,20 @@
     "subtitle": "We couldn't process your payment.",
     "tryAgain": "Try Again",
     "reason": "Reason: {{reason}}"
+  },
+  "review": {
+    "title": "Review Order",
+    "editShipping": "Edit Shipping",
+    "editPayment": "Edit Payment",
+    "shippingAddress": "Shipping Address",
+    "paymentMethod": "Payment Method",
+    "orderItems": "Order Items"
+  },
+  "testCards": {
+    "title": "Test Cards",
+    "success": "4242 4242 4242 4242 — Success",
+    "declined": "4000 0000 0000 0002 — Declined",
+    "timeout": "4000 0000 0000 0069 — Timeout"
   },
   "checkoutTitle": "Checkout",
   "placeOrder": "Place Order",

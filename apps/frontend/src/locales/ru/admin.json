@@ -5,7 +5,8 @@
     "products": "Товары",
     "orders": "Заказы",
     "users": "Пользователи",
-    "backToStore": "В магазин"
+    "backToStore": "В магазин",
+    "audit": "Журнал действий"
   },
   "dashboard": {
     "title": "Панель управления",
@@ -29,7 +30,16 @@
     "stock": "Склад",
     "category": "Категория",
     "images": "URL изображений (по одному на строку)",
-    "actions": "Действия"
+    "actions": "Действия",
+    "bulkDelete": "Удалить выбранные",
+    "selectAll": "Выбрать все",
+    "showDeleted": "Показать удалённые",
+    "restore": "Восстановить",
+    "bulkDeleteConfirm": "Удалить {{count}} товаров?",
+    "restored": "Товар восстановлен",
+    "uploadImages": "Загрузить изо��ражения",
+    "dragImages": "Перетащите изображения сюда",
+    "deleted": "Удалён"
   },
   "orders": {
     "title": "Заказы",
@@ -41,7 +51,15 @@
     "date": "Дата",
     "filterStatus": "Фильтр по статусу",
     "allStatuses": "Все статусы",
-    "search": "Поиск заказов..."
+    "search": "Поиск заказов...",
+    "dateFrom": "С",
+    "dateTo": "По",
+    "export": "Экспорт",
+    "exportCsv": "Экспорт CSV",
+    "exportPdf": "Экспорт PDF",
+    "bulkStatus": "Обновить статус",
+    "bulkStatusConfirm": "Обновить {{count}} заказов на {{status}}?",
+    "selectAll": "Выбрать все"
   },
   "users": {
     "title": "Пользователи",
@@ -62,5 +80,17 @@
     "showing": "Показано {{from}}-{{to}} из {{total}}",
     "empty": "Данные не найдены.",
     "loading": "Загрузка..."
+  },
+  "audit": {
+    "title": "Журнал действий",
+    "timestamp": "Время",
+    "user": "Пользователь",
+    "action": "Действие",
+    "resource": "Ресурс",
+    "details": "Детали",
+    "filterAction": "Фильтр по действию",
+    "allActions": "Все действия",
+    "dateFrom": "С",
+    "dateTo": "По"
   }
 }

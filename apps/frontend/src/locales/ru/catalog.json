@@ -132,6 +132,23 @@
     "removeConfirm": "Удалить",
     "removeCancel": "Отмена"
   },
+  "autocomplete": {
+    "placeholder": "Поиск товаров...",
+    "noResults": "Ничего не найдено",
+    "loading": "Поиск..."
+  },
+  "rangeSlider": {
+    "priceRange": "Диапазон цен",
+    "min": "От: {{value}}",
+    "max": "До: {{value}}"
+  },
+  "infiniteScroll": {
+    "loadMore": "Загрузить ещё",
+    "loading": "Загрузка...",
+    "toggle": "Бесконечная прокрутка",
+    "pagination": "Постраничная навигация",
+    "endOfResults": "Больше товаров нет"
+  },
   "empty": "Товары не найдены. Попробуйте изменить фильтры.",
   "loading": "Загрузка товаров..."
 }

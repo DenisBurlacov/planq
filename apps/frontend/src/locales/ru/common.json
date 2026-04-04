@@ -63,6 +63,39 @@
   "inStock": "В наличии",
   "items": "{{count}} товар",
   "items_other": "{{count}} товаров",
+  "tooltips": {
+    "cart": "Корзина",
+    "wishlist": "Избранное",
+    "theme": "Сменить тему",
+    "language": "Сменить язык",
+    "notifications": "Уведомления"
+  },
+  "copy": {
+    "copy": "Копировать",
+    "copied": "Скопировано!",
+    "copyLink": "Копировать ссылку",
+    "copyId": "Копировать ID",
+    "copyPromo": "Копировать код"
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "empty": "Нет уведомлений",
+    "markAllRead": "Прочитать все",
+    "markRead": "Отметить прочитанным",
+    "viewAll": "Все уведомления"
+  },
+  "upload": {
+    "dragDrop": "Перетащите или нажмите для загрузки",
+    "maxSize": "Максимум {{size}}",
+    "formats": "Формат: {{formats}}",
+    "uploading": "Загрузка...",
+    "remove": "Удалить",
+    "error": {
+      "tooLarge": "Файл превышает лимит {{size}}",
+      "invalidType": "Неподдерживаемый формат файла",
+      "failed": "Ошибка загрузки"
+    }
+  },
   "footer": {
     "tagline": "Скандинавская мебель для современных домов.",
     "shop": "Магазин",
@@ -76,5 +109,19 @@
     "builtFor": "Создано для тренировки QA автоматизации",
     "logoutTitle": "Выход",
     "logoutMessage": "Вы уверены, что хотите выйти?"
+  },
+  "orderDetail": {
+    "title": "Заказ",
+    "items": "Товары",
+    "summary": "Итого",
+    "payment": "Оплата",
+    "address": "Адрес",
+    "total": "Итого",
+    "qty": "Кол-во"
+  },
+  "ordersPage": {
+    "title": "Заказы",
+    "empty": "Заказов пока нет",
+    "browseCatalog": "Перейти в каталог"
   }
 }

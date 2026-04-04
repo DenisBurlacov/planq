@@ -132,6 +132,23 @@
     "removeConfirm": "Remove",
     "removeCancel": "Cancel"
   },
+  "autocomplete": {
+    "placeholder": "Search products...",
+    "noResults": "No results found",
+    "loading": "Searching..."
+  },
+  "rangeSlider": {
+    "priceRange": "Price Range",
+    "min": "Min: {{value}}",
+    "max": "Max: {{value}}"
+  },
+  "infiniteScroll": {
+    "loadMore": "Load More",
+    "loading": "Loading more...",
+    "toggle": "Infinite Scroll",
+    "pagination": "Pagination",
+    "endOfResults": "No more products"
+  },
   "empty": "No products found. Try adjusting your filters.",
   "loading": "Loading products..."
 }

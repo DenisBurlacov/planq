@@ -22,6 +22,8 @@ import { useCartStore } from '@store/cart.store';
 import { authApi } from '@api/auth';
 import { productsApi } from '@api/products';
 import { MegaMenu } from './MegaMenu';
+import { Tooltip } from '@components/ui/Tooltip';
+import { NotificationDropdown } from '@components/features/NotificationDropdown';
 
 export function Navbar() {
   const { t, i18n } = useTranslation('common');
@@ -131,7 +133,7 @@ export function Navbar() {
     }, 300);
   };
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
 
   const pathname = location.pathname;
   const search = location.search;
@@ -222,49 +224,59 @@ export function Navbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-1">
-            <button
-              data-testid="lang-toggle"
-              onClick={toggleLang}
-              className="px-2 py-1 text-xs font-medium rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-              aria-label="Toggle language"
-            >
-              {i18n.language === 'en' ? 'EN' : 'RU'}
-            </button>
+            <Tooltip text={t('tooltips.language')}>
+              <button
+                data-testid="lang-toggle"
+                onClick={toggleLang}
+                className="px-2 py-1 text-xs font-medium rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                aria-label="Toggle language"
+              >
+                {i18n.language === 'en' ? 'EN' : 'RU'}
+              </button>
+            </Tooltip>
 
-            <button
-              data-testid="theme-toggle"
-              onClick={toggle}
-              className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-              aria-label={isDark ? t('theme.light') : t('theme.dark')}
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
+            <Tooltip text={isDark ? t('theme.light') : t('theme.dark')}>
+              <button
+                data-testid="theme-toggle"
+                onClick={toggle}
+                className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                aria-label={isDark ? t('theme.light') : t('theme.dark')}
+              >
+                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+            </Tooltip>
 
-            <Link
-              data-testid="nav-wishlist"
-              to="/wishlist"
-              className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-              aria-label={t('nav.wishlist')}
-            >
-              <Heart className="h-5 w-5" />
-            </Link>
+            <Tooltip text={t('tooltips.wishlist')}>
+              <Link
+                data-testid="nav-wishlist"
+                to="/wishlist"
+                className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                aria-label={t('nav.wishlist')}
+              >
+                <Heart className="h-5 w-5" />
+              </Link>
+            </Tooltip>
 
-            <Link
-              data-testid="nav-cart"
-              to="/cart"
-              className="relative p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-              aria-label={t('nav.cart')}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
-                <span
-                  data-testid="cart-badge"
-                  className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white"
-                >
-                  {itemCount > 9 ? '9+' : itemCount}
-                </span>
-              )}
-            </Link>
+            <Tooltip text={t('tooltips.cart')}>
+              <Link
+                data-testid="nav-cart"
+                to="/cart"
+                className="relative p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                aria-label={t('nav.cart')}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <span
+                    data-testid="cart-badge"
+                    className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white"
+                  >
+                    {itemCount > 9 ? '9+' : itemCount}
+                  </span>
+                )}
+              </Link>
+            </Tooltip>
+
+            {accessToken && <NotificationDropdown />}
 
             {accessToken ? (
               <div className="relative" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>

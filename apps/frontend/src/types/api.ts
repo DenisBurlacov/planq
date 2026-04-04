@@ -13,7 +13,7 @@ export interface PaginatedResponse<T> {
   pages: number;
 }
 
-export type UserRole = 'USER' | 'ADMIN';
+export type UserRole = 'USER' | 'ADMIN' | 'MANAGER';
 
 export interface User {
   id: string;
@@ -133,8 +133,27 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  userId: string;
+  userName: string;
+  action: string;
+  resource: string;
+  details: string | null;
+  createdAt: string;
+}
+
 export interface WsMessage<T = unknown> {
-  event: 'payment.result' | 'order.status.updated' | 'cart.updated';
+  event: 'payment.result' | 'order.status.updated' | 'cart.updated' | 'notification.new';
   payload: T;
 }
 

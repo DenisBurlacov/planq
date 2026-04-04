@@ -33,6 +33,7 @@ import { AdminDashboardPage } from '@pages/admin/AdminDashboardPage';
 import { AdminProductsPage } from '@pages/admin/AdminProductsPage';
 import { AdminOrdersPage } from '@pages/admin/AdminOrdersPage';
 import { AdminUsersPage } from '@pages/admin/AdminUsersPage';
+import { AdminAuditPage } from '@pages/admin/AdminAuditPage';
 
 import './i18n';
 
@@ -69,6 +70,7 @@ export default function App() {
                   <Route path="products" element={<AdminProductsPage />} />
                   <Route path="orders" element={<AdminOrdersPage />} />
                   <Route path="users" element={<AdminUsersPage />} />
+                  <Route path="audit" element={<AdminAuditPage />} />
                 </Route>
               </Route>
 

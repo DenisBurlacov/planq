@@ -9,12 +9,15 @@ import { Modal } from '@components/ui/Modal';
 import { DataTable, type Column } from '@components/ui/DataTable';
 import { useToast } from '@components/ui/Toast';
 import { adminApi } from '@api/admin';
+import { useAuthStore } from '@store/auth.store';
 import type { AdminUser } from '@appTypes/api';
 
 export function AdminUsersPage() {
   const { t } = useTranslation('admin');
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const currentUser = useAuthStore(s => s.user);
+  const isManager = currentUser?.role === 'MANAGER';
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -83,8 +86,9 @@ export function AdminUsersPage() {
       key: 'actions',
       header: t('users.actions'),
       render: row => {
-        // Admins cannot block other admins
-        if (row.role === 'ADMIN') return <span className="text-[var(--text-secondary)]">—</span>;
+        // MANAGER cannot manage users, Admins cannot block other admins
+        if (isManager || row.role === 'ADMIN')
+          return <span className="text-[var(--text-secondary)]">{'\u2014'}</span>;
 
         return row.isBlocked ? (
           <Button

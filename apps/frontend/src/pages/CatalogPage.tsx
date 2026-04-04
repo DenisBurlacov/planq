@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal, ArrowLeftRight } from 'lucide-react';
+import { SlidersHorizontal, ArrowLeftRight } from 'lucide-react';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardList } from '@components/features/ProductCardList';
 import { QuickViewModal } from '@components/features/QuickViewModal';
@@ -12,6 +12,9 @@ import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Button } from '@components/ui/Button';
 import { ViewToggle } from '@components/ui/ViewToggle';
 import { CategoryBar } from '@components/features/CategoryBar';
+import { SearchAutocomplete } from '@components/ui/SearchAutocomplete';
+import { RangeSlider } from '@components/ui/RangeSlider';
+import { InfiniteScroll } from '@components/ui/InfiniteScroll';
 import { productsApi, type ProductsQuery } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
@@ -42,11 +45,17 @@ export function CatalogPage() {
   };
 
   const [query, setQuery] = useState<ProductsQuery>(initialQuery);
-  const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set());
   const [priceError, setPriceError] = useState('');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [scrollMode, setScrollMode] = useState<'pagination' | 'infinite'>('pagination');
+  const [infiniteItems, setInfiniteItems] = useState<Product[]>([]);
+  const [infinitePage, setInfinitePage] = useState(1);
+  const [infiniteHasMore, setInfiniteHasMore] = useState(true);
+  const [infiniteLoading, setInfiniteLoading] = useState(false);
+  const infiniteQueryRef = useRef(query);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
     try {
       return (localStorage.getItem('planq-view-mode') as 'grid' | 'list') ?? 'grid';
@@ -110,9 +119,8 @@ export function CatalogPage() {
     ...(activeCategoryName ? [{ label: activeCategoryName }] : []),
   ];
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setQuery(q => ({ ...q, search, page: 1 }));
+  const handleSearch = (term: string) => {
+    setQuery(q => ({ ...q, search: term, page: 1 }));
   };
 
   const handleAddToCart = async (product: Product, quantity = 1) => {
@@ -178,6 +186,49 @@ export function CatalogPage() {
     navigate(`/catalog?${params.toString()}`, { replace: true });
   };
 
+  // Infinite scroll: accumulate items when data changes
+  useEffect(() => {
+    if (scrollMode !== 'infinite' || !data) return;
+    if (infinitePage === 1) {
+      setInfiniteItems(data.items);
+    } else {
+      setInfiniteItems(prev => {
+        const existingIds = new Set(prev.map(p => p.id));
+        const newItems = data.items.filter(p => !existingIds.has(p.id));
+        return [...prev, ...newItems];
+      });
+    }
+    setInfiniteHasMore(data.page < data.pages);
+    setInfiniteLoading(false);
+  }, [data, scrollMode, infinitePage]);
+
+  // Reset infinite scroll when query filters change (not page)
+  useEffect(() => {
+    infiniteQueryRef.current = query;
+    if (scrollMode === 'infinite') {
+      setInfiniteItems([]);
+      setInfinitePage(1);
+      setInfiniteHasMore(true);
+    }
+  }, [
+    query.categoryId,
+    query.search,
+    query.sort,
+    query.minPrice,
+    query.maxPrice,
+    query.onSale,
+    query.inStock,
+    scrollMode,
+  ]);
+
+  const handleLoadMore = useCallback(() => {
+    if (infiniteLoading || !infiniteHasMore) return;
+    setInfiniteLoading(true);
+    const nextPage = infinitePage + 1;
+    setInfinitePage(nextPage);
+    setQuery(q => ({ ...q, page: nextPage }));
+  }, [infiniteLoading, infiniteHasMore, infinitePage]);
+
   const handleFilterToggle = () => {
     // On mobile, open modal; on desktop, toggle inline
     if (window.innerWidth < 768) {
@@ -218,21 +269,9 @@ export function CatalogPage() {
       />
 
       {/* Search */}
-      <form onSubmit={handleSearch} className="mb-6 flex gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder={t('search')}
-            aria-label={t('search')}
-            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-        </div>
-        <Button type="submit" variant="secondary">
-          {t('common:actions.submit', { ns: 'common' })}
-        </Button>
-      </form>
+      <div className="mb-6">
+        <SearchAutocomplete onSearch={handleSearch} data-testid="catalog-search" />
+      </div>
 
       {/* Desktop Filters */}
       {showFilters && (
@@ -240,58 +279,31 @@ export function CatalogPage() {
           data-testid="catalog-filter-panel"
           className="hidden md:grid mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 grid-cols-1 md:grid-cols-3 gap-4"
         >
-          <div className="flex gap-2 items-end col-span-1">
-            <div className="flex-1">
-              <label
-                htmlFor="filter-min-price"
-                className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide"
-              >
-                {t('filters.minPrice')}
-              </label>
-              <input
-                id="filter-min-price"
-                type="number"
-                placeholder="0"
-                min="0"
-                className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
-                onChange={e => {
-                  const min = e.target.value ? Number(e.target.value) : undefined;
-                  const max = query.maxPrice;
-                  if (min !== undefined && max !== undefined && min > max) {
-                    setPriceError(t('filters.priceError'));
-                    return;
-                  }
+          <div className="col-span-1">
+            <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
+              {t('rangeSlider.priceRange')}
+            </label>
+            <div className="mt-2">
+              <RangeSlider
+                min={0}
+                max={10000}
+                step={10}
+                value={priceRange}
+                onChange={([min, max]) => {
+                  setPriceRange([min, max]);
                   setPriceError('');
-                  setQuery(q => ({ ...q, minPrice: min, page: 1 }));
+                  setQuery(q => ({
+                    ...q,
+                    minPrice: min > 0 ? min : undefined,
+                    maxPrice: max < 10000 ? max : undefined,
+                    page: 1,
+                  }));
                 }}
+                formatLabel={v => `\u20AC${v}`}
+                data-testid="catalog-price-range"
               />
             </div>
-            <div className="flex-1">
-              <label
-                htmlFor="filter-max-price"
-                className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide"
-              >
-                {t('filters.maxPrice')}
-              </label>
-              <input
-                id="filter-max-price"
-                type="number"
-                placeholder="∞"
-                min="0"
-                className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
-                onChange={e => {
-                  const max = e.target.value ? Number(e.target.value) : undefined;
-                  const min = query.minPrice;
-                  if (min !== undefined && max !== undefined && min > max) {
-                    setPriceError(t('filters.priceError'));
-                    return;
-                  }
-                  setPriceError('');
-                  setQuery(q => ({ ...q, maxPrice: max, page: 1 }));
-                }}
-              />
-            </div>
-            {priceError && <p className="col-span-2 text-xs text-red-500 mt-1">{priceError}</p>}
+            {priceError && <p className="text-xs text-red-500 mt-1">{priceError}</p>}
           </div>
 
           <div className="flex flex-col gap-2 justify-end">
@@ -323,8 +335,8 @@ export function CatalogPage() {
               size="sm"
               onClick={() => {
                 setQuery({ page: 1, limit: 12, sort: 'newest' });
-                setSearch('');
                 setPriceError('');
+                setPriceRange([0, 10000]);
               }}
             >
               {t('filters.clear')}
@@ -349,6 +361,23 @@ export function CatalogPage() {
           {data ? t('common:items', { count: data.total }) : ''}
         </span>
         <div className="flex items-center gap-3">
+          <label
+            data-testid="scroll-mode-toggle"
+            className="flex items-center gap-2 text-xs text-[var(--text-secondary)] cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              checked={scrollMode === 'infinite'}
+              onChange={e => {
+                setScrollMode(e.target.checked ? 'infinite' : 'pagination');
+                setInfiniteItems([]);
+                setInfinitePage(1);
+                setInfiniteHasMore(true);
+              }}
+              className="rounded"
+            />
+            {t('infiniteScroll.toggle')}
+          </label>
           <ViewToggle value={viewMode} onChange={setViewMode} />
           <select
             value={query.sort ?? 'newest'}
@@ -371,68 +400,85 @@ export function CatalogPage() {
       </div>
 
       {/* Products */}
-      {isLoading ? (
+      {isLoading && infinitePage <= 1 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 12 }).map((_, i) => (
             <ProductCardSkeleton key={i} />
           ))}
         </div>
-      ) : !data?.items.length ? (
+      ) : !data?.items.length && infiniteItems.length === 0 ? (
         <div className="py-24 text-center text-[var(--text-secondary)]">{t('empty')}</div>
       ) : (
         <>
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {data.items.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  isWishlisted={wishlistedIds.has(product.id)}
-                  onAddToCart={handleAddToCart}
-                  onToggleWishlist={handleToggleWishlist}
-                  onQuickView={setQuickViewProduct}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {data.items.map(product => (
-                <ProductCardList
-                  key={product.id}
-                  product={product}
-                  isWishlisted={wishlistedIds.has(product.id)}
-                  onAddToCart={handleAddToCart}
-                  onToggleWishlist={handleToggleWishlist}
-                  onQuickView={setQuickViewProduct}
-                  onAddToCompare={p => compareStore.addProduct(p.id)}
-                />
-              ))}
-            </div>
-          )}
+          {(() => {
+            const displayItems = scrollMode === 'infinite' ? infiniteItems : (data?.items ?? []);
+            return viewMode === 'grid' ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {displayItems.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    isWishlisted={wishlistedIds.has(product.id)}
+                    onAddToCart={handleAddToCart}
+                    onToggleWishlist={handleToggleWishlist}
+                    onQuickView={setQuickViewProduct}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {displayItems.map(product => (
+                  <ProductCardList
+                    key={product.id}
+                    product={product}
+                    isWishlisted={wishlistedIds.has(product.id)}
+                    onAddToCart={handleAddToCart}
+                    onToggleWishlist={handleToggleWishlist}
+                    onQuickView={setQuickViewProduct}
+                    onAddToCompare={p => compareStore.addProduct(p.id)}
+                  />
+                ))}
+              </div>
+            );
+          })()}
 
-          {/* Pagination */}
-          {data.pages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={(query.page ?? 1) <= 1}
-                onClick={() => setQuery(q => ({ ...q, page: (q.page ?? 1) - 1 }))}
-              >
-                ←
-              </Button>
-              <span className="text-sm text-[var(--text-secondary)]">
-                {query.page ?? 1} / {data.pages}
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={(query.page ?? 1) >= data.pages}
-                onClick={() => setQuery(q => ({ ...q, page: (q.page ?? 1) + 1 }))}
-              >
-                →
-              </Button>
-            </div>
+          {/* Pagination / Infinite Scroll */}
+          {scrollMode === 'infinite' ? (
+            <InfiniteScroll
+              onLoadMore={handleLoadMore}
+              hasMore={infiniteHasMore}
+              loading={infiniteLoading}
+              endElement={
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {t('infiniteScroll.endOfResults')}
+                </p>
+              }
+            />
+          ) : (
+            data &&
+            data.pages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={(query.page ?? 1) <= 1}
+                  onClick={() => setQuery(q => ({ ...q, page: (q.page ?? 1) - 1 }))}
+                >
+                  {'\u2190'}
+                </Button>
+                <span className="text-sm text-[var(--text-secondary)]">
+                  {query.page ?? 1} / {data.pages}
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={(query.page ?? 1) >= data.pages}
+                  onClick={() => setQuery(q => ({ ...q, page: (q.page ?? 1) + 1 }))}
+                >
+                  {'\u2192'}
+                </Button>
+              </div>
+            )
           )}
         </>
       )}
