@@ -18,6 +18,8 @@ import wishlistRouter from '@routes/wishlist.js';
 import reviewsRouter from '@routes/reviews.js';
 import promoRouter from '@routes/promo.js';
 import profileRouter from '@routes/profile.js';
+import addressesRouter from '@routes/addresses.js';
+import notificationsRouter from '@routes/notifications.js';
 import adminRouter from '@routes/admin.js';
 
 const app: Express = express();
@@ -61,6 +63,8 @@ app.use('/api/v1/wishlist', wishlistRouter);
 app.use('/api/v1/reviews', reviewsRouter);
 app.use('/api/v1/promotions', promoRouter);
 app.use('/api/v1/profile', profileRouter);
+app.use('/api/v1/profile/notifications', notificationsRouter);
+app.use('/api/v1/addresses', addressesRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/test', resetRouter);
 

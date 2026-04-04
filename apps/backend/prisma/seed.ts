@@ -212,6 +212,14 @@ async function main() {
       images: [PHOTOS.sofa1, PHOTOS.sofa2],
       rating: 4.5,
       reviewCount: 23,
+      specs: {
+        material: 'Premium linen upholstery, solid oak legs',
+        dimensions: '210x90x85 cm',
+        weight: '42 kg',
+        color: 'Light Grey',
+        warranty: '5 years',
+        careInstructions: 'Vacuum regularly, spot clean with mild detergent',
+      },
     },
     {
       name: 'Minimalist Coffee Table',
@@ -224,6 +232,14 @@ async function main() {
       images: [PHOTOS.coffeeTable1, PHOTOS.coffeeTable2],
       rating: 4.2,
       reviewCount: 15,
+      specs: {
+        material: 'Walnut veneer top, powder-coated steel legs',
+        dimensions: '90x90x45 cm',
+        weight: '12.5 kg',
+        color: 'Walnut / Black',
+        warranty: '2 years',
+        careInstructions: 'Wipe with damp cloth, avoid abrasive cleaners',
+      },
     },
     {
       name: 'Arc Floor Lamp',
@@ -236,6 +252,14 @@ async function main() {
       images: [PHOTOS.floorLamp1, PHOTOS.floorLamp2],
       rating: 4.8,
       reviewCount: 42,
+      specs: {
+        material: 'Marble base, brushed steel arm, fabric shade',
+        dimensions: '40x40x190 cm',
+        weight: '8.2 kg',
+        color: 'White / Silver',
+        warranty: '2 years',
+        careInstructions: 'Dust with soft cloth, use E27 LED bulb max 12W',
+      },
     },
     {
       name: 'Bookshelf Tall Oak',
@@ -248,6 +272,14 @@ async function main() {
       images: [PHOTOS.bookshelf1],
       rating: 4.0,
       reviewCount: 7,
+      specs: {
+        material: 'Solid oak',
+        dimensions: '80x30x180 cm',
+        weight: '28 kg',
+        color: 'Natural Oak',
+        warranty: '3 years',
+        careInstructions: 'Dust regularly, treat with wood oil every 6 months',
+      },
     },
     {
       name: 'Wool Area Rug 200×300',
@@ -261,6 +293,14 @@ async function main() {
       images: [PHOTOS.rug1],
       rating: 4.6,
       reviewCount: 19,
+      specs: {
+        material: '100% pure wool, cotton backing',
+        dimensions: '200x300 cm',
+        weight: '9.5 kg',
+        color: 'Ivory / Terracotta',
+        warranty: '2 years',
+        careInstructions: 'Professional cleaning recommended, vacuum on low power',
+      },
     },
     {
       name: 'Bouclé Armchair',
@@ -274,6 +314,14 @@ async function main() {
       images: [PHOTOS.armchair1, PHOTOS.sofa3],
       rating: 4.7,
       reviewCount: 31,
+      specs: {
+        material: 'Bouclé fabric, solid beech legs',
+        dimensions: '75x80x82 cm',
+        weight: '18 kg',
+        color: 'Cream',
+        warranty: '3 years',
+        careInstructions: 'Brush gently to maintain texture, spot clean only',
+      },
     },
     {
       name: 'TV Stand with Storage',
@@ -286,6 +334,14 @@ async function main() {
       images: [PHOTOS.tvStand1],
       rating: 4.3,
       reviewCount: 14,
+      specs: {
+        material: 'MDF with oak veneer, steel handles',
+        dimensions: '150x40x50 cm',
+        weight: '24 kg',
+        color: 'Natural Oak / Black',
+        warranty: '2 years',
+        careInstructions: 'Wipe with slightly damp cloth, do not use polish',
+      },
     },
 
     // ── Bedroom (6) ──────────────────────────────────────────────────────
@@ -297,6 +353,14 @@ async function main() {
       price: 599.99,
       stock: 20,
       categoryId: bedroom.id,
+      specs: {
+        material: 'Solid pine wood with walnut stain',
+        dimensions: '160x200x30 cm',
+        weight: '35 kg',
+        color: 'Walnut',
+        warranty: '5 years',
+        careInstructions: 'Tighten bolts every 6 months, wipe with dry cloth',
+      },
       images: [PHOTOS.bed1, PHOTOS.bed2],
       rating: 4.7,
       reviewCount: 31,
@@ -313,6 +377,14 @@ async function main() {
       images: [PHOTOS.bedsideTable1],
       rating: 4.3,
       reviewCount: 12,
+      specs: {
+        material: 'White lacquered MDF, solid beech legs',
+        dimensions: '40x35x55 cm (each)',
+        weight: '7.5 kg (each)',
+        color: 'White',
+        warranty: '2 years',
+        careInstructions: 'Wipe with damp cloth, avoid excessive moisture',
+      },
     },
     {
       name: 'Wardrobe with Sliding Doors',
@@ -325,6 +397,14 @@ async function main() {
       images: [PHOTOS.wardrobe1, PHOTOS.wardrobe2],
       rating: 4.1,
       reviewCount: 9,
+      specs: {
+        material: 'Particleboard with melamine finish, mirror glass',
+        dimensions: '200x62x220 cm',
+        weight: '95 kg',
+        color: 'White / Mirror',
+        warranty: '5 years',
+        careInstructions: 'Clean mirrors with glass cleaner, wipe surfaces with dry cloth',
+      },
     },
     {
       name: 'Dresser 6-Drawer',
@@ -336,6 +416,14 @@ async function main() {
       images: [PHOTOS.dresser1],
       rating: 4.4,
       reviewCount: 18,
+      specs: {
+        material: 'Solid oak, brass handles',
+        dimensions: '120x45x80 cm',
+        weight: '38 kg',
+        color: 'Natural Oak',
+        warranty: '3 years',
+        careInstructions: 'Treat with wood oil annually, use coasters for drinks',
+      },
     },
     {
       name: 'Upholstered Headboard King',
@@ -349,6 +437,14 @@ async function main() {
       images: [PHOTOS.bed3],
       rating: 4.6,
       reviewCount: 28,
+      specs: {
+        material: 'Velvet upholstery, plywood frame, foam padding',
+        dimensions: '180x8x120 cm',
+        weight: '15 kg',
+        color: 'Dusty Rose',
+        warranty: '2 years',
+        careInstructions: 'Vacuum with upholstery attachment, spot clean only',
+      },
     },
     // Edge case: no images
     {
@@ -362,6 +458,14 @@ async function main() {
       images: [],
       rating: 3.8,
       reviewCount: 56,
+      specs: {
+        material: 'Memory foam core, bamboo-derived rayon cover',
+        dimensions: '60x40x12 cm (each)',
+        weight: '1.2 kg (each)',
+        color: 'White',
+        warranty: '2 years',
+        careInstructions: 'Machine wash covers at 40°C, do not wash foam core',
+      },
     },
 
     // ── Kitchen / Dining (6) ─────────────────────────────────────────────
@@ -376,6 +480,14 @@ async function main() {
       images: [PHOTOS.diningTable1, PHOTOS.diningTable2],
       rating: 4.6,
       reviewCount: 27,
+      specs: {
+        material: 'Solid birch with white lacquer finish',
+        dimensions: '120-200x85x75 cm',
+        weight: '45 kg',
+        color: 'White',
+        warranty: '5 years',
+        careInstructions: 'Wipe spills immediately, use placemats to protect surface',
+      },
     },
     {
       name: 'Dining Chair Set of 4',
@@ -389,6 +501,14 @@ async function main() {
       images: [PHOTOS.diningChair1],
       rating: 4.3,
       reviewCount: 34,
+      specs: {
+        material: 'Moulded polypropylene seat, solid beech legs',
+        dimensions: '46x52x82 cm (each)',
+        weight: '4.2 kg (each)',
+        color: 'White / Natural',
+        warranty: '2 years',
+        careInstructions: 'Wipe with damp cloth, use felt pads on leg bottoms',
+      },
     },
     {
       name: 'Kitchen Island Cart',
@@ -401,6 +521,14 @@ async function main() {
       images: [PHOTOS.kitchenIsland1],
       rating: 4.5,
       reviewCount: 11,
+      specs: {
+        material: 'Solid rubberwood top, steel frame',
+        dimensions: '90x60x90 cm',
+        weight: '30 kg',
+        color: 'Natural Wood / Black',
+        warranty: '2 years',
+        careInstructions: 'Oil butcher block monthly, lock wheels when stationary',
+      },
     },
     {
       name: 'Floating Shelves Set of 3',
@@ -413,6 +541,14 @@ async function main() {
       images: [PHOTOS.kitchenShelf1],
       rating: 4.1,
       reviewCount: 22,
+      specs: {
+        material: 'Oak veneer over MDF, concealed steel bracket',
+        dimensions: '40/60/80x20x3 cm',
+        weight: '2.5 kg (set)',
+        color: 'Natural Oak',
+        warranty: '2 years',
+        careInstructions: 'Dust regularly, do not exceed 15 kg per shelf',
+      },
     },
     // Edge case: stock 0
     {
@@ -426,6 +562,14 @@ async function main() {
       images: [PHOTOS.barStool1],
       rating: 3.9,
       reviewCount: 8,
+      specs: {
+        material: 'Chrome-plated steel, faux leather seat',
+        dimensions: '40x40x60-80 cm',
+        weight: '6.8 kg',
+        color: 'Black / Chrome',
+        warranty: '1 year',
+        careInstructions: 'Wipe seat with leather cleaner, do not use bleach',
+      },
     },
     {
       name: 'Marble Lazy Susan 40cm',
@@ -438,6 +582,14 @@ async function main() {
       images: [PHOTOS.diningTable2],
       rating: 4.8,
       reviewCount: 43,
+      specs: {
+        material: 'Natural marble with rubber base',
+        dimensions: '40x40x3 cm',
+        weight: '3.8 kg',
+        color: 'White Marble',
+        warranty: '1 year',
+        careInstructions: 'Hand wash only, do not use in microwave, seal annually',
+      },
     },
 
     // ── Bathroom (5) ─────────────────────────────────────────────────────
@@ -452,6 +604,14 @@ async function main() {
       images: [PHOTOS.bathroomCabinet1],
       rating: 4.2,
       reviewCount: 16,
+      specs: {
+        material: 'MDF with moisture-resistant coating, mirror glass',
+        dimensions: '60x15x70 cm',
+        weight: '11 kg',
+        color: 'White',
+        warranty: '2 years',
+        careInstructions: 'Clean mirror with glass cleaner, wipe body with dry cloth',
+      },
     },
     {
       name: 'Bamboo Towel Rack',
@@ -464,6 +624,14 @@ async function main() {
       images: [PHOTOS.towelRack1],
       rating: 4.0,
       reviewCount: 29,
+      specs: {
+        material: 'Solid bamboo with water-resistant lacquer',
+        dimensions: '50x28x160 cm',
+        weight: '3.5 kg',
+        color: 'Natural Bamboo',
+        warranty: '2 years',
+        careInstructions: 'Wipe dry after contact with water, re-lacquer yearly',
+      },
     },
     {
       name: 'Seagrass Laundry Basket',
@@ -476,6 +644,14 @@ async function main() {
       images: [PHOTOS.laundryBasket1],
       rating: 4.4,
       reviewCount: 21,
+      specs: {
+        material: 'Natural seagrass, cotton liner, leather handles',
+        dimensions: '40x40x55 cm',
+        weight: '2.2 kg',
+        color: 'Natural',
+        warranty: '1 year',
+        careInstructions: 'Remove liner for washing, keep seagrass dry',
+      },
     },
     {
       name: 'Corner Shower Shelf',
@@ -488,6 +664,14 @@ async function main() {
       images: [PHOTOS.showerShelf1],
       rating: 4.7,
       reviewCount: 45,
+      specs: {
+        material: 'Brushed 304 stainless steel',
+        dimensions: '25x25x35 cm',
+        weight: '1.1 kg',
+        color: 'Brushed Silver',
+        warranty: '3 years',
+        careInstructions: 'Rinse after use to prevent soap buildup, no abrasive pads',
+      },
     },
     {
       name: 'Velvet Vanity Stool',
@@ -501,6 +685,14 @@ async function main() {
       images: [PHOTOS.vanityStool1],
       rating: 4.6,
       reviewCount: 13,
+      specs: {
+        material: 'Velvet seat, steel legs with gold finish',
+        dimensions: '38x38x50 cm',
+        weight: '4.5 kg',
+        color: 'Dusty Pink / Gold',
+        warranty: '1 year',
+        careInstructions: 'Spot clean velvet, avoid placing in wet areas',
+      },
     },
 
     // ── Office (6) ───────────────────────────────────────────────────────
@@ -515,6 +707,14 @@ async function main() {
       images: [PHOTOS.standingDesk1, PHOTOS.standingDesk2],
       rating: 4.8,
       reviewCount: 38,
+      specs: {
+        material: 'Bamboo surface, powder-coated steel frame',
+        dimensions: '140x70x65-130 cm',
+        weight: '32 kg',
+        color: 'Natural Bamboo / Black',
+        warranty: '5 years',
+        careInstructions: 'Wipe bamboo surface with damp cloth, lubricate motor yearly',
+      },
     },
     {
       name: 'Ergonomic Mesh Office Chair',
@@ -528,6 +728,14 @@ async function main() {
       images: [PHOTOS.officeChair1, PHOTOS.officeChair2],
       rating: 4.9,
       reviewCount: 67,
+      specs: {
+        material: 'Breathable mesh back, foam seat, nylon base',
+        dimensions: '68x68x110-125 cm',
+        weight: '14 kg',
+        color: 'Black',
+        warranty: '5 years',
+        careInstructions: 'Vacuum mesh periodically, tighten screws every 3 months',
+      },
     },
     {
       name: 'Bamboo Monitor Riser',
@@ -540,6 +748,14 @@ async function main() {
       images: [PHOTOS.monitorStand1],
       rating: 4.3,
       reviewCount: 24,
+      specs: {
+        material: 'Solid bamboo with USB 3.0 hub',
+        dimensions: '50x22x8 cm',
+        weight: '1.8 kg',
+        color: 'Natural Bamboo',
+        warranty: '2 years',
+        careInstructions: 'Wipe with damp cloth, do not submerge USB hub in water',
+      },
     },
     {
       name: '3-Drawer Filing Cabinet',
@@ -552,6 +768,14 @@ async function main() {
       images: [PHOTOS.filingCabinet1],
       rating: 3.7,
       reviewCount: 5,
+      specs: {
+        material: 'Cold-rolled steel with powder coating',
+        dimensions: '47x62x103 cm',
+        weight: '28 kg',
+        color: 'Matte Black',
+        warranty: '5 years',
+        careInstructions: 'Lubricate drawer slides annually, wipe with dry cloth',
+      },
     },
     {
       name: 'Acoustic Office Divider',
@@ -564,6 +788,14 @@ async function main() {
       images: [PHOTOS.standingDesk2],
       rating: 4.2,
       reviewCount: 17,
+      specs: {
+        material: 'Recycled polyester felt, aluminium frame',
+        dimensions: '120x3x50 cm',
+        weight: '3.2 kg',
+        color: 'Dark Grey',
+        warranty: '2 years',
+        careInstructions: 'Vacuum felt surface, spot clean with mild detergent',
+      },
     },
     // Edge case: lowest rating
     {
@@ -577,6 +809,14 @@ async function main() {
       images: [PHOTOS.deskOrganizer1],
       rating: 1.0,
       reviewCount: 3,
+      specs: {
+        material: 'Recycled ABS plastic',
+        dimensions: '25x15x12 cm',
+        weight: '0.4 kg',
+        color: 'Black',
+        warranty: '1 year',
+        careInstructions: 'Wash with warm soapy water, air dry',
+      },
     },
 
     // ── Outdoor (5) ──────────────────────────────────────────────────────
@@ -592,6 +832,14 @@ async function main() {
       images: [PHOTOS.gardenSet1, PHOTOS.gardenSet2],
       rating: 4.5,
       reviewCount: 14,
+      specs: {
+        material: 'PE rattan wicker, aluminium frame, tempered glass',
+        dimensions: '220x180x75 cm (set)',
+        weight: '48 kg',
+        color: 'Brown / Beige cushions',
+        warranty: '3 years',
+        careInstructions: 'Cover in winter, wash cushion covers at 30°C',
+      },
     },
     {
       name: 'Folding Bistro Table',
@@ -604,6 +852,14 @@ async function main() {
       images: [PHOTOS.bistroTable1],
       rating: 4.2,
       reviewCount: 20,
+      specs: {
+        material: 'Powder-coated steel',
+        dimensions: '60x60x72 cm',
+        weight: '5.5 kg',
+        color: 'Matte Black',
+        warranty: '2 years',
+        careInstructions: 'Store folded in dry area during winter, wipe with damp cloth',
+      },
     },
     {
       name: 'Garden Storage Bench',
@@ -616,6 +872,14 @@ async function main() {
       images: [PHOTOS.gardenBench1],
       rating: 4.4,
       reviewCount: 9,
+      specs: {
+        material: 'Grade-A teak wood',
+        dimensions: '120x55x90 cm',
+        weight: '22 kg',
+        color: 'Natural Teak',
+        warranty: '5 years',
+        careInstructions: 'Apply teak oil every 6 months, will naturally silver if untreated',
+      },
     },
     {
       name: 'Large Planter Box',
@@ -628,6 +892,14 @@ async function main() {
       images: [PHOTOS.planterBox1],
       rating: 4.1,
       reviewCount: 17,
+      specs: {
+        material: 'Powder-coated galvanized steel',
+        dimensions: '60x25x50 cm',
+        weight: '4.8 kg',
+        color: 'Anthracite Grey',
+        warranty: '3 years',
+        careInstructions: 'Ensure drainage holes are clear, rinse with water seasonally',
+      },
     },
     {
       name: 'Hammock with Stand',
@@ -641,6 +913,14 @@ async function main() {
       images: [PHOTOS.gardenSet2],
       rating: 4.7,
       reviewCount: 36,
+      specs: {
+        material: 'Organic cotton rope, powder-coated steel stand',
+        dimensions: '280x100x110 cm',
+        weight: '15 kg',
+        color: 'Natural White / Black stand',
+        warranty: '2 years',
+        careInstructions: 'Bring indoors during rain, machine wash hammock at 30°C',
+      },
     },
 
     // ── Decor (8) ────────────────────────────────────────────────────────
@@ -656,6 +936,14 @@ async function main() {
       images: [PHOTOS.wallArt1, PHOTOS.wallArt2],
       rating: 4.6,
       reviewCount: 33,
+      specs: {
+        material: 'Giclée print on cotton canvas, pine stretcher bars',
+        dimensions: '80x120x3 cm',
+        weight: '2.5 kg',
+        color: 'Multicolor',
+        warranty: '1 year',
+        careInstructions: 'Dust with soft brush, avoid direct sunlight',
+      },
     },
     {
       name: 'Gallery Wall Set of 5',
@@ -668,6 +956,14 @@ async function main() {
       images: [PHOTOS.wallArt3, PHOTOS.wallArt1],
       rating: 4.8,
       reviewCount: 51,
+      specs: {
+        material: 'Art paper prints, black aluminium frames, glass front',
+        dimensions: '20x30 to 30x40 cm',
+        weight: '3.5 kg (set)',
+        color: 'Black & White',
+        warranty: '1 year',
+        careInstructions: 'Clean glass with glass cleaner, dust frames regularly',
+      },
     },
     {
       name: 'Round Arch Mirror 80cm',
@@ -680,6 +976,14 @@ async function main() {
       images: [PHOTOS.mirror1, PHOTOS.mirror2],
       rating: 4.9,
       reviewCount: 72,
+      specs: {
+        material: 'Float glass mirror, iron frame with gold finish',
+        dimensions: '50x80x2 cm',
+        weight: '5.8 kg',
+        color: 'Gold',
+        warranty: '2 years',
+        careInstructions: 'Clean with glass cleaner, avoid abrasive materials on frame',
+      },
     },
     {
       name: 'Ceramic Vase Set of 3',
@@ -693,6 +997,14 @@ async function main() {
       images: [PHOTOS.vase1, PHOTOS.vase2],
       rating: 4.7,
       reviewCount: 48,
+      specs: {
+        material: 'Handmade stoneware ceramic with matte glaze',
+        dimensions: '12x12x20/25/30 cm',
+        weight: '2.8 kg (set)',
+        color: 'Sand / Terracotta / Sage',
+        warranty: '1 year',
+        careInstructions: 'Hand wash, not dishwasher safe, waterproof for fresh flowers',
+      },
     },
     {
       name: 'Scented Candle Set',
@@ -705,6 +1017,14 @@ async function main() {
       images: [PHOTOS.candle1],
       rating: 4.5,
       reviewCount: 89,
+      specs: {
+        material: 'Soy wax, cotton wick, amber glass jars',
+        dimensions: '8x8x10 cm (each)',
+        weight: '0.35 kg (each)',
+        color: 'Amber Glass',
+        warranty: 'N/A',
+        careInstructions: 'Trim wick to 5mm before each use, burn max 4 hours at a time',
+      },
     },
     {
       name: 'Minimalist Wall Clock',
@@ -717,6 +1037,14 @@ async function main() {
       images: [PHOTOS.clock1],
       rating: 4.4,
       reviewCount: 27,
+      specs: {
+        material: 'Oak frame, glass face, quartz movement',
+        dimensions: '30x30x4 cm',
+        weight: '0.8 kg',
+        color: 'Natural Oak / White',
+        warranty: '2 years',
+        careInstructions: 'Replace AA battery annually, dust with soft cloth',
+      },
     },
     {
       name: 'Macramé Wall Hanging',
@@ -729,6 +1057,14 @@ async function main() {
       images: [PHOTOS.wallArt2],
       rating: 4.3,
       reviewCount: 19,
+      specs: {
+        material: '100% natural cotton rope, driftwood rod',
+        dimensions: '60x90 cm',
+        weight: '0.9 kg',
+        color: 'Natural Ivory',
+        warranty: '1 year',
+        careInstructions: 'Shake out dust, spot clean with cold water only',
+      },
     },
     {
       name: 'Decorative Tray Set',
@@ -741,6 +1077,14 @@ async function main() {
       images: [PHOTOS.vase2],
       rating: 4.2,
       reviewCount: 15,
+      specs: {
+        material: 'Matte powder-coated steel',
+        dimensions: '30x20x3 cm / 40x25x3 cm',
+        weight: '1.5 kg (set)',
+        color: 'Matte Black',
+        warranty: '1 year',
+        careInstructions: 'Wipe with damp cloth, dry immediately to prevent spots',
+      },
     },
 
     // ── Textiles (7) ─────────────────────────────────────────────────────
@@ -756,6 +1100,14 @@ async function main() {
       images: [PHOTOS.bedding1, PHOTOS.bedding2],
       rating: 4.8,
       reviewCount: 64,
+      specs: {
+        material: '100% French flax linen, OEKO-TEX certified',
+        dimensions: '200x200 cm (duvet), 50x70 cm (pillowcases)',
+        weight: '1.8 kg',
+        color: 'Natural Linen',
+        warranty: '1 year',
+        careInstructions: 'Machine wash 40°C gentle, tumble dry low, gets softer with each wash',
+      },
     },
     {
       name: 'Velvet Cushion Set of 4',
@@ -769,6 +1121,14 @@ async function main() {
       images: [PHOTOS.pillow1, PHOTOS.pillow2],
       rating: 4.6,
       reviewCount: 41,
+      specs: {
+        material: 'Cotton velvet covers, polyester fill inserts',
+        dimensions: '45x45 cm (each)',
+        weight: '0.6 kg (each)',
+        color: 'Sage / Terracotta / Ivory / Dusty Blue',
+        warranty: '1 year',
+        careInstructions: 'Remove covers and machine wash at 30°C, do not bleach',
+      },
     },
     {
       name: 'Chunky Knit Throw Blanket',
@@ -781,6 +1141,14 @@ async function main() {
       images: [PHOTOS.throwBlanket1],
       rating: 4.9,
       reviewCount: 93,
+      specs: {
+        material: '100% merino wool, hand-knitted',
+        dimensions: '130x170 cm',
+        weight: '2.5 kg',
+        color: 'Natural Ivory',
+        warranty: '1 year',
+        careInstructions: 'Dry clean only or hand wash in cold water, lay flat to dry',
+      },
     },
     {
       name: 'Linen Blackout Curtains',
@@ -793,6 +1161,14 @@ async function main() {
       images: [PHOTOS.curtain1],
       rating: 4.4,
       reviewCount: 38,
+      specs: {
+        material: 'Polyester-linen blend with thermal blackout lining',
+        dimensions: '140x250 cm (per panel)',
+        weight: '2.2 kg (pair)',
+        color: 'Oatmeal',
+        warranty: '1 year',
+        careInstructions: 'Machine wash cold, hang dry, iron on low heat if needed',
+      },
     },
     {
       name: 'Cotton Waffle Bath Towels',
@@ -806,6 +1182,14 @@ async function main() {
       images: [PHOTOS.towelRack1],
       rating: 4.5,
       reviewCount: 55,
+      specs: {
+        material: '100% long-staple Turkish cotton, 400 GSM',
+        dimensions: '70x140 cm (bath), 40x70 cm (hand)',
+        weight: '1.6 kg (set)',
+        color: 'White',
+        warranty: '1 year',
+        careInstructions: 'Machine wash 60°C, tumble dry, avoid fabric softener',
+      },
     },
     {
       name: 'Table Runner Natural Linen',
@@ -818,6 +1202,14 @@ async function main() {
       images: [PHOTOS.tableRunner1],
       rating: 4.3,
       reviewCount: 22,
+      specs: {
+        material: '100% natural linen',
+        dimensions: '40x180 cm',
+        weight: '0.3 kg',
+        color: 'Natural Flax',
+        warranty: '1 year',
+        careInstructions: 'Machine wash 40°C, iron while damp for crisp look',
+      },
     },
     {
       name: 'Shaggy Bathroom Mat',
@@ -830,6 +1222,14 @@ async function main() {
       images: [PHOTOS.bathroomCabinet1],
       rating: 4.1,
       reviewCount: 31,
+      specs: {
+        material: 'Microfibre pile, TPR non-slip backing',
+        dimensions: '50x80 cm',
+        weight: '0.7 kg',
+        color: 'Light Grey',
+        warranty: '1 year',
+        careInstructions: 'Machine wash 40°C, do not tumble dry, air dry flat',
+      },
     },
 
     // ── Lighting (6) ─────────────────────────────────────────────────────
@@ -845,6 +1245,14 @@ async function main() {
       images: [PHOTOS.pendantLight1, PHOTOS.pendantLight2],
       rating: 4.7,
       reviewCount: 44,
+      specs: {
+        material: 'Brass-plated steel, opal glass shade',
+        dimensions: '22x22x25 cm (shade), 150 cm cable',
+        weight: '2.1 kg',
+        color: 'Brass / White',
+        warranty: '2 years',
+        careInstructions: 'Dust shade gently, use max 12W E27 LED bulb',
+      },
     },
     {
       name: 'Wall Sconce Set of 2',
@@ -857,6 +1265,14 @@ async function main() {
       images: [PHOTOS.wallSconce1],
       rating: 4.5,
       reviewCount: 29,
+      specs: {
+        material: 'Steel with matte black powder coating',
+        dimensions: '10x12x18 cm (each)',
+        weight: '0.6 kg (each)',
+        color: 'Matte Black',
+        warranty: '2 years',
+        careInstructions: 'Professional installation recommended, use G9 LED max 5W',
+      },
     },
     {
       name: 'LED Desk Lamp',
@@ -869,6 +1285,14 @@ async function main() {
       images: [PHOTOS.deskLamp1],
       rating: 4.6,
       reviewCount: 112,
+      specs: {
+        material: 'Aluminium body, silicone gooseneck',
+        dimensions: '15x15x45 cm',
+        weight: '0.9 kg',
+        color: 'Matte White',
+        warranty: '2 years',
+        careInstructions: 'Wipe with dry cloth, do not expose USB port to moisture',
+      },
     },
     {
       name: 'Rattan Table Lamp',
@@ -881,6 +1305,14 @@ async function main() {
       images: [PHOTOS.tableLamp1],
       rating: 4.8,
       reviewCount: 37,
+      specs: {
+        material: 'Natural rattan base, white linen shade',
+        dimensions: '25x25x45 cm',
+        weight: '1.4 kg',
+        color: 'Natural / White',
+        warranty: '1 year',
+        careInstructions: 'Dust rattan with soft brush, use max 10W E27 LED bulb',
+      },
     },
     {
       name: 'Smart LED Strip 5m',
@@ -894,6 +1326,14 @@ async function main() {
       images: [PHOTOS.ledStrip1],
       rating: 4.3,
       reviewCount: 178,
+      specs: {
+        material: 'Flexible PCB, 3M adhesive backing',
+        dimensions: '500x1x0.3 cm',
+        weight: '0.2 kg',
+        color: 'RGB (16 million colors)',
+        warranty: '2 years',
+        careInstructions: 'Clean surface before applying, do not bend at sharp angles',
+      },
     },
     {
       name: 'Cluster Ceiling Light',
@@ -906,6 +1346,14 @@ async function main() {
       images: [PHOTOS.pendantLight2],
       rating: 4.6,
       reviewCount: 21,
+      specs: {
+        material: 'Steel with matte black finish',
+        dimensions: '50x50x40 cm (adjustable arms)',
+        weight: '4.5 kg',
+        color: 'Matte Black',
+        warranty: '2 years',
+        careInstructions: 'Professional installation required, use 6x E27 LED max 8W',
+      },
     },
 
     // ── Storage (6) ──────────────────────────────────────────────────────
@@ -920,6 +1368,14 @@ async function main() {
       images: [PHOTOS.coatRack1],
       rating: 4.4,
       reviewCount: 26,
+      specs: {
+        material: 'Solid beech wood, steel hooks',
+        dimensions: '45x45x170 cm',
+        weight: '6.5 kg',
+        color: 'Natural Beech',
+        warranty: '2 years',
+        careInstructions: 'Wipe with dry cloth, do not overload hooks (max 3 kg each)',
+      },
     },
     {
       name: 'Seagrass Basket Set of 3',
@@ -932,6 +1388,14 @@ async function main() {
       images: [PHOTOS.storageBasket1, PHOTOS.storageBasket2],
       rating: 4.7,
       reviewCount: 59,
+      specs: {
+        material: 'Natural seagrass, genuine leather handles',
+        dimensions: '25x20/30x25/35x30 cm',
+        weight: '1.8 kg (set)',
+        color: 'Natural',
+        warranty: '1 year',
+        careInstructions: 'Keep dry, shake out dust, store nested when not in use',
+      },
     },
     {
       name: 'Floating Wall Shelf with Hooks',
@@ -944,6 +1408,14 @@ async function main() {
       images: [PHOTOS.wallHook1],
       rating: 4.5,
       reviewCount: 33,
+      specs: {
+        material: 'Solid oak shelf, steel hooks with black finish',
+        dimensions: '80x15x12 cm',
+        weight: '2.8 kg',
+        color: 'Oak / Black',
+        warranty: '2 years',
+        careInstructions: 'Max load 10 kg on shelf, 2 kg per hook, use wall anchors for drywall',
+      },
     },
     {
       name: '10-Tier Shoe Rack',
@@ -956,6 +1428,14 @@ async function main() {
       images: [PHOTOS.shoeRack1],
       rating: 4.2,
       reviewCount: 18,
+      specs: {
+        material: 'Powder-coated steel tubes, plastic connectors',
+        dimensions: '55x25x150 cm',
+        weight: '3.2 kg',
+        color: 'Black',
+        warranty: '2 years',
+        careInstructions: 'Wipe with damp cloth, ensure level ground for stability',
+      },
     },
     {
       name: 'Linen Storage Boxes Set of 4',
@@ -968,6 +1448,14 @@ async function main() {
       images: [PHOTOS.storageBox1],
       rating: 4.3,
       reviewCount: 42,
+      specs: {
+        material: 'Linen-cotton blend fabric, cardboard frame',
+        dimensions: '33x33x33 cm (each)',
+        weight: '0.5 kg (each)',
+        color: 'Grey',
+        warranty: '1 year',
+        careInstructions: 'Spot clean exterior, collapse flat for storage',
+      },
     },
     // Edge case: very long name
     {
@@ -981,6 +1469,15 @@ async function main() {
       images: [PHOTOS.sofa2, PHOTOS.sofa3, PHOTOS.sofa1],
       rating: 5.0,
       reviewCount: 2,
+      specs: {
+        material: 'Natural linen upholstery, solid oak frame, high-density foam',
+        dimensions: '320x200x90 cm',
+        weight: '85 kg',
+        color: 'Natural Linen',
+        warranty: '7 years',
+        careInstructions:
+          'Professional cleaning recommended, vacuum weekly, rotate cushions monthly',
+      },
     },
   ];
 
@@ -988,7 +1485,7 @@ async function main() {
     productData.map(p =>
       prisma.product.upsert({
         where: { slug: p.slug },
-        update: { images: p.images },
+        update: { images: p.images, specs: p.specs },
         create: p,
       })
     )
@@ -1206,6 +1703,34 @@ async function main() {
         amount: 50,
         type: TransactionType.TOPUP,
         description: 'Initial wallet top-up',
+      },
+    });
+  }
+
+  // ─── Addresses ────────────────────────────────────────────��────────────
+
+  const existingAddresses = await prisma.address.count({ where: { userId: userRegular.id } });
+  if (existingAddresses === 0) {
+    await prisma.address.create({
+      data: {
+        userId: userRegular.id,
+        name: 'Home',
+        street: '123 Birch Avenue, Apt 4B',
+        city: 'Stockholm',
+        zip: '114 35',
+        country: 'Sweden',
+        isDefault: true,
+      },
+    });
+    await prisma.address.create({
+      data: {
+        userId: userRegular.id,
+        name: 'Office',
+        street: '45 Kungsgatan, Floor 3',
+        city: 'Stockholm',
+        zip: '111 56',
+        country: 'Sweden',
+        isDefault: false,
       },
     });
   }

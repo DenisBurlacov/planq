@@ -48,6 +48,8 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  notificationPrefs  Json?
+
   refreshTokens      RefreshToken[]
   passwordResetTokens PasswordResetToken[]
   cart               Cart?
@@ -55,6 +57,7 @@ model User {
   reviews            Review[]
   wishlist           Wishlist[]
   transactions       Transaction[]
+  addresses          Address[]
 }
 
 model PasswordResetToken {
@@ -107,6 +110,8 @@ model Product {
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  specs       Json?
 
   category   Category    @relation(fields: [categoryId], references: [id])
   cartItems  CartItem[]
@@ -220,6 +225,23 @@ model Transaction {
   createdAt   DateTime        @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Address {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  street    String
+  city      String
+  zip       String
+  country   String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
