@@ -563,6 +563,7 @@ export function ProfilePage() {
             onConfirm={handleSaveAddress}
             onCancel={() => setAddressModalOpen(false)}
             confirmLabel={t('common:actions.save', { ns: 'common' })}
+            cancelLabel={t('common:actions.cancel', { ns: 'common' })}
             loading={savingAddress}
           >
             <div data-testid="address-modal">
@@ -662,6 +663,7 @@ export function ProfilePage() {
             onConfirm={handleDeleteAddress}
             onCancel={() => setDeleteAddress(null)}
             confirmLabel={t('addresses.delete')}
+            cancelLabel={t('common:actions.cancel', { ns: 'common' })}
             danger
           >
             <p>

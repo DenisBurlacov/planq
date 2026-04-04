@@ -68,7 +68,7 @@ export async function createNotification(
   });
 
   // Broadcast via WS
-  wsServer.sendToUser(userId, 'notification', notification);
+  wsServer.sendToUser(userId, 'notification.new', notification);
 
   return notification;
 }

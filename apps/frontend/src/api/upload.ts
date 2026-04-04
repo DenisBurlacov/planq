@@ -25,15 +25,20 @@ async function uploadFetch<T>(path: string, body: FormData): Promise<T> {
 }
 
 export const uploadApi = {
-  avatar: (file: File) => {
+  avatar: async (file: File) => {
     const form = new FormData();
     form.append('avatar', file);
-    return uploadFetch<{ url: string }>('/api/v1/profile/avatar', form);
+    const profile = await uploadFetch<{ avatar: string | null }>('/api/v1/profile/avatar', form);
+    return { url: profile.avatar ?? '' };
   },
 
-  productImages: (productId: string, files: File[]) => {
+  productImages: async (productId: string, files: File[]) => {
     const form = new FormData();
     files.forEach(f => form.append('images', f));
-    return uploadFetch<{ urls: string[] }>(`/api/v1/admin/products/${productId}/images`, form);
+    const product = await uploadFetch<{ images: string[] }>(
+      `/api/v1/admin/products/${productId}/images`,
+      form
+    );
+    return { urls: product.images };
   },
 };

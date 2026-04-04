@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface RangeSliderProps {
   min: number;
@@ -19,6 +20,7 @@ export function RangeSlider({
   formatLabel = v => String(v),
   'data-testid': testId,
 }: RangeSliderProps) {
+  const { t } = useTranslation('catalog');
   const [localMin, setLocalMin] = useState(value[0]);
   const [localMax, setLocalMax] = useState(value[1]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,7 +79,7 @@ export function RangeSlider({
           value={localMin}
           onChange={handleMinChange}
           className="absolute w-full h-6 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--slider-fill)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--slider-fill)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow [&::-moz-range-thumb]:cursor-pointer"
-          aria-label="Minimum"
+          aria-label={t('rangeSlider.min', { value: localMin })}
         />
         {/* Max handle */}
         <input
@@ -89,7 +91,7 @@ export function RangeSlider({
           value={localMax}
           onChange={handleMaxChange}
           className="absolute w-full h-6 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--slider-fill)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--slider-fill)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow [&::-moz-range-thumb]:cursor-pointer"
-          aria-label="Maximum"
+          aria-label={t('rangeSlider.max', { value: localMax })}
         />
       </div>
     </div>

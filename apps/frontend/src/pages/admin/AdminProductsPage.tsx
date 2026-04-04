@@ -144,8 +144,13 @@ export function AdminProductsPage() {
   };
 
   const handleSubmit = () => {
+    const slug = formName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
     const input: AdminProductInput = {
       name: formName,
+      slug,
       description: formDesc,
       price: Number(formPrice),
       salePrice: formSalePrice ? Number(formSalePrice) : null,
@@ -537,6 +542,8 @@ export function AdminProductsPage() {
         open={!!deleteTarget}
         title={t('products.deleteProduct')}
         danger
+        confirmLabel={t('common:actions.delete', { ns: 'common' })}
+        cancelLabel={t('common:actions.cancel', { ns: 'common' })}
         onConfirm={() => deleteTarget && deleteMut.mutate(deleteTarget.id)}
         onCancel={() => setDeleteTarget(null)}
       >
@@ -548,6 +555,8 @@ export function AdminProductsPage() {
         open={bulkDeleteOpen}
         title={t('products.bulkDelete')}
         danger
+        confirmLabel={t('common:actions.delete', { ns: 'common' })}
+        cancelLabel={t('common:actions.cancel', { ns: 'common' })}
         onConfirm={() => bulkDeleteMut.mutate(Array.from(selectedIds))}
         onCancel={() => setBulkDeleteOpen(false)}
       >

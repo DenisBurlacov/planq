@@ -62,7 +62,7 @@ export function CartPage() {
       await cartApi.update(productId, newQty);
       await qc.invalidateQueries({ queryKey: ['cart'] });
     } catch {
-      toast('error', 'Failed to update');
+      toast('error', t('cart.failedUpdate'));
     } finally {
       setUpdatingItem(null);
     }
@@ -73,9 +73,9 @@ export function CartPage() {
     try {
       await cartApi.remove(productId);
       await qc.invalidateQueries({ queryKey: ['cart'] });
-      toast('success', 'Item removed');
+      toast('success', t('cart.itemRemoved'));
     } catch {
-      toast('error', 'Failed to remove');
+      toast('error', t('cart.failedRemove'));
     } finally {
       setUpdatingItem(null);
     }
@@ -87,9 +87,9 @@ export function CartPage() {
     try {
       const result = await promotionsApi.validate(promoCode, subtotal);
       setPromoDiscount(result.discountPercent);
-      toast('success', `Promo applied: ${result.discountPercent}% off`);
+      toast('success', t('cart.promoApplied', { percent: result.discountPercent }));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Invalid promo code');
+      toast('error', err instanceof ApiException ? err.message : t('cart.invalidPromo'));
     } finally {
       setApplyingPromo(false);
     }

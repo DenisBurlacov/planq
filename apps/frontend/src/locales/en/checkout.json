@@ -15,7 +15,12 @@
     "removeConfirmBody": "Are you sure you want to remove this item from your cart?",
     "removeConfirmYes": "Remove",
     "removeConfirmNo": "Keep",
-    "checkout": "Proceed to Checkout"
+    "checkout": "Proceed to Checkout",
+    "failedUpdate": "Failed to update quantity",
+    "failedRemove": "Failed to remove item",
+    "itemRemoved": "Item removed",
+    "invalidPromo": "Invalid promo code",
+    "promoApplied": "Promo applied: {{percent}}% off"
   },
   "steps": {
     "address": "Shipping",
@@ -34,6 +39,8 @@
     "enterNew": "Enter new address",
     "useSaved": "Use saved address",
     "newAddress": "New address",
+    "city": "City",
+    "zip": "ZIP",
     "country": "Country",
     "searchCountry": "Search country..."
   },

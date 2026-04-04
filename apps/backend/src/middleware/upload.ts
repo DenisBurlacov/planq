@@ -15,8 +15,9 @@ for (const dir of [UPLOADS_DIR, AVATARS_DIR, PRODUCTS_DIR]) {
   }
 }
 
-const ALLOWED_MIMES = ['image/jpeg', 'image/png'];
-const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_PRODUCT_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
 function createStorage(destination: string) {
   return multer.diskStorage({
@@ -39,19 +40,19 @@ function fileFilter(
   if (ALLOWED_MIMES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new AppError('INVALID_FILE_TYPE', 'Only JPG and PNG files are allowed', 400));
+    cb(new AppError('INVALID_FILE_TYPE', 'Only JPG, PNG, and WebP files are allowed', 400));
   }
 }
 
 const avatarUpload = multer({
   storage: createStorage(AVATARS_DIR),
-  limits: { fileSize: MAX_SIZE },
+  limits: { fileSize: MAX_AVATAR_SIZE },
   fileFilter,
 });
 
 const productImagesUpload = multer({
   storage: createStorage(PRODUCTS_DIR),
-  limits: { fileSize: MAX_SIZE },
+  limits: { fileSize: MAX_PRODUCT_IMAGE_SIZE },
   fileFilter,
 });
 

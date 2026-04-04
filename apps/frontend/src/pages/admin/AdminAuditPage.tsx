@@ -40,7 +40,9 @@ export function AdminAuditPage() {
     {
       key: 'user',
       header: t('audit.user'),
-      render: row => <span className="text-sm font-medium">{row.userName}</span>,
+      render: row => (
+        <span className="text-sm font-medium">{row.user?.name ?? row.userName ?? '\u2014'}</span>
+      ),
     },
     {
       key: 'action',

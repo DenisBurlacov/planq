@@ -321,6 +321,8 @@ export function AdminOrdersPage() {
       <Modal
         open={bulkStatusOpen}
         title={t('orders.bulkStatus')}
+        confirmLabel={tc('actions.save')}
+        cancelLabel={tc('actions.cancel')}
         onConfirm={() =>
           bulkStatusMut.mutate({ ids: Array.from(selectedIds), status: bulkNewStatus })
         }

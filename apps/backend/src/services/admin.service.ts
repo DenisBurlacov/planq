@@ -16,6 +16,7 @@ export const AdminOrdersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: z.nativeEnum(OrderStatus).optional(),
+  search: z.string().optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
 });
@@ -170,6 +171,7 @@ export async function listOrders(
   page: number,
   limit: number,
   status?: OrderStatus,
+  search?: string,
   dateFrom?: string,
   dateTo?: string
 ) {
@@ -178,6 +180,12 @@ export async function listOrders(
   const where = {
     deletedAt: null,
     ...(status && { status }),
+    ...(search && {
+      OR: [
+        { id: { contains: search, mode: 'insensitive' as const } },
+        { shippingAddress: { contains: search, mode: 'insensitive' as const } },
+      ],
+    }),
     ...((dateFrom || dateTo) && {
       createdAt: {
         ...(dateFrom && { gte: new Date(dateFrom) }),

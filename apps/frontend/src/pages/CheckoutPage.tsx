@@ -265,14 +265,14 @@ export function CheckoutPage() {
                     data-testid="checkout-city"
                     value={newAddress.city}
                     onChange={e => setNewAddress(a => ({ ...a, city: e.target.value }))}
-                    placeholder="City"
+                    placeholder={t('address.city')}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                   <input
                     data-testid="checkout-zip"
                     value={newAddress.zip}
                     onChange={e => setNewAddress(a => ({ ...a, zip: e.target.value }))}
-                    placeholder="ZIP"
+                    placeholder={t('address.zip')}
                     className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                   />
                 </div>

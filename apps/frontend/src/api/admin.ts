@@ -12,6 +12,7 @@ import type {
 
 export interface AdminProductInput {
   name: string;
+  slug: string;
   description: string;
   price: number;
   salePrice?: number | null;

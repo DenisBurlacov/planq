@@ -319,10 +319,9 @@ router.delete(
  */
 router.get('/orders', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, status, dateFrom, dateTo } = adminService.AdminOrdersQuerySchema.parse(
-      req.query
-    );
-    ok(res, await adminService.listOrders(page, limit, status, dateFrom, dateTo));
+    const { page, limit, status, search, dateFrom, dateTo } =
+      adminService.AdminOrdersQuerySchema.parse(req.query);
+    ok(res, await adminService.listOrders(page, limit, status, search, dateFrom, dateTo));
   } catch (err) {
     next(err);
   }

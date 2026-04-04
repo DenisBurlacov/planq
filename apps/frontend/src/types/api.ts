@@ -145,7 +145,8 @@ export interface Notification {
 export interface AuditLogEntry {
   id: string;
   userId: string;
-  userName: string;
+  userName?: string;
+  user?: { id: string; name: string; email: string };
   action: string;
   resource: string;
   details: string | null;
