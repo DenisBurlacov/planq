@@ -127,9 +127,11 @@ export function Modal({
           {children}
         </div>
         <div className="flex justify-end gap-3">
-          <Button variant="ghost" size="sm" onClick={onCancel} data-testid="modal-cancel">
-            {cancelLabel}
-          </Button>
+          {cancelLabel && (
+            <Button variant="ghost" size="sm" onClick={onCancel} data-testid="modal-cancel">
+              {cancelLabel}
+            </Button>
+          )}
           <Button
             variant={danger ? 'danger' : 'primary'}
             size="sm"

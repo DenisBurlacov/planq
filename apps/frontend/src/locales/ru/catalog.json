@@ -52,7 +52,13 @@
     "warranty": "Гарантия",
     "sizeGuide": "Таблица размеров",
     "viewFullDetails": "Все подробности",
-    "specifications": "Характеристики"
+    "specifications": "Характеристики",
+    "productType": "Тип товара",
+    "size": "Размер",
+    "width": "Ш",
+    "depth": "Г",
+    "height": "В",
+    "dimensionsNote": "Все размеры указаны в сантиметрах."
   },
   "compare": {
     "title": "Сравнение товаров",

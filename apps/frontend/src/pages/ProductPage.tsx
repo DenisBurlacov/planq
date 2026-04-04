@@ -211,12 +211,15 @@ export function ProductPage() {
         title={t('product.sizeGuide', { defaultValue: 'Size Guide' })}
         onConfirm={() => setSizeGuideOpen(false)}
         onCancel={() => setSizeGuideOpen(false)}
-        confirmLabel="Close"
-        cancelLabel="Close"
+        confirmLabel={t('common:actions.cancel', { defaultValue: 'Close' })}
+        cancelLabel=""
       >
         <div data-testid="size-guide-modal">
           <p className="text-sm text-[var(--text-secondary)] mb-3">
-            Product Type: {product.category?.name ?? 'Furniture'}
+            {t('product.productType', { defaultValue: 'Product Type' })}:{' '}
+            {product.category
+              ? t(`categories.${product.category.slug}`, { defaultValue: product.category.name })
+              : t('common:nav.catalog')}
           </p>
           <table
             data-testid="size-guide-table"
@@ -224,10 +227,14 @@ export function ProductPage() {
           >
             <thead>
               <tr className="bg-[var(--table-header-bg)]">
-                <th className="px-3 py-2 text-left">Size</th>
-                <th className="px-3 py-2 text-left">W</th>
-                <th className="px-3 py-2 text-left">D</th>
-                <th className="px-3 py-2 text-left">H</th>
+                <th className="px-3 py-2 text-left">
+                  {t('product.size', { defaultValue: 'Size' })}
+                </th>
+                <th className="px-3 py-2 text-left">{t('product.width', { defaultValue: 'W' })}</th>
+                <th className="px-3 py-2 text-left">{t('product.depth', { defaultValue: 'D' })}</th>
+                <th className="px-3 py-2 text-left">
+                  {t('product.height', { defaultValue: 'H' })}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -258,7 +265,7 @@ export function ProductPage() {
             </tbody>
           </table>
           <p className="text-xs text-[var(--text-secondary)] mt-3">
-            All dimensions in centimeters.
+            {t('product.dimensionsNote', { defaultValue: 'All dimensions in centimeters.' })}
           </p>
         </div>
       </Modal>

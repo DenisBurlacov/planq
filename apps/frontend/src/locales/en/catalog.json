@@ -52,7 +52,13 @@
     "warranty": "Warranty",
     "sizeGuide": "Size Guide",
     "viewFullDetails": "View Full Details",
-    "specifications": "Specifications"
+    "specifications": "Specifications",
+    "productType": "Product Type",
+    "size": "Size",
+    "width": "W",
+    "depth": "D",
+    "height": "H",
+    "dimensionsNote": "All dimensions in centimeters."
   },
   "compare": {
     "title": "Compare Products",
