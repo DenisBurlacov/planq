@@ -9,7 +9,9 @@ interface UseWebSocketOptions {
   enabled?: boolean;
 }
 
-const WS_URL = import.meta.env.VITE_WS_URL as string;
+const WS_URL =
+  (import.meta.env.VITE_WS_URL as string) ||
+  `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
 const MAX_RETRIES = 5;
 const BASE_DELAY = 1000;
 

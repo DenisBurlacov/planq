@@ -11,6 +11,9 @@ RUN pnpm install --frozen-lockfile --filter @planq/frontend --filter @planq/type
 COPY tsconfig.base.json ./
 COPY apps/frontend/ apps/frontend/
 COPY packages/types/ packages/types/
+
+ENV VITE_API_URL=""
+ENV VITE_WS_URL=""
 RUN pnpm --filter @planq/frontend run build
 
 # Production stage
