@@ -10,12 +10,18 @@ export function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
           <div className="col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <div className="grid grid-cols-2 gap-0.5">
-                <div className="h-2.5 w-2.5 rounded-sm bg-accent" />
-                <div className="h-2.5 w-2.5 rounded-sm bg-accent/60" />
-                <div className="h-2.5 w-2.5 rounded-sm bg-accent/60" />
-                <div className="h-2.5 w-2.5 rounded-sm bg-accent/30" />
-              </div>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-accent"
+              >
+                <rect x="2" y="2" width="9" height="9" rx="1" />
+                <rect x="13" y="2" width="9" height="9" rx="1" opacity="0.6" />
+                <rect x="2" y="13" width="9" height="9" rx="1" opacity="0.6" />
+                <rect x="13" y="13" width="9" height="9" rx="1" opacity="0.3" />
+              </svg>
               <span className="font-bold text-[var(--text-primary)]">PLANQ</span>
             </div>
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
