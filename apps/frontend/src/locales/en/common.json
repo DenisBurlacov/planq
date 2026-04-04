@@ -8,7 +8,18 @@
     "login": "Sign In",
     "logout": "Sign Out",
     "register": "Sign Up",
-    "admin": "Admin"
+    "admin": "Admin",
+    "home": "Home",
+    "support": "Support"
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "We're here to help. Choose how you'd like to reach us.",
+    "email": "Email",
+    "chat": "Live Chat",
+    "chatDesc": "Available Mon–Fri, 9–17 CET",
+    "hours": "Working Hours",
+    "hoursDesc": "Mon–Fri: 9:00–17:00 CET"
   },
   "dismissNotification": "Dismiss notification",
   "actions": {

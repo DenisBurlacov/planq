@@ -100,7 +100,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  to="/catalog"
+                  to="/support"
                   data-testid="footer-support-link"
                   className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 >

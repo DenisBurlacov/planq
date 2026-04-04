@@ -8,7 +8,18 @@
     "login": "Войти",
     "logout": "Выйти",
     "register": "Регистрация",
-    "admin": "Админ"
+    "admin": "Админ",
+    "home": "Главная",
+    "support": "Поддержка"
+  },
+  "support": {
+    "title": "Поддержка",
+    "subtitle": "Мы готовы помочь. Выберите удобный способ связи.",
+    "email": "Email",
+    "chat": "Онлайн-чат",
+    "chatDesc": "Пн–Пт, 9–17 CET",
+    "hours": "Часы работы",
+    "hoursDesc": "Пн–Пт: 9:00–17:00 CET"
   },
   "dismissNotification": "Закрыть уведомление",
   "actions": {
