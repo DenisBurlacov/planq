@@ -8,7 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- **Support page** — new `/support` page with email, chat, and business hours contact cards
+- **Password visibility toggle** — `Input` component shows eye icon to toggle password visibility on `type="password"` fields
+- **Footer support link** — footer now links to `/support` page
+
+### Fixed
+
+- **Footer logo** — matched with navbar SVG icon (was using a different icon)
+- **Wishlist API** — frontend adapted to paginated response format from backend
+- **Docker: frontend VITE_API_URL** — fixed for Docker environment using nginx proxy
+- **Docker: Postgres healthcheck** — corrected database name in healthcheck command
+- **Docker: backend runner** — switched to `tsx` to resolve TypeScript path aliases at runtime
+- **Docker: Husky** — disabled Husky during Docker build
+- **Docker: backend Dockerfile** — install prod deps in production stage
+- **Docker: Prisma generate** — added `prisma generate` before backend build
+- **CI: Playwright** — added `@playwright/test` dependency, fixed lowercase Docker tags
 
 ---
 
@@ -20,7 +36,7 @@ _No unreleased changes._
 - **Admin components** — `AdminLayout` (sidebar navigation), `AdminRoute` (role-based route guard), `DataTable` (sortable, paginated), `StatCard` (dashboard metrics)
 - **Password reset flow** — `POST /auth/forgot-password` and `POST /auth/reset-password` endpoints; `PasswordResetToken` model
 - **Role-based access control** — `Role` enum (`USER`/`ADMIN`) on User model; admin middleware on backend; `AdminRoute` guard on frontend
-- **Rate limiting** — 100 req/min global, 20 req/min on auth endpoints (raised to 1000 in test env)
+- **Rate limiting** — 100 req/min global, 5 req/15min on auth endpoints (raised in test env)
 - **Shared types package** — `@planq/types` for TypeScript types used by both frontend and backend
 - **Playwright E2E test setup** — `playwright.config.ts`, Chromium + Firefox projects, `tests/e2e/` directory
 - **Docker health checks** — backend and database containers now have health check probes

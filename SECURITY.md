@@ -15,7 +15,8 @@ We will respond within 5 business days.
 
 | Version        | Supported |
 | -------------- | --------- |
-| 1.0.x (latest) | ✅ Yes    |
+| 1.1.x (latest) | ✅ Yes    |
+| 1.0.x          | ✅ Yes    |
 | < 1.0.0        | ❌ No     |
 
 ## Security Practices
@@ -28,7 +29,7 @@ We will respond within 5 business days.
 
 ### API
 
-- Rate limiting on all authentication endpoints
+- Global rate limiting (100 req/min) and stricter auth rate limiting (5 req/15min)
 - Input validation with Zod on every route
 - CORS restricted to configured allowed origins
 - HTTP security headers via `helmet`

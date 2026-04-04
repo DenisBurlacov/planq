@@ -16,7 +16,8 @@ PLANQ is a full-stack web application with a realistic e-commerce flow: product 
 | **User account**    | Register · login · profile tabs · wallet top-up · order history · password reset   |
 | **Admin panel**     | Dashboard with stats · product CRUD · order management · user management           |
 | **Wishlist**        | Add/remove · persisted per user                                                    |
-| **Auth & Security** | Role-based access (USER/ADMIN) · rate limiting (100 req/min, 20 on auth)           |
+| **Support**         | Support page with contact info (`/support`)                                        |
+| **Auth & Security** | Role-based access (USER/ADMIN) · rate limiting (100 req/min, 5/15min on auth)      |
 | **Monitoring**      | Grafana + Loki + Promtail — optional Docker Compose profile                        |
 | **i18n**            | English / Russian toggle                                                           |
 | **Dark mode**       | Full light/dark theme                                                              |
@@ -29,7 +30,9 @@ PLANQ is a full-stack web application with a realistic e-commerce flow: product 
 # 1. Clone & install
 git clone git@github.com:DenisBurlacov/Planq.git
 cd Planq
+cp .env.example .env
 cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
 pnpm install
 
 # 2. Start all services (PostgreSQL + backend + frontend)
@@ -99,15 +102,18 @@ Planq/
 │   │   ├── src/
 │   │   │   ├── pages/
 │   │   │   │   ├── admin/         # Admin panel pages (Dashboard, Products, Orders, Users)
-│   │   │   │   └── ...            # Public pages (Home, Catalog, Cart, etc.)
+│   │   │   │   └── ...            # Public pages (Home, Catalog, Cart, Support, etc.)
 │   │   │   └── components/
 │   │   │       ├── layout/        # Navbar, Footer, AdminLayout, AdminRoute, ProtectedRoute
 │   │   │       └── ui/            # Button, Input, Modal, DataTable, StatCard, etc.
 │   │   └── tests/e2e/             # Playwright E2E tests
 │   └── backend/           # Express API + Prisma
-│       └── src/routes/
-│           ├── admin/             # Admin CRUD routes (products, orders, users)
-│           └── ...                # Public routes (auth, products, cart, etc.)
+│       └── src/
+│           ├── routes/            # Express routers (auth, products, cart, admin, etc.)
+│           ├── controllers/       # Route handlers
+│           ├── services/          # Business logic layer
+│           ├── middleware/         # auth, adminAuth, error handler, rate limiter, validation
+│           └── ws/                # WebSocket server
 ├── packages/
 │   └── types/             # Shared TypeScript types (@planq/types)
 ├── docker/
@@ -138,9 +144,9 @@ pnpm --filter @planq/backend db:seed   # Seed database
 pnpm --filter @planq/backend db:reset  # Reset + re-seed database
 
 # E2E tests (Playwright — requires running backend + frontend)
-pnpm --filter @planq/frontend exec playwright test              # Run all E2E tests
-pnpm --filter @planq/frontend exec playwright test --ui         # Open Playwright UI
-pnpm --filter @planq/frontend exec playwright test --project=chromium  # Chromium only
+cd apps/frontend && npx playwright test              # Run all E2E tests
+cd apps/frontend && npx playwright test --ui         # Open Playwright UI
+cd apps/frontend && npx playwright test --project=chromium  # Chromium only
 ```
 
 ---
@@ -169,9 +175,11 @@ PLANQ is designed to be automation-friendly:
 ## Быстрый старт (RU)
 
 ```bash
-git clone git@github.com:DenisBurlacov/Planq.git
-cd Planq
+git clone git@github.com:DenisBurlacov/planq.git
+cd planq
+cp .env.example .env
 cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
 pnpm install
 docker compose up
 pnpm --filter @planq/backend db:seed

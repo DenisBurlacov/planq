@@ -27,7 +27,8 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | `nav-orders-link`    | `<Link>`   | "Orders" link inside dropdown                 |
 | `nav-logout-button`  | `<button>` | Logout button inside dropdown                 |
 | `nav-login-button`   | `<Link>`   | "Sign in" button (guest only)                 |
-| `nav-admin-link`     | `<Link>`   | "Admin" link (visible to ADMIN role only)     |
+| `nav-admin`          | `<Link>`   | "Admin" link, desktop (visible to ADMIN only) |
+| `nav-admin-mobile`   | `<Link>`   | "Admin" link, mobile menu (ADMIN only)        |
 
 ---
 
@@ -52,16 +53,10 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 
 | Locator                    | Element                  | Notes                                                          |
 | -------------------------- | ------------------------ | -------------------------------------------------------------- |
-| `search-input`             | `<input>`                | Product search input                                           |
-| `sort-select`              | `<select>`               | Sort dropdown                                                  |
-| `filter-sale`              | `<input[type=checkbox]>` | "On Sale" filter checkbox                                      |
-| `filter-stock`             | `<input[type=checkbox]>` | "In Stock" filter checkbox                                     |
 | `category-filter`          | `<div>`                  | Container for category checkboxes                              |
 | `category-checkbox-{slug}` | `<input[type=checkbox]>` | Individual category checkbox, e.g. `category-checkbox-bedroom` |
-| `product-grid`             | `<div>`                  | Products grid                                                  |
-| `pagination-prev`          | `<button>`               | Previous page button                                           |
-| `pagination-next`          | `<button>`               | Next page button                                               |
-| `empty-state`              | `<div>`                  | Shown when no products match                                   |
+
+> **Note:** The search input, sort select, filter checkboxes (sale/stock), product grid, and pagination buttons do not currently have `data-testid` attributes. Use semantic selectors (`aria-label`, `role`, element type) for these elements.
 
 ---
 
@@ -118,15 +113,15 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 
 ### CheckoutPage (`/checkout`)
 
-| Locator              | Element               | Notes                                          |
-| -------------------- | --------------------- | ---------------------------------------------- |
-| `breadcrumb`         | `<nav>`               | Home → Cart → Checkout breadcrumb              |
-| `checkout-title`     | `<h1>`                | "Checkout" heading                             |
-| `address-input`      | `<input>`             | Shipping address field                         |
-| `payment-card`       | `<input[type=radio]>` | Card payment option                            |
-| `payment-wallet`     | `<input[type=radio]>` | Wallet payment option                          |
-| `card-number-input`  | `<input>`             | Card number field (visible when CARD selected) |
-| `place-order-button` | `<button>`            | Submit / place order button                    |
+| Locator                | Element    | Notes                                          |
+| ---------------------- | ---------- | ---------------------------------------------- |
+| `breadcrumb`           | `<nav>`    | Home → Cart → Checkout breadcrumb              |
+| `checkout-title`       | `<h1>`     | "Checkout" heading                             |
+| `checkout-address`     | `<input>`  | Shipping address field                         |
+| `payment-card`         | `<label>`  | Card payment option (radio inside)             |
+| `payment-wallet`       | `<label>`  | Wallet payment option (radio inside)           |
+| `checkout-card-number` | `<input>`  | Card number field (visible when CARD selected) |
+| `place-order-button`   | `<button>` | Submit / place order button                    |
 
 ---
 
@@ -158,6 +153,85 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | `orders-list` | `<div>` | Order list wrapper (absent when empty) |
 | `order-item`  | `<a>`   | Single order row link (multiple)       |
 | `empty-state` | `<div>` | Empty orders state                     |
+
+---
+
+### LoginPage (`/login`)
+
+| Locator               | Element    | Notes                                                           |
+| --------------------- | ---------- | --------------------------------------------------------------- |
+| `login-title`         | `<h1>`     | "Sign In" heading                                               |
+| `login-form`          | `<form>`   | Login form                                                      |
+| `login-email`         | `<input>`  | Email input                                                     |
+| `login-password`      | `<input>`  | Password input                                                  |
+| `login-error`         | `<p>`      | Server error message (absent when no error)                     |
+| `login-submit`        | `<button>` | Submit button                                                   |
+| `register-link`       | `<Link>`   | Link to register page                                           |
+| `demo-accounts`       | `<div>`    | Demo accounts panel (only when VITE_SHOW_TEST_CREDENTIALS=true) |
+| `demo-account-{name}` | `<button>` | Quick-fill demo account, e.g. `demo-account-user`               |
+
+---
+
+### RegisterPage (`/register`)
+
+| Locator             | Element    | Notes                                 |
+| ------------------- | ---------- | ------------------------------------- |
+| `register-title`    | `<h1>`     | "Create Account" heading              |
+| `register-form`     | `<form>`   | Registration form                     |
+| `register-name`     | `<input>`  | Name input                            |
+| `register-email`    | `<input>`  | Email input                           |
+| `register-password` | `<input>`  | Password input                        |
+| `register-error`    | `<p>`      | Server error message (absent when ok) |
+| `register-submit`   | `<button>` | Submit button                         |
+
+---
+
+### SupportPage (`/support`)
+
+| Locator         | Element | Notes               |
+| --------------- | ------- | ------------------- |
+| `support-title` | `<h1>`  | Page title          |
+| `support-email` | `<div>` | Email contact card  |
+| `support-chat`  | `<div>` | Live chat card      |
+| `support-hours` | `<div>` | Business hours card |
+
+---
+
+### CheckoutProcessingPage (`/checkout/processing`)
+
+| Locator            | Element | Notes              |
+| ------------------ | ------- | ------------------ |
+| `processing-page`  | `<div>` | Page root          |
+| `processing-title` | `<h1>`  | Processing heading |
+
+---
+
+### CheckoutSuccessPage (`/checkout/success`)
+
+| Locator             | Element  | Notes                  |
+| ------------------- | -------- | ---------------------- |
+| `success-page`      | `<div>`  | Page root              |
+| `success-title`     | `<h1>`   | Success heading        |
+| `view-order-button` | `<Link>` | View order link button |
+
+---
+
+### CheckoutFailedPage (`/checkout/failed`)
+
+| Locator            | Element  | Notes                 |
+| ------------------ | -------- | --------------------- |
+| `failed-page`      | `<div>`  | Page root             |
+| `failed-title`     | `<h1>`   | Failed heading        |
+| `try-again-button` | `<Link>` | Try again link button |
+
+---
+
+### OrderDetailPage (`/orders/:id`)
+
+| Locator        | Element  | Notes                  |
+| -------------- | -------- | ---------------------- |
+| `order-detail` | `<div>`  | Order detail container |
+| `order-status` | `<span>` | Order status badge     |
 
 ---
 
@@ -200,6 +274,8 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | `stat-card-active-users`   | `<div>`  | Active Users stat card          |
 | `stat-value`               | `<span>` | Metric value (inside each card) |
 | `stat-change`              | `<span>` | Change badge (inside each card) |
+| `recent-orders-table`      | `<div>`  | Recent orders DataTable         |
+| `order-badge-{id}`         | `<span>` | Order status badge per row      |
 
 ---
 
@@ -222,7 +298,9 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | ------------------------------- | ---------- | ------------------------------------------- |
 | `order-filter-status`           | `<select>` | Status filter dropdown                      |
 | `order-filter-search`           | `<input>`  | Search input                                |
+| `orders-table`                  | `<div>`    | DataTable container                         |
 | `order-status-select-{orderId}` | `<select>` | Inline status update dropdown per order row |
+| `order-badge-{id}`              | `<span>`   | Order status badge per row                  |
 
 ---
 
@@ -231,6 +309,9 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | Locator             | Element    | Notes                                    |
 | ------------------- | ---------- | ---------------------------------------- |
 | `user-search-input` | `<input>`  | Search by name or email                  |
+| `users-table`       | `<div>`    | DataTable container                      |
+| `user-role-{id}`    | `<span>`   | Role badge per user row                  |
+| `user-status-{id}`  | `<span>`   | Status badge per user row                |
 | `block-user-{id}`   | `<button>` | Block user button (non-admin users only) |
 | `unblock-user-{id}` | `<button>` | Unblock user button (blocked users only) |
 
@@ -261,6 +342,23 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 ---
 
 ## Shared Components
+
+### `<AddToCartModal>`
+
+| Locator                     | Element    | Notes                        |
+| --------------------------- | ---------- | ---------------------------- |
+| `add-to-cart-modal-overlay` | `<div>`    | Backdrop overlay             |
+| `add-to-cart-modal`         | `<div>`    | Modal dialog container       |
+| `add-to-cart-modal-close`   | `<button>` | Close button (top-right)     |
+| `add-to-cart-modal-name`    | `<h3>`     | Product name heading         |
+| `modal-quantity-minus`      | `<button>` | Decrease quantity button     |
+| `modal-quantity-value`      | `<span>`   | Current quantity value       |
+| `modal-quantity-plus`       | `<button>` | Increase quantity button     |
+| `modal-total-price`         | `<span>`   | Total price display          |
+| `modal-cancel-button`       | `<button>` | Cancel / "No, thanks" button |
+| `modal-confirm-add`         | `<button>` | Confirm "Add to Cart" button |
+
+---
 
 ### `<ProductCard>`
 
@@ -304,6 +402,35 @@ This document lists all `data-testid` attributes used throughout the frontend, o
 | `accordion-item-{index}`    | `<div>`    | Item wrapper                          |
 | `accordion-trigger-{index}` | `<button>` | Toggle button (aria-expanded)         |
 | `accordion-content-{index}` | `<div>`    | Content panel (absent when collapsed) |
+
+---
+
+### `<Footer>`
+
+| Locator               | Element  | Notes                    |
+| --------------------- | -------- | ------------------------ |
+| `footer-support-link` | `<Link>` | Support page link        |
+| `footer-500-link`     | `<Link>` | Server Error (test) link |
+| `footer-signin-link`  | `<Link>` | Sign In link             |
+
+---
+
+### `<Toast>`
+
+| Locator           | Element | Notes                                  |
+| ----------------- | ------- | -------------------------------------- |
+| `toast-container` | `<div>` | Toast notifications wrapper            |
+| `toast-{type}`    | `<div>` | Individual toast, e.g. `toast-success` |
+
+---
+
+### `<Input>` (password visibility toggle)
+
+| Locator                  | Element    | Notes                                                        |
+| ------------------------ | ---------- | ------------------------------------------------------------ |
+| `{id}-toggle-visibility` | `<button>` | Password show/hide toggle, e.g. `password-toggle-visibility` |
+
+> The toggle button `data-testid` is derived from the input's `id` prop. If `id="password"`, the testid is `password-toggle-visibility`. If no `id` is provided, it falls back to `password-toggle-visibility`.
 
 ---
 

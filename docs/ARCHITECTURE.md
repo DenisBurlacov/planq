@@ -39,12 +39,14 @@ Planq/
 │       │   ├── migrations/       # Prisma migrate history
 │       │   └── seed.ts           # Deterministic seed (10 categories, 62 products)
 │       └── src/
-│           ├── routes/
-│           │   ├── admin/        # Admin CRUD routers (products, orders, users)
-│           │   └── ...           # Public routers (auth, products, cart, orders…)
+│           ├── routes/           # Express routers (auth, products, cart, admin…)
+│           ├── controllers/      # Route handlers
 │           ├── services/         # Business logic layer
-│           ├── middlewares/      # auth, error handler, rate-limiter
-│           └── index.ts          # App entry point
+│           ├── middleware/       # auth, adminAuth, error handler, requestId, validate
+│           ├── utils/            # Utility functions
+│           ├── ws/               # WebSocket server
+│           ├── app.ts            # Express app setup (middleware, routes, rate limiter)
+│           └── server.ts         # App entry point (HTTP + WS)
 ├── packages/
 │   └── types/                    # @planq/types — shared TS types (frontend + backend)
 ├── docker/
@@ -126,8 +128,9 @@ All requests go through `apiFetch()` in `src/api/client.ts`:
 ### API structure
 
 ```
+/health           healthcheck endpoint
 /api/v1/
-  auth/          register · login · refresh · logout · forgot-password · reset-password
+  auth/          register · login · refresh · logout · me · forgot-password · reset-password
   products/      list (paginated + filtered) · getById · stock
   categories/    list
   cart/          get · add · update · remove
@@ -157,30 +160,34 @@ Protected routes use `authMiddleware` which verifies the JWT and attaches `req.u
 
 ### Rate limiting
 
-| Scope                      | Limit        | Window   |
-| -------------------------- | ------------ | -------- |
-| Global (all public API)    | 100 requests | 1 minute |
-| Auth endpoints (`/auth/*`) | 20 requests  | 1 minute |
+| Scope                      | Limit        | Window     |
+| -------------------------- | ------------ | ---------- |
+| Global (all public API)    | 100 requests | 1 minute   |
+| Auth endpoints (`/auth/*`) | 5 requests   | 15 minutes |
 
-Rate limits are enforced per IP. In `NODE_ENV=test`, limits are raised to 1000 to avoid flaky tests.
+Rate limits are enforced per IP. In `NODE_ENV=test`, global limit is raised to 10,000 and auth limit to 1,000 to avoid flaky tests. Auth rate limit window and max are configurable via `RATE_LIMIT_WINDOW_MS` and `RATE_LIMIT_MAX_REQUESTS` environment variables.
 
 ### Database schema (key models)
 
 ```
 enum Role              USER | ADMIN
+enum OrderStatus       PENDING | PROCESSING | SHIPPED | DELIVERED | CANCELLED
+enum PaymentMethod     CARD | WALLET
+enum TransactionType   TOPUP | PURCHASE | REFUND
 
-User                   id · email · name · passwordHash · walletBalance · isBlocked · role(Role)
-Category               id · name · slug · image
-Product                id · name · slug · description · price · salePrice · stock · images[] · categoryId
-Cart                   id · userId
-CartItem               id · cartId · productId · quantity
-Order                  id · userId · status · totalAmount · shippingAddress · paymentMethod
+User                   id · email · password · name · avatar? · role(Role) · walletBalance · isBlocked · deletedAt?
+RefreshToken           id · token(unique) · userId · expiresAt
+PasswordResetToken     id · userId · token(unique) · expiresAt
+Category               id · name(unique) · slug(unique) · image?
+Product                id · name · slug(unique) · description · price · salePrice? · stock · categoryId · images[] · rating · reviewCount · deletedAt?
+Cart                   id · userId(unique)
+CartItem               id · cartId · productId · quantity (unique on [cartId, productId])
+Wishlist               id · userId · productId (unique on [userId, productId])
+Order                  id · userId · status(OrderStatus) · totalAmount · shippingAddress · paymentMethod · deletedAt?
 OrderItem              id · orderId · productId · quantity · priceAtOrder
-Review                 id · userId · productId · rating · comment
-Wishlist               id · userId · productId (direct User↔Product, unique on [userId, productId])
-PromoCode              id · code · discountPercent · validFrom · validUntil · minOrderAmount
-Transaction            id · userId · amount · type · description
-PasswordResetToken     id · userId · token(unique) · expiresAt · createdAt
+Review                 id · userId · productId · rating · comment? · deletedAt? (unique on [userId, productId])
+PromoCode              id · code(unique) · discountPercent · validFrom · validUntil · minOrderAmount? · maxUses · currentUses · isActive
+Transaction            id · userId · amount · type(TransactionType) · description? · orderId?
 ```
 
 ---
@@ -210,11 +217,11 @@ GitHub Actions workflow (`.github/workflows/ci.yml`):
 
 ```
 push/PR to develop or main
-  └── lint (ESLint)
-  └── typecheck (tsc --noEmit)
-  └── test (Jest — backend unit tests)
-  └── build (tsc + vite build)
-  └── docker push → GHCR (main branch only)
+  ├── lint & typecheck (ESLint + tsc --noEmit)
+  ├── test (Jest — backend unit tests, requires lint)    → uploads coverage artifact
+  ├── build (tsc + vite build, requires lint)
+  ├── e2e (Playwright — chromium + firefox, requires build, continue-on-error)  → uploads report artifact
+  └── docker push → GHCR (main branch push only, requires test + build)
 ```
 
 Branch protection: `develop` and `main` require CI to pass before merge.
@@ -223,7 +230,7 @@ Branch protection: `develop` and `main` require CI to pass before merge.
 
 ## Design System
 
-CSS custom properties defined in `index.css`:
+CSS custom properties defined in `src/styles/globals.css`:
 
 ```css
 --bg-page        Background page
@@ -234,6 +241,17 @@ CSS custom properties defined in `index.css`:
 --border         Border color
 --accent         Brand green (#2d6a4f)
 --accent-hover   Hover state
+
+/* Admin & table tokens */
+--bg-admin-sidebar        Admin sidebar background
+--bg-admin-sidebar-active Active admin nav item
+--admin-sidebar-width     Sidebar width (256px, collapsed: 64px)
+--stat-positive           Stat card positive trend
+--stat-negative           Stat card negative trend
+--stat-neutral            Stat card neutral
+--table-header-bg         Table header background
+--table-row-hover         Table row hover
+--table-stripe            Alternating row stripe
 ```
 
 Dark mode toggled via `data-theme="dark"` on `<html>` and persisted in localStorage via Zustand.

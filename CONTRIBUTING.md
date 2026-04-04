@@ -9,6 +9,7 @@ git clone git@github.com:DenisBurlacov/Planq.git
 cd Planq
 cp .env.example .env
 cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
 pnpm install
 docker compose up -d
 pnpm --filter @planq/backend db:migrate
@@ -85,7 +86,7 @@ pnpm typecheck                    # Type checking
 pnpm --filter @planq/backend test # Backend unit tests
 
 # E2E tests (requires running backend + frontend)
-pnpm --filter @planq/frontend exec playwright test
+cd apps/frontend && npx playwright test
 ```
 
 ---
@@ -105,4 +106,4 @@ Every interactive UI element must have a `data-testid` attribute. Follow these r
 ## Environment Variables
 
 - Never commit `.env` files. Use `.env.example` as a template.
-- When adding a new env var, update both `.env.example` (root) and `apps/backend/.env.example` with a comment explaining the variable.
+- When adding a new env var, update the relevant `.env.example` file(s): root, `apps/backend/.env.example`, and/or `apps/frontend/.env.example` with a comment explaining the variable.
