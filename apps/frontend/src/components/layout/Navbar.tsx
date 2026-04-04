@@ -390,7 +390,10 @@ export function Navbar() {
                       onClick={() => setMenuOpen(false)}
                       className="block px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                     >
-                      {cat.name}
+                      {t('catalog:categories.' + cat.slug, {
+                        ns: 'catalog',
+                        defaultValue: cat.name,
+                      })}
                     </Link>
                   ))}
                 </div>

@@ -72,10 +72,10 @@ export function ProductPage() {
     try {
       await cartApi.add(id ?? '', quantity);
       increment(quantity);
-      toast('success', 'Added to cart');
+      toast('success', t('product.addedToCart'));
       setCartModalOpen(false);
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
     } finally {
       setAddingToCart(false);
     }
@@ -95,14 +95,14 @@ export function ProductPage() {
       }
     } catch {
       setIsWishlisted(prev => !prev);
-      toast('error', 'Failed to update wishlist');
+      toast('error', t('product.failedUpdateWishlist'));
     }
   };
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!accessToken) {
-      toast('info', 'Please sign in');
+      toast('info', t('common:errors.unauthorized', { ns: 'common' }));
       return;
     }
     setSubmittingReview(true);
@@ -110,9 +110,9 @@ export function ProductPage() {
       await productsApi.createReview(id ?? '', reviewRating, reviewComment);
       await qc.invalidateQueries({ queryKey: ['reviews', id] });
       setReviewComment('');
-      toast('success', 'Review submitted');
+      toast('success', t('product.reviewSubmitted'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast('error', err instanceof ApiException ? err.message : t('product.failedSubmitReview'));
     } finally {
       setSubmittingReview(false);
     }
@@ -138,8 +138,8 @@ export function ProductPage() {
   const isOnSale = product.salePrice !== null;
 
   const breadcrumbItems = [
-    { label: 'Home', to: '/' },
-    { label: 'Catalog', to: '/catalog' },
+    { label: t('common:nav.home', { ns: 'common' }), to: '/' },
+    { label: t('common:nav.catalog', { ns: 'common' }), to: '/catalog' },
     ...(product.category
       ? [{ label: product.category.name, to: `/catalog?categoryId=${product.category.id}` }]
       : []),
@@ -155,39 +155,45 @@ export function ProductPage() {
     { label: t('product.weight', { defaultValue: 'Weight' }), value: '18.5 kg' },
     { label: t('product.color', { defaultValue: 'Color' }), value: 'Natural' },
     { label: t('product.warranty', { defaultValue: 'Warranty' }), value: '2 years' },
-    { label: 'SKU', value: product.id.slice(0, 8).toUpperCase() },
-    { label: 'Category', value: product.category?.name ?? '—' },
+    { label: t('product.sku'), value: product.id.slice(0, 8).toUpperCase() },
+    { label: t('product.category'), value: product.category?.name ?? '—' },
     {
-      label: 'Availability',
-      value: product.stock > 0 ? `In stock (${product.stock} units)` : 'Out of stock',
+      label: t('product.availability'),
+      value:
+        product.stock > 0
+          ? t('product.inStockUnits', { count: product.stock })
+          : t('product.outOfStock'),
     },
-    { label: 'Rating', value: `${product.rating.toFixed(1)} / 5 (${product.reviewCount} reviews)` },
+    {
+      label: t('product.ratingLabel'),
+      value: `${product.rating.toFixed(1)} / 5 (${t('product.reviews', { count: product.reviewCount })})`,
+    },
   ];
 
   const accordionItems = [
     {
-      title: 'Description',
+      title: t('product.description'),
       content: <p className="leading-relaxed">{product.description}</p>,
     },
     {
-      title: 'Delivery & Returns',
+      title: t('product.deliveryReturns'),
       content: (
         <ul className="space-y-1 list-disc list-inside">
-          <li>Free delivery on orders over €200</li>
-          <li>Standard delivery 3–5 business days</li>
-          <li>30-day return policy for unused items</li>
-          <li>Contact support for large item assembly</li>
+          <li>{t('product.deliveryFree')}</li>
+          <li>{t('product.deliveryStandard')}</li>
+          <li>{t('product.returnPolicy')}</li>
+          <li>{t('product.assemblySupport')}</li>
         </ul>
       ),
     },
     {
-      title: 'Care Instructions',
+      title: t('product.careInstructions'),
       content: (
         <ul className="space-y-1 list-disc list-inside">
-          <li>Wipe with a clean, damp cloth</li>
-          <li>Avoid harsh chemicals and abrasive cleaners</li>
-          <li>Keep away from direct sunlight to prevent fading</li>
-          <li>Check manufacturer label for specific materials</li>
+          <li>{t('product.careWipe')}</li>
+          <li>{t('product.careChemicals')}</li>
+          <li>{t('product.careSunlight')}</li>
+          <li>{t('product.careLabel')}</li>
         </ul>
       ),
     },
@@ -238,6 +244,7 @@ export function ProductPage() {
               </tr>
             </thead>
             <tbody>
+              {/* Size labels (Small, Medium, Large, XL) are kept in English as standard sizing notation */}
               <tr>
                 <td className="px-3 py-2">Small</td>
                 <td className="px-3 py-2">80</td>
@@ -402,11 +409,11 @@ export function ProductPage() {
           <div className="flex gap-4 py-4 border-y border-[var(--border)]">
             <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
               <Home className="h-4 w-4" />
-              Free returns
+              {t('product.freeReturns')}
             </div>
             <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
               <ShoppingCart className="h-4 w-4" />
-              Fast delivery
+              {t('product.fastDelivery')}
             </div>
           </div>
         </div>
@@ -435,7 +442,9 @@ export function ProductPage() {
             onSubmit={handleSubmitReview}
             className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"
           >
-            <p className="text-sm font-medium text-[var(--text-primary)] mb-3">Write a review</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              {t('product.writeReview')}
+            </p>
             <div data-testid="review-stars" className="flex gap-1 mb-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <button
@@ -454,7 +463,7 @@ export function ProductPage() {
               data-testid="review-comment"
               value={reviewComment}
               onChange={e => setReviewComment(e.target.value)}
-              placeholder="Share your thoughts..."
+              placeholder={t('product.reviewPlaceholder')}
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-sidebar)] p-3 text-sm resize-none h-24 focus:outline-none focus:ring-2 focus:ring-accent"
             />
             <Button
@@ -464,7 +473,7 @@ export function ProductPage() {
               loading={submittingReview}
               className="mt-2"
             >
-              Submit Review
+              {t('product.submitReview')}
             </Button>
           </form>
         )}

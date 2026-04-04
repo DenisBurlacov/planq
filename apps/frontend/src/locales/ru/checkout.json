@@ -59,6 +59,7 @@
     "tryAgain": "Попробовать снова",
     "reason": "Причина: {{reason}}"
   },
+  "checkoutTitle": "Оформление заказа",
   "placeOrder": "Подтвердить заказ",
   "terms": {
     "label": "Я согласен с",

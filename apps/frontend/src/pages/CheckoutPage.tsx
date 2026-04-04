@@ -15,12 +15,10 @@ import { ApiException } from '@api/client';
 import { CreditCard, Wallet, Check } from 'lucide-react';
 
 const schema = z.object({
-  shippingAddress: z.string().min(5, 'Address must be at least 5 characters'),
+  shippingAddress: z.string().min(5),
   paymentMethod: z.enum(['CARD', 'WALLET']),
   cardNumber: z.string().optional(),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: 'You must accept the terms' }),
-  }),
+  termsAccepted: z.literal(true),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -110,20 +108,24 @@ export function CheckoutPage() {
       });
       navigate('/checkout/processing', { state: { orderId: order.id }, replace: true });
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Checkout failed');
+      toast('error', err instanceof ApiException ? err.message : t('failed.title'));
     }
   };
 
   return (
     <div className="max-w-lg mx-auto">
       <Breadcrumb
-        items={[{ label: 'Home', to: '/' }, { label: 'Cart', to: '/cart' }, { label: 'Checkout' }]}
+        items={[
+          { label: t('common:nav.home', { ns: 'common' }), to: '/' },
+          { label: t('cart.title'), to: '/cart' },
+          { label: t('checkoutTitle') },
+        ]}
       />
       <h1
         data-testid="checkout-title"
         className="text-2xl font-bold text-[var(--text-primary)] mb-6"
       >
-        Checkout
+        {t('checkoutTitle')}
       </h1>
 
       <StepIndicator currentStep={1} />

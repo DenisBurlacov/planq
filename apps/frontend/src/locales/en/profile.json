@@ -67,6 +67,15 @@
     "saveChanges": "Save Changes",
     "changePassword": "Change Password"
   },
+  "toast": {
+    "profileUpdated": "Profile updated",
+    "passwordChanged": "Password changed",
+    "preferencesSaved": "Preferences saved",
+    "addressAdded": "Address added",
+    "addressUpdated": "Address updated",
+    "addressDeleted": "Address deleted",
+    "defaultAddressUpdated": "Default address updated"
+  },
   "auth": {
     "login": "Sign In",
     "register": "Sign Up",

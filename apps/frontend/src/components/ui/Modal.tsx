@@ -11,6 +11,7 @@ interface ModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   danger?: boolean;
+  loading?: boolean;
 }
 
 export function Modal({
@@ -22,6 +23,7 @@ export function Modal({
   onConfirm,
   onCancel,
   danger = false,
+  loading = false,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -136,6 +138,7 @@ export function Modal({
             variant={danger ? 'danger' : 'primary'}
             size="sm"
             onClick={onConfirm}
+            loading={loading}
             data-testid="modal-confirm"
           >
             {confirmLabel}

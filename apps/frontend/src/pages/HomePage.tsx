@@ -67,9 +67,9 @@ export function HomePage() {
     try {
       await cartApi.add(product.id, quantity);
       increment(quantity);
-      toast('success', `${product.name} added to cart`);
+      toast('success', t('product.addedToCartName', { name: product.name }));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed to add to cart');
+      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
     }
   };
 

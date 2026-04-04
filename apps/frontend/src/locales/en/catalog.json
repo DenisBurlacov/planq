@@ -58,7 +58,34 @@
     "width": "W",
     "depth": "D",
     "height": "H",
-    "dimensionsNote": "All dimensions in centimeters."
+    "dimensionsNote": "All dimensions in centimeters.",
+    "addedToCart": "Added to cart",
+    "addedToCartName": "{{name}} added to cart",
+    "failedAddToCart": "Failed to add to cart",
+    "failedUpdateWishlist": "Failed to update wishlist",
+    "reviewSubmitted": "Review submitted",
+    "failedSubmitReview": "Failed to submit review",
+    "writeReview": "Write a review",
+    "submitReview": "Submit Review",
+    "reviewPlaceholder": "Share your thoughts...",
+    "freeReturns": "Free returns",
+    "fastDelivery": "Fast delivery",
+    "deliveryReturns": "Delivery & Returns",
+    "deliveryFree": "Free delivery on orders over €200",
+    "deliveryStandard": "Standard delivery 3–5 business days",
+    "returnPolicy": "30-day return policy for unused items",
+    "assemblySupport": "Contact support for large item assembly",
+    "careInstructions": "Care Instructions",
+    "careWipe": "Wipe with a clean, damp cloth",
+    "careChemicals": "Avoid harsh chemicals and abrasive cleaners",
+    "careSunlight": "Keep away from direct sunlight to prevent fading",
+    "careLabel": "Check manufacturer label for specific materials",
+    "sku": "SKU",
+    "category": "Category",
+    "availability": "Availability",
+    "inStockUnits": "In stock ({{count}} unit)",
+    "inStockUnits_other": "In stock ({{count}} units)",
+    "ratingLabel": "Rating"
   },
   "compare": {
     "title": "Compare Products",
@@ -67,7 +94,9 @@
     "empty": "No products to compare",
     "emptyHint": "Add products from the catalog to compare them side by side",
     "max": "Maximum 4 products allowed",
-    "remove": "Remove"
+    "remove": "Remove",
+    "productsToCompare": "{{count}} product to compare",
+    "productsToCompare_other": "{{count}} products to compare"
   },
   "viewToggle": {
     "grid": "Grid view",
@@ -94,6 +123,10 @@
     "shopSale": "Shop Sale"
   },
   "wishlist": {
+    "title": "Wishlist",
+    "empty": "Wishlist is empty",
+    "removed": "Removed from wishlist",
+    "failedRemove": "Failed to remove from wishlist",
     "removeTitle": "Remove from Wishlist",
     "removeMessage": "Are you sure you want to remove this item from your wishlist?",
     "removeConfirm": "Remove",

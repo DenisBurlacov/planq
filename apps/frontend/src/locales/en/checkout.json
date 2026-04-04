@@ -61,6 +61,7 @@
     "tryAgain": "Try Again",
     "reason": "Reason: {{reason}}"
   },
+  "checkoutTitle": "Checkout",
   "placeOrder": "Place Order",
   "terms": {
     "label": "I agree to the",

@@ -26,9 +26,9 @@ export function WishlistPage() {
     try {
       await cartApi.add(product.id);
       increment();
-      toast('success', `${product.name} added to cart`);
+      toast('success', t('product.addedToCartName', { name: product.name }));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
     }
   };
 
@@ -44,9 +44,9 @@ export function WishlistPage() {
     try {
       await wishlistApi.remove(pendingRemoveProduct.id);
       await qc.invalidateQueries({ queryKey: ['wishlist'] });
-      toast('success', 'Removed from wishlist');
+      toast('success', t('wishlist.removed'));
     } catch {
-      toast('error', 'Failed to remove');
+      toast('error', t('wishlist.failedRemove'));
     } finally {
       setPendingRemoveProduct(null);
     }
@@ -55,7 +55,9 @@ export function WishlistPage() {
   if (isLoading) {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Wishlist</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">
+          {t('wishlist.title')}
+        </h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <ProductCardSkeleton key={i} />
@@ -72,7 +74,7 @@ export function WishlistPage() {
         className="flex flex-col items-center justify-center py-24 gap-4"
       >
         <Heart className="h-16 w-16 text-[var(--text-secondary)]" />
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">Wishlist is empty</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">{t('wishlist.empty')}</h2>
         <Link to="/catalog" className="text-accent hover:underline text-sm">
           {t('product.addToWishlist')}
         </Link>
@@ -83,7 +85,7 @@ export function WishlistPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">
-        Wishlist ({data.length})
+        {t('wishlist.title')} ({data.length})
       </h1>
       <div
         data-testid="wishlist-grid"

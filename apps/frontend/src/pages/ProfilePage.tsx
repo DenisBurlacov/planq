@@ -78,7 +78,7 @@ export function ProfilePage() {
     country: 'Sweden',
     isDefault: false,
   });
-  const [, setSavingAddress] = useState(false);
+  const [savingAddress, setSavingAddress] = useState(false);
 
   const { data: profile, isLoading } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
 
@@ -121,9 +121,12 @@ export function ProfilePage() {
       const updated = await profileApi.update({ name: data.name });
       setUser(updated);
       await qc.invalidateQueries({ queryKey: ['profile'] });
-      toast('success', 'Profile updated');
+      toast('success', t('toast.profileUpdated'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     }
   };
 
@@ -131,9 +134,12 @@ export function ProfilePage() {
     try {
       await profileApi.changePassword(data.currentPassword, data.newPassword);
       pwForm.reset();
-      toast('success', 'Password changed');
+      toast('success', t('toast.passwordChanged'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     }
   };
 
@@ -141,9 +147,12 @@ export function ProfilePage() {
     setSavingNotifs(true);
     try {
       await notificationsApi.update(notifPrefs);
-      toast('success', 'Preferences saved');
+      toast('success', t('toast.preferencesSaved'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     } finally {
       setSavingNotifs(false);
     }
@@ -184,9 +193,12 @@ export function ProfilePage() {
       }
       await refetchAddresses();
       setAddressModalOpen(false);
-      toast('success', editingAddress ? 'Address updated' : 'Address added');
+      toast('success', editingAddress ? t('toast.addressUpdated') : t('toast.addressAdded'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     } finally {
       setSavingAddress(false);
     }
@@ -197,9 +209,12 @@ export function ProfilePage() {
     try {
       await addressesApi.remove(deleteAddress.id);
       await refetchAddresses();
-      toast('success', 'Address deleted');
+      toast('success', t('toast.addressDeleted'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     } finally {
       setDeleteAddress(null);
     }
@@ -209,9 +224,12 @@ export function ProfilePage() {
     try {
       await addressesApi.setDefault(id);
       await refetchAddresses();
-      toast('success', 'Default address updated');
+      toast('success', t('toast.defaultAddressUpdated'));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     }
   };
 
@@ -497,6 +515,7 @@ export function ProfilePage() {
             onConfirm={handleSaveAddress}
             onCancel={() => setAddressModalOpen(false)}
             confirmLabel={t('common:actions.save', { ns: 'common' })}
+            loading={savingAddress}
           >
             <div data-testid="address-modal">
               <form

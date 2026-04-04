@@ -67,6 +67,15 @@
     "saveChanges": "Сохранить",
     "changePassword": "Изменить пароль"
   },
+  "toast": {
+    "profileUpdated": "Профиль обновлён",
+    "passwordChanged": "Пароль изменён",
+    "preferencesSaved": "Настройки сохранены",
+    "addressAdded": "Адрес добавлен",
+    "addressUpdated": "Адрес обновлён",
+    "addressDeleted": "Адрес удалён",
+    "defaultAddressUpdated": "Адрес по умолчанию обновлён"
+  },
   "auth": {
     "login": "Войти",
     "register": "Зарегистрироваться",

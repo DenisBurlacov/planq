@@ -123,9 +123,9 @@ export function CatalogPage() {
     try {
       await cartApi.add(product.id, quantity);
       increment(quantity);
-      toast('success', `${product.name} added to cart`);
+      toast('success', t('product.addedToCartName', { name: product.name }));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed to add to cart');
+      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
     }
   };
 
@@ -162,7 +162,7 @@ export function CatalogPage() {
         }
         return next;
       });
-      toast('error', 'Failed to update wishlist');
+      toast('error', t('product.failedUpdateWishlist'));
     }
   };
 
@@ -452,7 +452,7 @@ export function CatalogPage() {
             <div className="flex items-center gap-2">
               <ArrowLeftRight className="h-4 w-4 text-accent" />
               <span className="text-sm font-medium text-[var(--text-primary)]">
-                {compareCount} {compareCount === 1 ? 'product' : 'products'} to compare
+                {t('compare.productsToCompare', { count: compareCount })}
               </span>
             </div>
             <div className="flex items-center gap-2">

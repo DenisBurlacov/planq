@@ -58,7 +58,34 @@
     "width": "Ш",
     "depth": "Г",
     "height": "В",
-    "dimensionsNote": "Все размеры указаны в сантиметрах."
+    "dimensionsNote": "Все размеры указаны в сантиметрах.",
+    "addedToCart": "Добавлено в корзину",
+    "addedToCartName": "{{name}} добавлен в корзину",
+    "failedAddToCart": "Не удалось добавить в корзину",
+    "failedUpdateWishlist": "Не удалось обновить избранное",
+    "reviewSubmitted": "Отзыв отправлен",
+    "failedSubmitReview": "Не удалось отправить отзыв",
+    "writeReview": "Написать отзыв",
+    "submitReview": "Отправить отзыв",
+    "reviewPlaceholder": "Поделитесь впечатлениями...",
+    "freeReturns": "Бесплатный возврат",
+    "fastDelivery": "Быстрая доставка",
+    "deliveryReturns": "Доставка и возврат",
+    "deliveryFree": "Бесплатная доставка при заказе от €200",
+    "deliveryStandard": "Стандартная доставка 3–5 рабочих дней",
+    "returnPolicy": "Возврат в течение 30 дней для неиспользованных товаров",
+    "assemblySupport": "Свяжитесь с поддержкой для сборки крупных товаров",
+    "careInstructions": "Уход за товаром",
+    "careWipe": "Протирайте чистой влажной тканью",
+    "careChemicals": "Избегайте агрессивных химикатов и абразивных средств",
+    "careSunlight": "Не допускайте попадания прямых солнечных лучей",
+    "careLabel": "Следуйте указаниям на этикетке производителя",
+    "sku": "Артикул",
+    "category": "Категория",
+    "availability": "Наличие",
+    "inStockUnits": "В наличии ({{count}} шт.)",
+    "inStockUnits_other": "В наличии ({{count}} шт.)",
+    "ratingLabel": "Рейтинг"
   },
   "compare": {
     "title": "Сравнение товаров",
@@ -67,7 +94,9 @@
     "empty": "Нет товаров для сравнения",
     "emptyHint": "Добавьте товары из каталога для сравнения",
     "max": "Максимум 4 товара",
-    "remove": "Удалить"
+    "remove": "Удалить",
+    "productsToCompare": "{{count}} товар к сравнению",
+    "productsToCompare_other": "{{count}} товаров к сравнению"
   },
   "viewToggle": {
     "grid": "Сетка",
@@ -94,6 +123,10 @@
     "shopSale": "К скидкам"
   },
   "wishlist": {
+    "title": "Избранное",
+    "empty": "В избранном пусто",
+    "removed": "Удалено из избранного",
+    "failedRemove": "Не удалось удалить из избранного",
     "removeTitle": "Удалить из избранного",
     "removeMessage": "Вы уверены, что хотите удалить этот товар из избранного?",
     "removeConfirm": "Удалить",
