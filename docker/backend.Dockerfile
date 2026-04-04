@@ -6,6 +6,7 @@ WORKDIR /app
 COPY pnpm-workspace.yaml pnpm-lock.yaml* package.json ./
 COPY apps/backend/package.json apps/backend/
 COPY packages/types/package.json packages/types/
+ENV HUSKY=0
 RUN pnpm install --frozen-lockfile --filter @planq/backend --filter @planq/types
 
 COPY tsconfig.base.json ./
@@ -27,7 +28,8 @@ WORKDIR /app
 COPY pnpm-workspace.yaml pnpm-lock.yaml* package.json ./
 COPY apps/backend/package.json apps/backend/
 COPY packages/types/package.json packages/types/
-RUN pnpm install --frozen-lockfile --filter @planq/backend --prod
+ENV HUSKY=0
+RUN pnpm install --frozen-lockfile --filter @planq/backend --prod --ignore-scripts
 
 # Copy built output, prisma schema, and generated client
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
