@@ -1,6 +1,18 @@
 {
   "title": "Каталог",
   "allCategories": "Все",
+  "categories": {
+    "living-room": "Гостиная",
+    "bedroom": "Спальня",
+    "kitchen": "Кухня",
+    "lighting": "Освещение",
+    "storage": "Хранение",
+    "decor": "Декор",
+    "bathroom": "Ванная",
+    "office": "Офис",
+    "outdoor": "Сад",
+    "textiles": "Текстиль"
+  },
   "search": "Поиск мебели...",
   "filters": {
     "title": "Фильтры",

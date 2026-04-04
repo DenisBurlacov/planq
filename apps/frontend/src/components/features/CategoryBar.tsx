@@ -105,7 +105,7 @@ export function CategoryBar({ categories, activeCategoryId, onCategoryChange }: 
               }}
             >
               <Icon className="h-4 w-4" />
-              {cat.name}
+              {t(`categories.${cat.slug}`, { defaultValue: cat.name })}
             </button>
           );
         })}

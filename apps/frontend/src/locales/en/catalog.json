@@ -1,6 +1,18 @@
 {
   "title": "Catalog",
   "allCategories": "All",
+  "categories": {
+    "living-room": "Living Room",
+    "bedroom": "Bedroom",
+    "kitchen": "Kitchen",
+    "lighting": "Lighting",
+    "storage": "Storage",
+    "decor": "Decor",
+    "bathroom": "Bathroom",
+    "office": "Office",
+    "outdoor": "Outdoor",
+    "textiles": "Textiles"
+  },
   "search": "Search furniture...",
   "filters": {
     "title": "Filters",

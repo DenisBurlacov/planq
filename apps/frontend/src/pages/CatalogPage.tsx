@@ -73,8 +73,11 @@ export function CatalogPage() {
     queryFn: productsApi.getCategories,
   });
 
-  // Derive active category name
-  const activeCategoryName = categories?.find(c => c.id === query.categoryId)?.name;
+  // Derive active category name (translated)
+  const activeCategory = categories?.find(c => c.id === query.categoryId);
+  const activeCategoryName = activeCategory
+    ? t(`categories.${activeCategory.slug}`, { defaultValue: activeCategory.name })
+    : undefined;
 
   // Build breadcrumb items
   const breadcrumbItems = [
@@ -294,7 +297,7 @@ export function CatalogPage() {
       {/* Sort */}
       <div className="mb-4 flex items-center justify-between">
         <span className="text-sm text-[var(--text-secondary)]">
-          {data ? `${data.total} products` : ''}
+          {data ? t('common:items', { count: data.total }) : ''}
         </span>
         <select
           value={query.sort ?? 'newest'}
