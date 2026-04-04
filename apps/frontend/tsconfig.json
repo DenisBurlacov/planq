@@ -15,7 +15,8 @@
       "@appTypes/*": ["src/types/*"],
       "@ws/*": ["src/ws/*"],
       "@locales/*": ["src/locales/*"],
-      "@styles/*": ["src/styles/*"]
+      "@styles/*": ["src/styles/*"],
+      "@constants/*": ["src/constants/*"]
     }
   },
   "include": ["src"],

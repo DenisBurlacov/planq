@@ -16,6 +16,7 @@ export default defineConfig({
       '@ws': path.resolve(__dirname, 'src/ws'),
       '@locales': path.resolve(__dirname, 'src/locales'),
       '@styles': path.resolve(__dirname, 'src/styles'),
+      '@constants': path.resolve(__dirname, 'src/constants'),
     },
   },
   server: {

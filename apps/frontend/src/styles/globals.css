@@ -60,3 +60,11 @@ body {
   color: var(--text-primary);
   font-family: 'Inter', system-ui, sans-serif;
 }
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  scrollbar-width: none;
+}

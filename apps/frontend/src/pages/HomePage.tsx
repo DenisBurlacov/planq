@@ -1,17 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import {
-  ArrowRight,
-  Sofa,
-  BedDouble,
-  UtensilsCrossed,
-  Lamp,
-  Package,
-  Flower2,
-  Bath,
-  Monitor,
-  TreePine,
-  Layers,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { ProductCard } from '@components/features/ProductCard';
@@ -23,19 +11,7 @@ import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
 import type { Product } from '@appTypes/api';
 import { ApiException } from '@api/client';
-
-const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'living-room': Sofa,
-  bedroom: BedDouble,
-  kitchen: UtensilsCrossed,
-  lighting: Lamp,
-  storage: Package,
-  decor: Flower2,
-  bathroom: Bath,
-  office: Monitor,
-  outdoor: TreePine,
-  textiles: Layers,
-};
+import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '@constants/categoryIcons';
 
 // Verified Unsplash hero images (Scandinavian interior)
 const HERO_IMAGES = [
@@ -177,7 +153,7 @@ export function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {categories.slice(0, 10).map(cat => {
-              const Icon = CATEGORY_ICONS[cat.slug] ?? Package;
+              const Icon = CATEGORY_ICONS[cat.slug] ?? DEFAULT_CATEGORY_ICON;
               return (
                 <Link
                   key={cat.id}

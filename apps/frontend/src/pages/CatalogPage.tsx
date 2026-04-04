@@ -7,6 +7,7 @@ import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Button } from '@components/ui/Button';
+import { CategoryBar } from '@components/features/CategoryBar';
 import { productsApi, type ProductsQuery } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
@@ -36,9 +37,7 @@ export function CatalogPage() {
 
   const [query, setQuery] = useState<ProductsQuery>(initialQuery);
   const [search, setSearch] = useState('');
-  const [showFilters, setShowFilters] = useState(
-    !!initialQuery.categoryId || !!initialQuery.onSale
-  );
+  const [showFilters, setShowFilters] = useState(false);
   const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set());
   const [priceError, setPriceError] = useState('');
 
@@ -55,7 +54,6 @@ export function CatalogPage() {
     const onSale = params.get('onSale') === 'true' || undefined;
     const sort = (params.get('sort') as ProductsQuery['sort']) ?? undefined;
     setQuery(q => ({ ...q, categoryId: catId, onSale, sort: sort ?? q.sort, page: 1 }));
-    if (catId || onSale) setShowFilters(true);
   }, [location.search]);
 
   useEffect(() => {
@@ -74,6 +72,16 @@ export function CatalogPage() {
     queryKey: ['categories'],
     queryFn: productsApi.getCategories,
   });
+
+  // Derive active category name
+  const activeCategoryName = categories?.find(c => c.id === query.categoryId)?.name;
+
+  // Build breadcrumb items
+  const breadcrumbItems = [
+    { label: t('common:nav.home'), to: '/' },
+    { label: t('title'), to: activeCategoryName ? '/catalog' : undefined },
+    ...(activeCategoryName ? [{ label: activeCategoryName }] : []),
+  ];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,12 +139,27 @@ export function CatalogPage() {
     }
   };
 
+  const handleCategoryChange = (categoryId: string | undefined) => {
+    setQuery(q => ({ ...q, categoryId, page: 1 }));
+    // Sync URL
+    const params = new URLSearchParams(location.search);
+    if (categoryId) {
+      params.set('categoryId', categoryId);
+    } else {
+      params.delete('categoryId');
+    }
+    navigate(`/catalog?${params.toString()}`, { replace: true });
+  };
+
   return (
     <div>
-      <Breadcrumb items={[{ label: 'Home', to: '/' }, { label: 'Catalog' }]} />
+      <Breadcrumb items={breadcrumbItems} />
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">{t('title')}</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+          {activeCategoryName ?? t('title')}
+        </h1>
         <button
+          data-testid="catalog-filter-toggle"
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
         >
@@ -144,6 +167,13 @@ export function CatalogPage() {
           {t('filters.title')}
         </button>
       </div>
+
+      {/* Category Bar */}
+      <CategoryBar
+        categories={categories ?? []}
+        activeCategoryId={query.categoryId}
+        onCategoryChange={handleCategoryChange}
+      />
 
       {/* Search */}
       <form onSubmit={handleSearch} className="mb-6 flex gap-2">
@@ -162,38 +192,12 @@ export function CatalogPage() {
         </Button>
       </form>
 
-      {/* Filters */}
+      {/* Filters (price/sale/stock only — category removed) */}
       {showFilters && (
-        <div className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">
-              {t('filters.category')}
-            </label>
-            <div data-testid="category-filter" className="mt-1 space-y-1 max-h-36 overflow-y-auto">
-              {categories?.map(cat => (
-                <label
-                  key={cat.id}
-                  className="flex items-center gap-2 text-sm cursor-pointer py-0.5"
-                >
-                  <input
-                    type="checkbox"
-                    data-testid={`category-checkbox-${cat.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    checked={query.categoryId === cat.id}
-                    onChange={() =>
-                      setQuery(q => ({
-                        ...q,
-                        categoryId: q.categoryId === cat.id ? undefined : cat.id,
-                        page: 1,
-                      }))
-                    }
-                    className="rounded"
-                  />
-                  {cat.name}
-                </label>
-              ))}
-            </div>
-          </div>
-
+        <div
+          data-testid="catalog-filter-panel"
+          className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
           <div className="flex gap-2 items-end col-span-1">
             <div className="flex-1">
               <label
