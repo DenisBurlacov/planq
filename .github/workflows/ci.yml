@@ -5,6 +5,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '22'
@@ -118,13 +119,14 @@ jobs:
       - name: Build all packages
         run: pnpm build
 
-  # E2E tests — runs Playwright against backend + frontend
-  # continue-on-error: true until the E2E suite is stable and covers critical paths.
-  # TODO: Remove continue-on-error once E2E tests are reliable (target: v1.2.0)
+  # E2E tests — manual trigger only (too slow and flaky for every push)
+  # Run manually: Actions → CI → Run workflow, or via `gh workflow run ci.yml`
+  # TODO: Move to a separate workflow with docker-compose for full stack (target: v1.2.0)
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'workflow_dispatch'
     continue-on-error: true
 
     services:
