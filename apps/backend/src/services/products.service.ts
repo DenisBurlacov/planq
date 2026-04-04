@@ -75,6 +75,33 @@ export async function getProductById(id: string) {
   return product;
 }
 
+export async function suggestProducts(q: string) {
+  const products = await prisma.product.findMany({
+    where: {
+      deletedAt: null,
+      name: { contains: q, mode: 'insensitive' },
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      price: true,
+      salePrice: true,
+      images: true,
+    },
+    take: 5,
+  });
+
+  return products.map(p => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    salePrice: p.salePrice,
+    image: p.images[0] ?? null,
+  }));
+}
+
 export async function getProductStock(id: string) {
   const product = await prisma.product.findFirst({
     where: { id },

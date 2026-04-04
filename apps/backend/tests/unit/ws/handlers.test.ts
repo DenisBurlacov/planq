@@ -57,7 +57,7 @@ describe('WS handlers', () => {
     it('sends payment.result after delay', async () => {
       mockFn(prisma.order.update).mockResolvedValue({});
 
-      schedulePaymentResult('user-1', 'order-1', 100);
+      schedulePaymentResult('user-1', 'order-1', undefined, 100);
       await jest.runAllTimersAsync();
 
       expect(prisma.order.update).toHaveBeenCalledWith({
@@ -73,7 +73,7 @@ describe('WS handlers', () => {
     it('does not throw if order update fails', async () => {
       mockFn(prisma.order.update).mockRejectedValue(new Error('DB error'));
 
-      schedulePaymentResult('user-1', 'order-99', 100);
+      schedulePaymentResult('user-1', 'order-99', undefined, 100);
       await expect(jest.runAllTimersAsync()).resolves.not.toThrow();
     });
   });

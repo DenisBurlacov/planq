@@ -3,8 +3,12 @@ import type { Request, Response, NextFunction } from 'express';
 import type { OrderStatus } from '@prisma/client';
 import { authenticate } from '@middleware/auth.js';
 import { adminAuth } from '@middleware/adminAuth.js';
+import { managerRestrictions } from '@middleware/managerRestrictions.js';
 import { validate } from '@middleware/validate.js';
+import { uploadProductImages } from '@middleware/upload.js';
+import { getAuthUser } from '@utils/getAuthUser.js';
 import * as adminService from '@services/admin.service.js';
+import * as auditService from '@services/audit.service.js';
 import { ok, created, noContent } from '@utils/response.js';
 
 const router: ExpressRouter = Router();
@@ -23,6 +27,7 @@ router.use(adminAuth);
  *       - { in: query, name: page, schema: { type: integer, default: 1 } }
  *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
  *       - { in: query, name: search, schema: { type: string } }
+ *       - { in: query, name: includeDeleted, schema: { type: string, enum: ['true', 'false'] } }
  *     responses:
  *       200:
  *         description: Paginated product list
@@ -31,8 +36,10 @@ router.use(adminAuth);
  */
 router.get('/products', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, search } = adminService.AdminPaginationSchema.parse(req.query);
-    ok(res, await adminService.listProducts(page, limit, search));
+    const { page, limit, search, includeDeleted } = adminService.AdminProductsQuerySchema.parse(
+      req.query
+    );
+    ok(res, await adminService.listProducts(page, limit, search, includeDeleted));
   } catch (err) {
     next(err);
   }
@@ -68,10 +75,19 @@ router.get('/products', async (req: Request, res: Response, next: NextFunction) 
  */
 router.post(
   '/products',
+  managerRestrictions,
   validate(adminService.CreateProductSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      created(res, await adminService.createProduct(req.body as adminService.CreateProductInput));
+      const product = await adminService.createProduct(req.body as adminService.CreateProductInput);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'product_create',
+        'product',
+        product.id,
+        { name: product.name }
+      );
+      created(res, product);
     } catch (err) {
       next(err);
     }
@@ -112,13 +128,18 @@ router.put(
   validate(adminService.UpdateProductSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      ok(
-        res,
-        await adminService.updateProduct(
-          req.params.id as string,
-          req.body as adminService.UpdateProductInput
-        )
+      const product = await adminService.updateProduct(
+        req.params.id as string,
+        req.body as adminService.UpdateProductInput
       );
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'product_update',
+        'product',
+        product.id,
+        req.body as Record<string, unknown>
+      );
+      ok(res, product);
     } catch (err) {
       next(err);
     }
@@ -139,14 +160,144 @@ router.put(
  *       404:
  *         description: Product not found
  */
-router.delete('/products/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.delete(
+  '/products/:id',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await adminService.deleteProduct(req.params.id as string);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'product_delete',
+        'product',
+        req.params.id as string
+      );
+      noContent(res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/products/{id}/restore:
+ *   put:
+ *     tags: [Admin]
+ *     summary: Restore a soft-deleted product
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Product restored
+ *       404:
+ *         description: Product not found
+ */
+router.put('/products/:id/restore', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await adminService.deleteProduct(req.params.id as string);
-    noContent(res);
+    const product = await adminService.restoreProduct(req.params.id as string);
+    await auditService.logAction(
+      getAuthUser(req).userId,
+      'product_restore',
+      'product',
+      req.params.id as string
+    );
+    ok(res, product);
   } catch (err) {
     next(err);
   }
 });
+
+/**
+ * @openapi
+ * /admin/products/{id}/images:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Upload product images
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               images:
+ *                 type: array
+ *                 items: { type: string, format: binary }
+ *     responses:
+ *       200:
+ *         description: Images uploaded and appended
+ *       404:
+ *         description: Product not found
+ */
+router.post(
+  '/products/:id/images',
+  uploadProductImages,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        res.status(400).json({ error: 'NO_FILES', message: 'No files uploaded', statusCode: 400 });
+        return;
+      }
+      const imagePaths = files.map(f => `/uploads/products/${f.filename}`);
+      const product = await adminService.appendProductImages(req.params.id as string, imagePaths);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'product_images_upload',
+        'product',
+        req.params.id as string,
+        { count: files.length }
+      );
+      ok(res, product);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/products/bulk:
+ *   delete:
+ *     tags: [Admin]
+ *     summary: Bulk soft-delete products
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ids]
+ *             properties:
+ *               ids: { type: array, items: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Products deleted
+ */
+router.delete(
+  '/products/bulk',
+  managerRestrictions,
+  validate(adminService.BulkDeleteProductsSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { ids } = req.body as { ids: string[] };
+      const result = await adminService.bulkDeleteProducts(ids);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'product_bulk_delete',
+        'product',
+        undefined,
+        { ids, deleted: result.deleted }
+      );
+      ok(res, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 // ─── Orders ──────────────────────────────────────────────────────────────────
 
@@ -155,19 +306,49 @@ router.delete('/products/:id', async (req: Request, res: Response, next: NextFun
  * /admin/orders:
  *   get:
  *     tags: [Admin]
- *     summary: List all orders (paginated, filterable by status)
+ *     summary: List all orders (paginated, filterable by status and date)
  *     parameters:
  *       - { in: query, name: page, schema: { type: integer, default: 1 } }
  *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
  *       - { in: query, name: status, schema: { type: string, enum: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED] } }
+ *       - { in: query, name: dateFrom, schema: { type: string, format: date-time } }
+ *       - { in: query, name: dateTo, schema: { type: string, format: date-time } }
  *     responses:
  *       200:
  *         description: Paginated order list
  */
 router.get('/orders', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, status } = adminService.AdminOrdersQuerySchema.parse(req.query);
-    ok(res, await adminService.listOrders(page, limit, status));
+    const { page, limit, status, dateFrom, dateTo } = adminService.AdminOrdersQuerySchema.parse(
+      req.query
+    );
+    ok(res, await adminService.listOrders(page, limit, status, dateFrom, dateTo));
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/orders/export:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Export orders as CSV
+ *     parameters:
+ *       - { in: query, name: format, schema: { type: string, enum: [csv] } }
+ *     responses:
+ *       200:
+ *         description: CSV file download
+ *         content:
+ *           text/csv:
+ *             schema: { type: string }
+ */
+router.get('/orders/export', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const csv = await adminService.exportOrdersCsv();
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="orders.csv"');
+    res.send(csv);
   } catch (err) {
     next(err);
   }
@@ -204,14 +385,63 @@ router.put(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { status } = req.body as { status: OrderStatus };
-      ok(res, await adminService.updateOrderStatus(req.params.id as string, status));
+      const order = await adminService.updateOrderStatus(req.params.id as string, status);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'order_status_update',
+        'order',
+        req.params.id as string,
+        { newStatus: status }
+      );
+      ok(res, order);
     } catch (err) {
       next(err);
     }
   }
 );
 
-// ─── Users ───────────────────────────────────────────────────────────────────
+/**
+ * @openapi
+ * /admin/orders/bulk/status:
+ *   put:
+ *     tags: [Admin]
+ *     summary: Bulk update order statuses
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ids, status]
+ *             properties:
+ *               ids: { type: array, items: { type: string } }
+ *               status: { type: string, enum: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED] }
+ *     responses:
+ *       200:
+ *         description: Bulk update results
+ */
+router.put(
+  '/orders/bulk/status',
+  validate(adminService.BulkUpdateOrderStatusSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { ids, status } = req.body as { ids: string[]; status: OrderStatus };
+      const result = await adminService.bulkUpdateOrderStatus(ids, status);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'order_bulk_status_update',
+        'order',
+        undefined,
+        { ids, status }
+      );
+      ok(res, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ─��─ Users ───────────────────────────────────────────────────────────────────
 
 /**
  * @openapi
@@ -252,13 +482,58 @@ router.get('/users', async (req: Request, res: Response, next: NextFunction) => 
  *       404:
  *         description: User not found
  */
-router.put('/users/:id/block', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    ok(res, await adminService.toggleBlockUser(req.params.id as string));
-  } catch (err) {
-    next(err);
+router.put(
+  '/users/:id/block',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = await adminService.toggleBlockUser(req.params.id as string);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        user.isBlocked ? 'user_block' : 'user_unblock',
+        'user',
+        req.params.id as string
+      );
+      ok(res, user);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
+
+// ─── Audit Log ──────────────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /admin/audit:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Get audit logs (paginated, filterable)
+ *     parameters:
+ *       - { in: query, name: page, schema: { type: integer, default: 1 } }
+ *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
+ *       - { in: query, name: action, schema: { type: string } }
+ *       - { in: query, name: userId, schema: { type: string } }
+ *       - { in: query, name: dateFrom, schema: { type: string, format: date-time } }
+ *       - { in: query, name: dateTo, schema: { type: string, format: date-time } }
+ *     responses:
+ *       200:
+ *         description: Paginated audit log list
+ */
+router.get(
+  '/audit',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, limit, action, userId, dateFrom, dateTo } = auditService.AuditQuerySchema.parse(
+        req.query
+      );
+      ok(res, await auditService.listAuditLogs(page, limit, action, userId, dateFrom, dateTo));
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 // ─── Stats ───────────────────────────────────────────────────────────────────
 

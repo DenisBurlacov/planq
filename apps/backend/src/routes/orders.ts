@@ -10,9 +10,11 @@ import { z } from 'zod';
 const router: ExpressRouter = Router();
 router.use(authenticate);
 
-const PaginationSchema = z.object({
+const OrdersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(50).default(10),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
 });
 
 /**
@@ -21,14 +23,19 @@ const PaginationSchema = z.object({
  *   get:
  *     tags: [Orders]
  *     summary: Get user's orders
+ *     parameters:
+ *       - { in: query, name: page, schema: { type: integer, default: 1 } }
+ *       - { in: query, name: limit, schema: { type: integer, default: 10 } }
+ *       - { in: query, name: dateFrom, schema: { type: string, format: date-time } }
+ *       - { in: query, name: dateTo, schema: { type: string, format: date-time } }
  *     responses:
  *       200:
  *         description: Paginated list of orders
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit } = PaginationSchema.parse(req.query);
-    ok(res, await ordersService.getOrders(getAuthUser(req).userId, page, limit));
+    const { page, limit, dateFrom, dateTo } = OrdersQuerySchema.parse(req.query);
+    ok(res, await ordersService.getOrders(getAuthUser(req).userId, page, limit, dateFrom, dateTo));
   } catch (err) {
     next(err);
   }

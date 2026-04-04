@@ -1735,16 +1735,74 @@ async function main() {
     });
   }
 
+  // ─── Manager User ──────────────────────────────────────────────────────
+
+  await prisma.user.upsert({
+    where: { email: 'manager@planq.com' },
+    update: { role: Role.MANAGER },
+    create: {
+      email: 'manager@planq.com',
+      password: passwordHash,
+      name: 'Manager',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=manager',
+      walletBalance: 50,
+      role: Role.MANAGER,
+    },
+  });
+
+  // ─── Sample Notifications for Alice ───────────────────────────────────
+
+  const existingNotifs = await prisma.notification.count({ where: { userId: userRegular.id } });
+  if (existingNotifs === 0) {
+    await prisma.notification.createMany({
+      data: [
+        {
+          userId: userRegular.id,
+          type: 'welcome',
+          title: 'Welcome to PLANQ!',
+          message: 'Thanks for joining. Explore our curated furniture collection.',
+        },
+        {
+          userId: userRegular.id,
+          type: 'promo',
+          title: 'Spring Sale - 20% Off',
+          message: 'Use code SPRING20 for 20% off your next order. Valid until end of month.',
+        },
+        {
+          userId: userRegular.id,
+          type: 'order_update',
+          title: 'Order Shipped',
+          message: 'Your order has been shipped and is on its way.',
+        },
+        {
+          userId: userRegular.id,
+          type: 'system',
+          title: 'Profile Incomplete',
+          message: 'Add a shipping address to speed up your next checkout.',
+        },
+        {
+          userId: userRegular.id,
+          type: 'promo',
+          title: 'New Arrivals',
+          message: 'Check out our latest bedroom and living room collections.',
+          read: true,
+        },
+      ],
+    });
+  }
+
   // eslint-disable-next-line no-console
   console.log('Seed completed successfully');
   // eslint-disable-next-line no-console
-  console.log(`  Users: 4`);
+  console.log(`  Users: 5`);
   // eslint-disable-next-line no-console
   console.log(`  Categories: ${categories.length}`);
   // eslint-disable-next-line no-console
   console.log(`  Products: ${products.length}`);
   // eslint-disable-next-line no-console
   console.log(`  Promo codes: 3`);
+  // eslint-disable-next-line no-console
+  console.log(`  Notifications: 5 (for alice)`);
 }
 
 // Export for use in /api/test/reset endpoint

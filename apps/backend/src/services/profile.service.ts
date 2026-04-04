@@ -6,7 +6,7 @@ import { hashPassword } from '@utils/password.js';
 
 export const UpdateProfileSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  avatar: z.string().url().optional(),
+  avatar: z.string().min(1).optional(),
 });
 
 export const ChangePasswordSchema = z.object({

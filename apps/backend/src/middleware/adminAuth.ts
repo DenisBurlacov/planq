@@ -10,7 +10,7 @@ export function adminAuth(req: Request, _res: Response, next: NextFunction): voi
     return next(new AppError('UNAUTHORIZED', 'Authentication required', 401));
   }
 
-  if (req.user.role !== 'ADMIN') {
+  if (req.user.role !== 'ADMIN' && req.user.role !== 'MANAGER') {
     return next(new AppError('FORBIDDEN', 'Admin access required', 403));
   }
 

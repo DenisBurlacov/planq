@@ -1,11 +1,19 @@
 import { Router, type Router as ExpressRouter } from 'express';
+import type { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 import {
   getProductsHandler,
   getProductHandler,
   getProductStockHandler,
 } from '@controllers/products.controller.js';
+import * as productsService from '@services/products.service.js';
+import { ok } from '@utils/response.js';
 
 const router: ExpressRouter = Router();
+
+const SuggestSchema = z.object({
+  q: z.string().min(1),
+});
 
 /**
  * @openapi
@@ -27,6 +35,28 @@ const router: ExpressRouter = Router();
  *         description: Paginated list of products
  */
 router.get('/', getProductsHandler);
+
+/**
+ * @openapi
+ * /products/suggest:
+ *   get:
+ *     tags: [Products]
+ *     summary: Autocomplete product search
+ *     security: []
+ *     parameters:
+ *       - { in: query, name: q, required: true, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Top 5 matching products
+ */
+router.get('/suggest', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { q } = SuggestSchema.parse(req.query);
+    ok(res, await productsService.suggestProducts(q));
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**
  * @openapi

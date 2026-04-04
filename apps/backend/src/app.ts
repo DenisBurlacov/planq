@@ -1,4 +1,5 @@
 import express, { type Express } from 'express';
+import path from 'node:path';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
@@ -20,6 +21,7 @@ import promoRouter from '@routes/promo.js';
 import profileRouter from '@routes/profile.js';
 import addressesRouter from '@routes/addresses.js';
 import notificationsRouter from '@routes/notifications.js';
+import realtimeNotificationsRouter from '@routes/realtime-notifications.js';
 import adminRouter from '@routes/admin.js';
 
 const app: Express = express();
@@ -31,6 +33,9 @@ app.use(compression());
 
 // Body parsing
 app.use(express.json());
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
 // Request ID on every request
 app.use(requestIdMiddleware);
@@ -65,6 +70,7 @@ app.use('/api/v1/promotions', promoRouter);
 app.use('/api/v1/profile', profileRouter);
 app.use('/api/v1/profile/notifications', notificationsRouter);
 app.use('/api/v1/addresses', addressesRouter);
+app.use('/api/v1/notifications', realtimeNotificationsRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/test', resetRouter);
 

@@ -4,6 +4,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { authenticate } from '@middleware/auth.js';
 import { validate } from '@middleware/validate.js';
+import { uploadAvatar } from '@middleware/upload.js';
 import * as profileService from '@services/profile.service.js';
 import { ok, noContent } from '@utils/response.js';
 
@@ -54,6 +55,40 @@ router.patch(
     }
   }
 );
+
+/**
+ * @openapi
+ * /profile/avatar:
+ *   post:
+ *     tags: [Profile]
+ *     summary: Upload avatar image (max 2MB, jpg/png only)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Avatar updated
+ */
+router.post('/avatar', uploadAvatar, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      res.status(400).json({ error: 'NO_FILE', message: 'No file uploaded', statusCode: 400 });
+      return;
+    }
+    const avatarPath = `/uploads/avatars/${file.filename}`;
+    ok(res, await profileService.updateProfile(getAuthUser(req).userId, { avatar: avatarPath }));
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**
  * @openapi

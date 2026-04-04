@@ -16,6 +16,27 @@ export const AdminOrdersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: z.nativeEnum(OrderStatus).optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+});
+
+export const AdminProductsQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+  includeDeleted: z
+    .string()
+    .optional()
+    .transform(v => v === 'true'),
+});
+
+export const BulkDeleteProductsSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1),
+});
+
+export const BulkUpdateOrderStatusSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1),
+  status: z.nativeEnum(OrderStatus),
 });
 
 export const CreateProductSchema = z.object({
@@ -59,11 +80,16 @@ const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
-export async function listProducts(page: number, limit: number, search?: string) {
+export async function listProducts(
+  page: number,
+  limit: number,
+  search?: string,
+  includeDeleted = false
+) {
   const skip = (page - 1) * limit;
 
   const where = {
-    deletedAt: null,
+    ...(!includeDeleted && { deletedAt: null }),
     ...(search && {
       OR: [
         { name: { contains: search, mode: 'insensitive' as const } },
@@ -140,12 +166,24 @@ export async function deleteProduct(id: string) {
 
 // ─── Orders ──────────────────────────────────────────────────────────────────
 
-export async function listOrders(page: number, limit: number, status?: OrderStatus) {
+export async function listOrders(
+  page: number,
+  limit: number,
+  status?: OrderStatus,
+  dateFrom?: string,
+  dateTo?: string
+) {
   const skip = (page - 1) * limit;
 
   const where = {
     deletedAt: null,
     ...(status && { status }),
+    ...((dateFrom || dateTo) && {
+      createdAt: {
+        ...(dateFrom && { gte: new Date(dateFrom) }),
+        ...(dateTo && { lte: new Date(dateTo) }),
+      },
+    }),
   };
 
   const [items, total] = await Promise.all([
@@ -263,6 +301,120 @@ export async function toggleBlockUser(id: string) {
   });
 
   return updated;
+}
+
+// ─── Restore Product ────────────────────────────────────────────────────────
+
+export async function restoreProduct(id: string) {
+  const existing = await prisma.product.findFirst({ where: { id, deletedAt: { not: null } } });
+  if (!existing) throw new AppError('PRODUCT_NOT_FOUND', 'Deleted product not found', 404);
+
+  const product = await prisma.product.update({
+    where: { id },
+    data: { deletedAt: null },
+    include: { category: true },
+  });
+
+  logger.info({ message: 'Product restored by admin', productId: id });
+  return product;
+}
+
+// ─── Bulk Operations ────────────────────────────────────────────────────────
+
+export async function bulkDeleteProducts(ids: string[]) {
+  const result = await prisma.product.updateMany({
+    where: { id: { in: ids }, deletedAt: null },
+    data: { deletedAt: new Date() },
+  });
+
+  logger.info({ message: 'Products bulk soft-deleted by admin', count: result.count });
+  return { deleted: result.count };
+}
+
+export async function bulkUpdateOrderStatus(ids: string[], newStatus: OrderStatus) {
+  const orders = await prisma.order.findMany({
+    where: { id: { in: ids }, deletedAt: null },
+  });
+
+  const results: { id: string; success: boolean; error?: string }[] = [];
+
+  for (const order of orders) {
+    const allowed = VALID_TRANSITIONS[order.status];
+    if (!allowed.includes(newStatus)) {
+      results.push({
+        id: order.id,
+        success: false,
+        error: `Cannot transition from ${order.status} to ${newStatus}`,
+      });
+      continue;
+    }
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: newStatus },
+    });
+    results.push({ id: order.id, success: true });
+  }
+
+  const foundIds = new Set(orders.map(o => o.id));
+  for (const id of ids) {
+    if (!foundIds.has(id)) {
+      results.push({ id, success: false, error: 'Order not found' });
+    }
+  }
+
+  logger.info({ message: 'Orders bulk status update by admin', results });
+  return { results };
+}
+
+// ─── CSV Export ─────────────────────────────────────────────────────────────
+
+function escapeCsv(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+export async function exportOrdersCsv() {
+  const orders = await prisma.order.findMany({
+    where: { deletedAt: null },
+    include: {
+      user: { select: { email: true, name: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const header = 'Order ID,Customer Email,Customer Name,Total,Status,Payment Method,Date';
+  const rows = orders.map(o =>
+    [
+      escapeCsv(o.id),
+      escapeCsv(o.user.email),
+      escapeCsv(o.user.name),
+      o.totalAmount.toFixed(2),
+      o.status,
+      o.paymentMethod,
+      o.createdAt.toISOString(),
+    ].join(',')
+  );
+
+  return [header, ...rows].join('\n');
+}
+
+// ─── Product Images ─────────────────────────────────────────────────────────
+
+export async function appendProductImages(id: string, imagePaths: string[]) {
+  const existing = await prisma.product.findFirst({ where: { id, deletedAt: null } });
+  if (!existing) throw new AppError('PRODUCT_NOT_FOUND', 'Product not found', 404);
+
+  const product = await prisma.product.update({
+    where: { id },
+    data: { images: { push: imagePaths } },
+    include: { category: true },
+  });
+
+  logger.info({ message: 'Product images updated by admin', productId: id });
+  return product;
 }
 
 // ─── Dashboard Stats ─────────────────────────────────────────────────────────

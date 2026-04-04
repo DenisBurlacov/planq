@@ -20,17 +20,35 @@ const CARD_SCENARIOS: Record<string, 'success' | 'declined' | 'insufficient'> = 
   '4000000000009995': 'insufficient',
 };
 
-export async function getOrders(userId: string, page = 1, limit = 10) {
+export async function getOrders(
+  userId: string,
+  page = 1,
+  limit = 10,
+  dateFrom?: string,
+  dateTo?: string
+) {
   const skip = (page - 1) * limit;
+
+  const where = {
+    userId,
+    deletedAt: null,
+    ...((dateFrom || dateTo) && {
+      createdAt: {
+        ...(dateFrom && { gte: new Date(dateFrom) }),
+        ...(dateTo && { lte: new Date(dateTo) }),
+      },
+    }),
+  };
+
   const [orders, total] = await Promise.all([
     prisma.order.findMany({
-      where: { userId, deletedAt: null },
+      where,
       include: { items: { include: { product: true } } },
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),
-    prisma.order.count({ where: { userId, deletedAt: null } }),
+    prisma.order.count({ where }),
   ]);
   return { items: orders, total, page, limit, pages: Math.ceil(total / limit) };
 }
@@ -157,7 +175,7 @@ export async function checkout(userId: string, input: CheckoutInput) {
   logger.info({ message: 'Order created', orderId: order.id, userId });
 
   // Async WS notification — does not block the response
-  schedulePaymentResult(userId, order.id);
+  schedulePaymentResult(userId, order.id, input.cardNumber);
 
   return order;
 }

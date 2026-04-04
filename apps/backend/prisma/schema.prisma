@@ -11,6 +11,7 @@ datasource db {
 
 enum Role {
   USER
+  MANAGER
   ADMIN
 }
 
@@ -58,6 +59,8 @@ model User {
   wishlist           Wishlist[]
   transactions       Transaction[]
   addresses          Address[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
 }
 
 model PasswordResetToken {
@@ -244,4 +247,33 @@ model Address {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // order_update, promo, system, welcome
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  action     String   // product_create, product_update, product_delete, order_status_update, user_block, etc.
+  resource   String   // product, order, user
+  resourceId String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
 }
