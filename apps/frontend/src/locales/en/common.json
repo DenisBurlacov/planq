@@ -55,5 +55,19 @@
   "outOfStock": "Out of stock",
   "inStock": "In stock",
   "items": "{{count}} item",
-  "items_other": "{{count}} items"
+  "items_other": "{{count}} items",
+  "footer": {
+    "tagline": "Scandinavian furniture for modern homes.",
+    "shop": "Shop",
+    "allProducts": "All Products",
+    "sale": "Sale",
+    "account": "Account",
+    "wallet": "Wallet",
+    "help": "Help",
+    "serverError": "Server Error (test)",
+    "rights": "All rights reserved.",
+    "builtFor": "Built for QA automation training",
+    "logoutTitle": "Sign Out",
+    "logoutMessage": "Are you sure you want to sign out?"
+  }
 }
