@@ -11,6 +11,7 @@ RUN pnpm install --frozen-lockfile --filter @planq/backend --filter @planq/types
 COPY tsconfig.base.json ./
 COPY apps/backend/ apps/backend/
 COPY packages/types/ packages/types/
+RUN pnpm --filter @planq/backend exec prisma generate
 RUN pnpm --filter @planq/backend run build
 
 # Production stage
