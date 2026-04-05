@@ -151,8 +151,10 @@ export function OrderDetailPage() {
         </div>
 
         <div>
+          <h2 className="font-semibold text-[var(--text-primary)] mb-3">
+            {t('ordersPage.summary')}
+          </h2>
           <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5 space-y-3">
-            <h2 className="font-semibold text-[var(--text-primary)]">{t('ordersPage.summary')}</h2>
             <div className="text-sm text-[var(--text-secondary)] space-y-1">
               <div className="flex justify-between">
                 <span>{t('ordersPage.payment')}</span>
