@@ -778,11 +778,11 @@ export function CatalogPage() {
                       data-testid={`filter-star-${star}`}
                       aria-label={t('filters.starAria', { count: star })}
                       onClick={() =>
-                        setQuery(q => ({
-                          ...q,
-                          rating: q.rating === star ? undefined : star,
-                          page: 1,
-                        }))
+                        setQuery(q => {
+                          const isFilled = q.rating !== undefined && star <= q.rating;
+                          const newRating = isFilled ? (star - 1 > 0 ? star - 1 : undefined) : star;
+                          return { ...q, rating: newRating, page: 1 };
+                        })
                       }
                       className="p-0.5 transition-colors"
                     >
