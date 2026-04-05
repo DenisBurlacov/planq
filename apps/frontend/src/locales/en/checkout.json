@@ -2,6 +2,7 @@
   "cart": {
     "title": "Cart",
     "empty": "Your cart is empty",
+    "emptyDesc": "Looks like you haven't added any items yet. Start shopping to fill your cart!",
     "browseCatalog": "Browse Catalog",
     "summary": "Order Summary",
     "subtotal": "Subtotal",

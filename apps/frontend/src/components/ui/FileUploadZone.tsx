@@ -1,6 +1,12 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 interface FileUploadZoneProps {
   accept: string;
@@ -26,6 +32,10 @@ export function FileUploadZone({
   const { t } = useTranslation('common');
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fileInfo, setFileInfo] = useState<{
+    size: string;
+    dimensions?: string;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const acceptTypes = accept.split(',').map(s => s.trim());
@@ -57,22 +67,48 @@ export function FileUploadZone({
     [maxSize, maxSizeLabel, acceptTypes, t]
   );
 
+  const captureFileInfo = useCallback((file: File) => {
+    const size = formatFileSize(file.size);
+    setFileInfo({ size });
+    // Try to read image dimensions
+    if (file.type.startsWith('image/')) {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        setFileInfo({ size, dimensions: `${img.width} x ${img.height}` });
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    }
+  }, []);
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       setDragActive(false);
       const files = validateFiles(e.dataTransfer.files);
-      if (files.length > 0) onUpload(files);
+      if (files.length > 0) {
+        captureFileInfo(files[0]);
+        onUpload(files);
+      }
     },
-    [validateFiles, onUpload]
+    [validateFiles, onUpload, captureFileInfo]
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = validateFiles(e.target.files);
-    if (files.length > 0) onUpload(files);
+    if (files.length > 0) {
+      captureFileInfo(files[0]);
+      onUpload(files);
+    }
     e.target.value = '';
   };
+
+  // Clear file info when preview is removed
+  useEffect(() => {
+    if (!preview) setFileInfo(null);
+  }, [preview]);
 
   return (
     <div data-testid={testId ?? 'file-upload-zone'}>
@@ -93,6 +129,22 @@ export function FileUploadZone({
             >
               <X className="h-3.5 w-3.5" />
             </button>
+          )}
+          {fileInfo && (
+            <div
+              data-testid="upload-file-info"
+              className="mt-1 text-xs text-[var(--text-secondary)]"
+            >
+              <span>{t('upload.fileSize', { size: fileInfo.size })}</span>
+              {fileInfo.dimensions && (
+                <span className="ml-2">
+                  {t('upload.fileDimensions', {
+                    width: fileInfo.dimensions.split(' x ')[0],
+                    height: fileInfo.dimensions.split(' x ')[1],
+                  })}
+                </span>
+              )}
+            </div>
           )}
         </div>
       ) : (

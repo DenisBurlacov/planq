@@ -20,9 +20,10 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const DEMO_ACCOUNTS = [
-  { email: 'user@planq.dev', password: 'Test1234!', label: 'user (3 orders, wallet)' },
-  { email: 'new@planq.dev', password: 'Test1234!', label: 'new user (clean)' },
-  { email: 'rich@planq.dev', password: 'Test1234!', label: 'rich (wallet \u20AC999)' },
+  { email: 'alice@example.com', password: 'Password1!', label: 'regular user (orders, wallet)' },
+  { email: 'bob@example.com', password: 'Password1!', label: 'regular user' },
+  { email: 'admin@planq.com', password: 'Password1!', label: 'admin' },
+  { email: 'manager@planq.com', password: 'Password1!', label: 'manager' },
 ];
 
 export function LoginPage() {

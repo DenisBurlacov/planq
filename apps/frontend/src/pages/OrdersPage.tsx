@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Package } from 'lucide-react';
 import { Badge } from '@components/ui/Badge';
 import { Skeleton } from '@components/ui/Skeleton';
+import { EmptyState } from '@components/ui/EmptyState';
 import { ordersApi } from '@api/orders';
 import type { OrderStatus } from '@appTypes/api';
 
@@ -68,16 +69,14 @@ export function OrdersPage() {
       </div>
 
       {!data?.items.length ? (
-        <div
+        <EmptyState
+          icon={Package}
+          title={t('ordersPage.empty')}
+          description={t('ordersPage.emptyDesc')}
+          ctaLabel={t('ordersPage.browseCatalog')}
+          ctaTo="/catalog"
           data-testid="empty-state"
-          className="flex flex-col items-center justify-center py-24 gap-4"
-        >
-          <Package className="h-16 w-16 text-[var(--text-secondary)]" />
-          <p className="text-[var(--text-secondary)]">{t('ordersPage.empty')}</p>
-          <Link to="/catalog" className="text-accent hover:underline text-sm">
-            {t('ordersPage.browseCatalog')}
-          </Link>
-        </div>
+        />
       ) : (
         <div data-testid="orders-list" className="space-y-4">
           {data.items.map(order => (

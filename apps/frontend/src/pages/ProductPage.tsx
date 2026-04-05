@@ -44,7 +44,7 @@ const COLOR_HEX: Record<string, string> = {
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
-  const { t } = useTranslation('catalog');
+  const { t, i18n } = useTranslation('catalog');
   const { accessToken } = useAuthStore();
   const { increment } = useCartStore();
   const { toast } = useToast();
@@ -252,6 +252,10 @@ export function ProductPage() {
 
   if (!product) return null;
 
+  const localizedName = i18n.language === 'ru' && product.nameRu ? product.nameRu : product.name;
+  const localizedDescription =
+    i18n.language === 'ru' && product.descriptionRu ? product.descriptionRu : product.description;
+
   const basePrice = product.salePrice ?? product.price;
   const priceAdjustment = selectedVariant?.priceAdjustment ?? 0;
   const price = basePrice + priceAdjustment;
@@ -268,7 +272,7 @@ export function ProductPage() {
     ...(product.category
       ? [{ label: product.category.name, to: `/catalog?categoryId=${product.category.id}` }]
       : []),
-    { label: product.name },
+    { label: localizedName },
   ];
 
   const specsTableRows = [
@@ -301,7 +305,7 @@ export function ProductPage() {
   const accordionItems = [
     {
       title: t('product.description'),
-      content: <p className="leading-relaxed">{product.description}</p>,
+      content: <p className="leading-relaxed">{localizedDescription}</p>,
     },
     {
       title: t('product.deliveryReturns'),
@@ -434,7 +438,7 @@ export function ProductPage() {
                 images={displayImages}
                 activeIndex={activeImage}
                 onChange={setActiveImage}
-                alt={product.name}
+                alt={localizedName}
               />
               {isOnSale && (
                 <div className="absolute top-3 left-3 z-10">
@@ -468,7 +472,7 @@ export function ProductPage() {
                 >
                   <img
                     src={img}
-                    alt={`${product.name} ${i + 1}`}
+                    alt={`${localizedName} ${i + 1}`}
                     className="h-full w-full object-cover"
                   />
                 </button>
@@ -490,7 +494,7 @@ export function ProductPage() {
             data-testid="product-name"
             className="text-2xl font-bold text-[var(--text-primary)] mb-2"
           >
-            {product.name}
+            {localizedName}
           </h1>
 
           <div data-testid="product-rating" className="flex items-center gap-2 mb-4">
@@ -630,7 +634,7 @@ export function ProductPage() {
 
           {/* Share buttons */}
           <div className="mb-4">
-            <ShareProduct productName={product.name} productUrl={productUrl} />
+            <ShareProduct productName={localizedName} productUrl={productUrl} />
           </div>
 
           {/* Quick stats */}

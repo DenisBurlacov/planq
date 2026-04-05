@@ -235,6 +235,7 @@ export function Navbar() {
                 >
                   <Link
                     data-testid="nav-catalog"
+                    data-onboarding-categories
                     to="/catalog"
                     className={navLinkClass('/catalog')}
                   >
@@ -288,6 +289,7 @@ export function Navbar() {
               <div className="relative hidden md:block">
                 <button
                   data-testid="navbar-search-trigger"
+                  data-onboarding-search
                   onClick={() => {
                     setSearchOpen(!searchOpen);
                     setTimeout(() => searchInputRef.current?.focus(), 50);
@@ -433,6 +435,7 @@ export function Navbar() {
               <Tooltip text={t('tooltips.cart') ?? t('nav.cart')}>
                 <Link
                   data-testid="nav-cart"
+                  data-onboarding-cart
                   to="/cart"
                   className="relative p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
                   aria-label={t('nav.cart')}
@@ -456,6 +459,7 @@ export function Navbar() {
               <div className="relative" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>
                 <button
                   data-testid="nav-profile-button"
+                  data-onboarding-profile
                   onClick={() => setDropdownOpen(prev => !prev)}
                   className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors text-sm"
                   aria-label={t('nav.profile')}

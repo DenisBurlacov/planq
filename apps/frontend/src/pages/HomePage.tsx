@@ -24,6 +24,7 @@ import { ApiException } from '@api/client';
 import { useTranslation } from 'react-i18next';
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '@constants/categoryIcons';
 import { TESTIMONIALS } from '@constants/testimonials';
+import { OnboardingTour } from '@components/OnboardingTour';
 
 // Verified Unsplash hero images (Scandinavian interior)
 const HERO_IMAGES = [
@@ -245,8 +246,13 @@ export function HomePage() {
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {loadingBest
             ? Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)
-            : bestSellers?.items.map(product => (
-                <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
+            : bestSellers?.items.map((product, idx) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  {...(idx === 0 ? { 'data-onboarding-product': true } : {})}
+                />
               ))}
         </div>
       </section>
@@ -330,6 +336,9 @@ export function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Onboarding tour (shown once for logged-in users) */}
+      {accessToken && <OnboardingTour />}
     </div>
   );
 }

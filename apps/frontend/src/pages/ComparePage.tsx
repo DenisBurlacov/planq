@@ -5,6 +5,7 @@ import { ArrowLeftRight, Plus, Star, X } from 'lucide-react';
 import { BackButton } from '@components/ui/BackButton';
 import { Button } from '@components/ui/Button';
 import { Skeleton } from '@components/ui/Skeleton';
+import { EmptyState } from '@components/ui/EmptyState';
 import { useCompareStore } from '@store/compare.store';
 import { useCartStore } from '@store/cart.store';
 import { useAuthStore } from '@store/auth.store';
@@ -91,23 +92,14 @@ export function ComparePage() {
     return (
       <div data-testid="compare-page">
         <BackButton fallbackTo="/catalog" className="mb-4" />
-        <div
+        <EmptyState
+          icon={ArrowLeftRight}
+          title={t('compare.empty')}
+          description={t('compare.emptyDesc')}
+          ctaLabel={t('compare.emptyCta')}
+          ctaTo="/catalog"
           data-testid="compare-empty"
-          className="flex flex-col items-center justify-center py-24 gap-4"
-        >
-          <ArrowLeftRight className="h-12 w-12 text-[var(--text-secondary)]" />
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">
-            {t('compare.empty', { defaultValue: 'No products to compare' })}
-          </h2>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {t('compare.emptyHint', {
-              defaultValue: 'Add products from the catalog to compare them side by side',
-            })}
-          </p>
-          <Link to="/catalog">
-            <Button>{t('title')}</Button>
-          </Link>
-        </div>
+        />
       </div>
     );
   }

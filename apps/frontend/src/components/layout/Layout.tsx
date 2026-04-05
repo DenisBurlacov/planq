@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ScrollToTop } from '@components/ui/ScrollToTop';
@@ -10,6 +10,18 @@ import { KeyboardShortcutsModal } from '@components/KeyboardShortcutsModal';
 
 export function Layout() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const location = useLocation();
+  const [transitionKey, setTransitionKey] = useState(location.key);
+  const [fadeIn, setFadeIn] = useState(true);
+
+  useEffect(() => {
+    setFadeIn(false);
+    const timer = setTimeout(() => {
+      setTransitionKey(location.key);
+      setFadeIn(true);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [location.key]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -55,7 +67,13 @@ export function Layout() {
       <EmailVerificationBanner />
       <Navbar />
       <main className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-8 flex-1">
-        <Outlet />
+        <div
+          key={transitionKey}
+          className="transition-opacity duration-200 ease-in-out"
+          style={{ opacity: fadeIn ? 1 : 0 }}
+        >
+          <Outlet />
+        </div>
       </main>
       <Footer />
       <ScrollToTop />

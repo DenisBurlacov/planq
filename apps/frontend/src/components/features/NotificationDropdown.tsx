@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, BellOff } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { notificationsApi } from '@api/notifications';
@@ -131,8 +131,20 @@ export function NotificationDropdown() {
           </div>
           <div className="max-h-80 overflow-y-auto">
             {!notifications?.items.length ? (
-              <div className="px-4 py-8 text-center text-sm text-[var(--text-secondary)]">
-                {t('notifications.empty')}
+              <div
+                data-testid="notification-empty"
+                className="flex flex-col items-center justify-center px-4 py-8 gap-2"
+              >
+                <BellOff
+                  className="h-10 w-10 text-[var(--text-secondary)] opacity-50"
+                  strokeWidth={1.2}
+                />
+                <p className="text-sm font-medium text-[var(--text-primary)]">
+                  {t('notifications.empty')}
+                </p>
+                <p className="text-xs text-[var(--text-secondary)] text-center">
+                  {t('notifications.emptyDesc')}
+                </p>
               </div>
             ) : (
               notifications.items.map(notif => (

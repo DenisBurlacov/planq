@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, ArrowLeftRight } from 'lucide-react';
@@ -12,6 +12,7 @@ import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Button } from '@components/ui/Button';
 import { ViewToggle, type ViewMode } from '@components/ui/ViewToggle';
 import { CategoryBar } from '@components/features/CategoryBar';
+import { useDebounce } from '@hooks/useDebounce';
 import { productsApi, type ProductsQuery } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
@@ -42,6 +43,7 @@ export function CatalogPage() {
   };
 
   const [query, setQuery] = useState<ProductsQuery>(initialQuery);
+  const debouncedQuery = useDebounce(query, 300);
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -90,8 +92,8 @@ export function CatalogPage() {
   }, [viewMode]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['products', query],
-    queryFn: () => productsApi.list(query),
+    queryKey: ['products', debouncedQuery],
+    queryFn: () => productsApi.list(debouncedQuery),
     placeholderData: prev => prev,
   });
 
@@ -236,9 +238,63 @@ export function CatalogPage() {
   };
 
   const compareCount = compareStore.productIds.length;
+  const qc = useQueryClient();
+
+  // Pull-to-refresh state (mobile only)
+  const [pullDistance, setPullDistance] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const pullStartY = useRef(0);
+  const isPulling = useRef(false);
+
+  const handlePullStart = useCallback((e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      pullStartY.current = e.touches[0].clientY;
+      isPulling.current = true;
+    }
+  }, []);
+
+  const handlePullMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isPulling.current || refreshing) return;
+      const delta = e.touches[0].clientY - pullStartY.current;
+      if (delta > 0 && window.scrollY === 0) {
+        setPullDistance(Math.min(delta * 0.4, 80));
+      }
+    },
+    [refreshing]
+  );
+
+  const handlePullEnd = useCallback(async () => {
+    if (!isPulling.current) return;
+    isPulling.current = false;
+    if (pullDistance > 50) {
+      setRefreshing(true);
+      await qc.invalidateQueries({ queryKey: ['products'] });
+      setRefreshing(false);
+    }
+    setPullDistance(0);
+  }, [pullDistance, qc]);
 
   return (
-    <div>
+    <div onTouchStart={handlePullStart} onTouchMove={handlePullMove} onTouchEnd={handlePullEnd}>
+      {/* Pull-to-refresh indicator (mobile) */}
+      {(pullDistance > 0 || refreshing) && (
+        <div
+          data-testid="pull-to-refresh-indicator"
+          className="flex items-center justify-center py-2 md:hidden"
+          style={{ height: pullDistance || (refreshing ? 40 : 0) }}
+        >
+          {refreshing ? (
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)]" />
+          ) : (
+            <p className="text-xs text-[var(--text-secondary)]">
+              {pullDistance > 50
+                ? t('common:pullToRefresh.release')
+                : t('common:pullToRefresh.pulling')}
+            </p>
+          )}
+        </div>
+      )}
       <Breadcrumb items={breadcrumbItems} />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--text-primary)]">

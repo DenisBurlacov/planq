@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
+import { useProductName, useProductDescription } from '@hooks/useProductLocale';
 import type { Product } from '@appTypes/api';
 
 interface ProductCardListProps {
@@ -28,6 +29,8 @@ export function ProductCardList({
   const [modalOpen, setModalOpen] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const localizedName = useProductName(product);
+  const localizedDescription = useProductDescription(product);
 
   const hasImage = product.images.length > 0 && !imgError;
   const price = product.salePrice ?? product.price;
@@ -86,7 +89,7 @@ export function ProductCardList({
         <div className="flex-1 p-4 flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2">
-              {product.name}
+              {localizedName}
             </h3>
             <div className="mt-1 flex items-center gap-1">
               <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
@@ -95,7 +98,7 @@ export function ProductCardList({
               </span>
             </div>
             <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mt-1">
-              {product.description}
+              {localizedDescription}
             </p>
           </div>
           <div className="flex items-center gap-2 mt-2">

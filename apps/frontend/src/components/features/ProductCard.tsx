@@ -1,12 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Heart, ShoppingCart, Star, ImageOff, Eye, ArrowLeftRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
 import { StockUrgencyBadge } from '@components/ui/StockUrgencyBadge';
 import { useCompareStore } from '@store/compare.store';
+import { useProductName } from '@hooks/useProductLocale';
 import type { Product } from '@appTypes/api';
 
 interface ProductCardProps {
@@ -15,6 +16,7 @@ interface ProductCardProps {
   onAddToCart?: (product: Product, quantity: number) => Promise<void>;
   onToggleWishlist?: (productId: string) => void;
   onQuickView?: (product: Product) => void;
+  'data-onboarding-product'?: boolean;
 }
 
 export function ProductCard({
@@ -23,6 +25,7 @@ export function ProductCard({
   onAddToCart,
   onToggleWishlist,
   onQuickView,
+  'data-onboarding-product': onboardingProduct,
 }: ProductCardProps) {
   const { t } = useTranslation('catalog');
   const navigate = useNavigate();
@@ -32,6 +35,44 @@ export function ProductCard({
   const [wishlistPending, setWishlistPending] = useState(false);
   const [imgError, setImgError] = useState(false);
   const { addProduct, removeProduct, hasProduct, productIds } = useCompareStore();
+  const localizedName = useProductName(product);
+
+  // Swipe state for mobile
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientX - touchStartX.current;
+    touchDeltaX.current = delta;
+    const clamped = Math.max(-80, Math.min(80, delta));
+    setSwipeOffset(clamped);
+    if (Math.abs(delta) > 20) {
+      setSwipeDirection(delta < 0 ? 'left' : 'right');
+    } else {
+      setSwipeDirection(null);
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const delta = touchDeltaX.current;
+    if (delta < -60 && onToggleWishlist) {
+      // Swipe left -> wishlist
+      onToggleWishlist(product.id);
+    } else if (delta > 60 && onAddToCart) {
+      // Swipe right -> add to cart
+      setModalOpen(true);
+    }
+    setSwipeOffset(0);
+    setSwipeDirection(null);
+  }, [onToggleWishlist, onAddToCart, product.id]);
 
   const handleAddToCart = () => {
     if (!onAddToCart) return;
@@ -94,11 +135,34 @@ export function ProductCard({
         onCancel={() => setModalOpen(false)}
       />
       <Link
+        ref={cardRef}
         to={`/catalog/${product.id}`}
         data-testid="product-card"
+        {...(onboardingProduct ? { 'data-onboarding-product': true } : {})}
         className="group relative rounded-xl bg-[var(--bg-card)] border border-[var(--border)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 block"
-        aria-label={isOutOfStock ? `${product.name} — ${t('product.outOfStock')}` : product.name}
+        aria-label={isOutOfStock ? `${localizedName} — ${t('product.outOfStock')}` : localizedName}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ transform: swipeOffset ? `translateX(${swipeOffset}px)` : undefined }}
       >
+        {/* Swipe indicators (mobile) */}
+        {swipeDirection === 'left' && (
+          <div
+            data-testid="swipe-indicator-wishlist"
+            className="absolute inset-y-0 right-0 w-16 z-30 flex items-center justify-center bg-red-500/80 rounded-r-xl md:hidden"
+          >
+            <Heart className="h-6 w-6 text-white" />
+          </div>
+        )}
+        {swipeDirection === 'right' && (
+          <div
+            data-testid="swipe-indicator-cart"
+            className="absolute inset-y-0 left-0 w-16 z-30 flex items-center justify-center bg-green-500/80 rounded-l-xl md:hidden"
+          >
+            <ShoppingCart className="h-6 w-6 text-white" />
+          </div>
+        )}
         {/* Image */}
         <div className="relative h-48 bg-[var(--bg-sidebar)] overflow-hidden">
           {hasImage ? (
@@ -194,7 +258,7 @@ export function ProductCard({
         {/* Content */}
         <div className="p-4">
           <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-2">
-            {product.name}
+            {localizedName}
           </h3>
 
           {/* Rating */}

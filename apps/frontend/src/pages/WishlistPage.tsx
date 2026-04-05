@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { Modal } from '@components/ui/Modal';
+import { EmptyState } from '@components/ui/EmptyState';
 import { wishlistApi } from '@api/wishlist';
 import { cartApi } from '@api/cart';
 import { useCartStore } from '@store/cart.store';
@@ -69,16 +69,14 @@ export function WishlistPage() {
 
   if (!data?.length) {
     return (
-      <div
+      <EmptyState
+        icon={Heart}
+        title={t('wishlist.empty')}
+        description={t('wishlist.emptyDesc')}
+        ctaLabel={t('wishlist.emptyCta')}
+        ctaTo="/catalog"
         data-testid="empty-state"
-        className="flex flex-col items-center justify-center py-24 gap-4"
-      >
-        <Heart className="h-16 w-16 text-[var(--text-secondary)]" />
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">{t('wishlist.empty')}</h2>
-        <Link to="/catalog" className="text-accent hover:underline text-sm">
-          {t('product.addToWishlist')}
-        </Link>
-      </div>
+      />
     );
   }
 

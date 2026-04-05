@@ -223,6 +223,8 @@
     "maxSize": "Max size: {{size}}",
     "formats": "Formats: {{formats}}",
     "remove": "Remove",
+    "fileSize": "Size: {{size}}",
+    "fileDimensions": "{{width}} x {{height}}",
     "error": {
       "tooLarge": "File too large. Max: {{size}}",
       "invalidType": "Invalid file type"
@@ -231,5 +233,43 @@
   "copy": {
     "copy": "Copy",
     "copied": "Copied!"
-  }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "emptyDesc": "When you receive notifications, they will appear here.",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read"
+  },
+  "tooltips": {
+    "notifications": "Notifications"
+  },
+  "ordersPage": {
+    "title": "My Orders",
+    "empty": "No orders yet",
+    "emptyDesc": "When you place an order, it will appear here.",
+    "browseCatalog": "Browse Catalog"
+  },
+  "onboarding": {
+    "step1Title": "Search Products",
+    "step1Desc": "Use the search bar to find furniture by name, category, or keyword.",
+    "step2Title": "Browse Categories",
+    "step2Desc": "Explore our curated collections organized by room and style.",
+    "step3Title": "Product Details",
+    "step3Desc": "Click any product card to view detailed specs, reviews, and photos.",
+    "step4Title": "Your Cart",
+    "step4Desc": "Add items to your cart and proceed to checkout when ready.",
+    "step5Title": "Your Profile",
+    "step5Desc": "Manage your orders, addresses, wallet, and account settings.",
+    "skip": "Skip Tour",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Got It!"
+  },
+  "pullToRefresh": {
+    "pulling": "Pull to refresh...",
+    "release": "Release to refresh",
+    "refreshing": "Refreshing..."
+  },
+  "loadingPage": "Loading page..."
 }

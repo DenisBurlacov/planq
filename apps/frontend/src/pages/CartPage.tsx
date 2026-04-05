@@ -8,6 +8,7 @@ import { Modal } from '@components/ui/Modal';
 import { Skeleton } from '@components/ui/Skeleton';
 import { DragList } from '@components/ui/DragList';
 import { CopyButton } from '@components/ui/CopyButton';
+import { EmptyState } from '@components/ui/EmptyState';
 import { cartApi } from '@api/cart';
 import { promotionsApi } from '@api/promotions';
 import { useCartStore } from '@store/cart.store';
@@ -110,16 +111,14 @@ export function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div
-        className="flex flex-col items-center justify-center py-24 gap-4"
+      <EmptyState
+        icon={ShoppingBag}
+        title={t('cart.empty')}
+        description={t('cart.emptyDesc')}
+        ctaLabel={t('cart.browseCatalog')}
+        ctaTo="/catalog"
         data-testid="cart-empty"
-      >
-        <ShoppingBag className="h-16 w-16 text-[var(--text-secondary)]" />
-        <h2 className="text-xl font-bold text-[var(--text-primary)]">{t('cart.empty')}</h2>
-        <Link to="/catalog">
-          <Button>{t('cart.browseCatalog')}</Button>
-        </Link>
-      </div>
+      />
     );
   }
 

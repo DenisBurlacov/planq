@@ -70,8 +70,10 @@ export interface ProductVariant {
 export interface Product {
   id: string;
   name: string;
+  nameRu?: string;
   slug: string;
   description: string;
+  descriptionRu?: string;
   price: number;
   salePrice: number | null;
   saleEndsAt?: string | null;
