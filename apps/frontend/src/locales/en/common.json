@@ -38,7 +38,8 @@
     "back": "Back",
     "continue": "Continue",
     "loading": "Loading...",
-    "retry": "Retry"
+    "retry": "Retry",
+    "clear": "Clear"
   },
   "status": {
     "PENDING": "Pending",

@@ -45,13 +45,22 @@ export async function getProducts(query: ProductsQuery) {
   // Build JSON path filters for specs
   const specsFilters: Record<string, unknown>[] = [];
   if (material) {
-    specsFilters.push({ specs: { path: ['material'], string_contains: material } });
+    const values = material.split(',');
+    specsFilters.push({
+      OR: values.map(v => ({ specs: { path: ['material'], string_contains: v.trim() } })),
+    });
   }
   if (color) {
-    specsFilters.push({ specs: { path: ['color'], string_contains: color } });
+    const values = color.split(',');
+    specsFilters.push({
+      OR: values.map(v => ({ specs: { path: ['color'], string_contains: v.trim() } })),
+    });
   }
   if (style) {
-    specsFilters.push({ specs: { path: ['style'], string_contains: style } });
+    const values = style.split(',');
+    specsFilters.push({
+      OR: values.map(v => ({ specs: { path: ['style'], string_contains: v.trim() } })),
+    });
   }
 
   const where = {
