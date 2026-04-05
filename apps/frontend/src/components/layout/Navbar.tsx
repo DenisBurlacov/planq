@@ -457,7 +457,7 @@ export function Navbar() {
               </Tooltip>
             )}
 
-            {accessToken && <NotificationDropdown />}
+            {accessToken && !isAdminRole && <NotificationDropdown />}
 
             {accessToken ? (
               <div className="relative" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>

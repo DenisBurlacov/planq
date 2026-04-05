@@ -100,7 +100,7 @@ export function LoginPage() {
       }
       if ('accessToken' in res) {
         setAuth(res.accessToken, res.refreshToken, res.user);
-        navigate(from, { replace: true });
+        navigate(res.user.role === 'ADMIN' ? '/admin' : from, { replace: true });
       }
     } catch (err) {
       if (err instanceof ApiException) {
@@ -115,7 +115,7 @@ export function LoginPage() {
     try {
       const res = await twoFactorApi.verifyLogin(tempToken, twoFactorCode);
       setAuth(res.accessToken, res.refreshToken, res.user);
-      navigate(from, { replace: true });
+      navigate(res.user.role === 'ADMIN' ? '/admin' : from, { replace: true });
     } catch (err) {
       if (err instanceof ApiException) {
         setServerError(err.message);
