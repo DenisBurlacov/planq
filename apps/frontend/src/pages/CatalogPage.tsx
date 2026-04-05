@@ -356,16 +356,17 @@ export function CatalogPage() {
       {showFilters && (
         <div
           data-testid="catalog-filter-panel"
-          className="hidden md:block mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"
+          className="hidden md:block mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3"
         >
-          {/* Filter panel header */}
-          <div className="flex items-center justify-between mb-4">
+          {/* Header: Filters + Clear */}
+          <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-[var(--text-primary)]">
               {t('filters.title')}
             </span>
             <Button
               data-testid="catalog-clear-filters"
               variant="secondary"
+              size="sm"
               onClick={() => {
                 setQuery({ page: 1, limit: 12, sort: 'newest' });
                 setSearch('');
@@ -378,25 +379,26 @@ export function CatalogPage() {
             </Button>
           </div>
 
-          {/* Filter grid: 2 rows x 3 cols */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Row 1, Col 1: Price range */}
+          {/* Row 1: Price + Checkboxes -- 2 columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            {/* Price range */}
             <div>
-              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
                 {t('filters.price')}
               </label>
-              <div className="flex gap-2 items-center">
-                <div className="relative flex-1">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)]">
+              <div className="flex items-center gap-1.5">
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)] pointer-events-none">
                     {t('common:currency')}
                   </span>
                   <input
                     id="filter-min-price"
+                    data-testid="filter-min-price"
                     type="number"
                     placeholder="0"
                     min="0"
                     value={localMinPrice}
-                    className={`w-full rounded-lg border bg-[var(--bg-card)] pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
+                    className={`w-[90px] rounded-md border bg-[var(--bg-card)] pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
                     onChange={e => {
                       const raw = e.target.value;
                       setLocalMinPrice(raw);
@@ -411,18 +413,19 @@ export function CatalogPage() {
                     }}
                   />
                 </div>
-                <span className="text-[var(--text-secondary)]">&mdash;</span>
-                <div className="relative flex-1">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)]">
+                <span className="text-xs text-[var(--text-secondary)]">&ndash;</span>
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)] pointer-events-none">
                     {t('common:currency')}
                   </span>
                   <input
                     id="filter-max-price"
+                    data-testid="filter-max-price"
                     type="number"
                     placeholder="∞"
                     min="0"
                     value={localMaxPrice}
-                    className={`w-full rounded-lg border bg-[var(--bg-card)] pl-7 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
+                    className={`w-[90px] rounded-md border bg-[var(--bg-card)] pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
                     onChange={e => {
                       const raw = e.target.value;
                       setLocalMaxPrice(raw);
@@ -438,14 +441,15 @@ export function CatalogPage() {
                   />
                 </div>
               </div>
-              {priceError && <p className="text-xs text-red-500 mt-1 w-full">{priceError}</p>}
+              {priceError && <p className="text-xs text-red-500 mt-1">{priceError}</p>}
             </div>
 
-            {/* Row 1, Col 2: Checkboxes */}
-            <div className="flex flex-col gap-2 justify-center">
-              <label className="flex items-center gap-2 text-sm cursor-pointer text-[var(--text-primary)]">
+            {/* Checkboxes: On Sale + In Stock -- inline, tight */}
+            <div className="flex items-end gap-4 pb-0.5">
+              <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)]">
                 <input
                   type="checkbox"
+                  data-testid="filter-on-sale"
                   className="rounded"
                   checked={!!query.onSale}
                   onChange={e =>
@@ -454,9 +458,10 @@ export function CatalogPage() {
                 />
                 {t('filters.onSale')}
               </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer text-[var(--text-primary)]">
+              <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)]">
                 <input
                   type="checkbox"
+                  data-testid="filter-in-stock"
                   className="rounded"
                   checked={!!query.inStock}
                   onChange={e =>
@@ -466,16 +471,16 @@ export function CatalogPage() {
                 {t('filters.inStock')}
               </label>
             </div>
+          </div>
 
-            {/* Row 1, Col 3: empty placeholder */}
-            <div />
-
-            {/* Row 2, Col 1: Material chips */}
+          {/* Row 2: Material | Color | Style -- 3 equal columns */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Material chips */}
             <div>
-              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
                 {t('filters.material')}
               </label>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1">
                 {(['wood', 'metal', 'fabric', 'glass', 'leather', 'plastic'] as const).map(mat => {
                   const isActive = query.material?.includes(mat);
                   return (
@@ -492,7 +497,7 @@ export function CatalogPage() {
                           page: 1,
                         }))
                       }
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
                         isActive
                           ? 'bg-accent text-white'
                           : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
@@ -505,12 +510,12 @@ export function CatalogPage() {
               </div>
             </div>
 
-            {/* Row 2, Col 2: Color swatches */}
+            {/* Color swatches */}
             <div>
-              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
                 {t('filters.color')}
               </label>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1">
                 {(
                   [
                     { key: 'natural', hex: '#d4a574' },
@@ -536,7 +541,7 @@ export function CatalogPage() {
                           page: 1,
                         }))
                       }
-                      className={`h-7 w-7 rounded-full border-2 transition-all ${
+                      className={`h-6 w-6 rounded-full border-2 transition-all ${
                         isActive
                           ? 'border-accent ring-2 ring-accent/30'
                           : 'border-[var(--border)] hover:border-accent/50'
@@ -550,12 +555,12 @@ export function CatalogPage() {
               </div>
             </div>
 
-            {/* Row 2, Col 3: Style pills */}
+            {/* Style pills */}
             <div>
-              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
                 {t('filters.style')}
               </label>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1">
                 {(['scandinavian', 'modern', 'industrial', 'minimalist', 'classic'] as const).map(
                   sty => {
                     const isActive = query.style?.includes(sty);
@@ -573,7 +578,7 @@ export function CatalogPage() {
                             page: 1,
                           }))
                         }
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
                           isActive
                             ? 'bg-accent text-white'
                             : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
