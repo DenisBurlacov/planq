@@ -12,6 +12,7 @@ import { useState, useCallback } from 'react';
 import { ApiException } from '@api/client';
 import { SocialLoginButtons } from '@components/SocialLoginButtons';
 import { CaptchaMock } from '@components/CaptchaMock';
+import { Users, X } from 'lucide-react';
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -65,7 +66,7 @@ export function LoginPage() {
   const location = useLocation();
   const [serverError, setServerError] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  // Always show demo accounts — this is a QA training platform
+  const [showAccounts, setShowAccounts] = useState(false);
 
   // 2FA state
   const [requires2FA, setRequires2FA] = useState(false);
@@ -259,24 +260,53 @@ export function LoginPage() {
             </Link>
           </p>
 
-          {/* Demo accounts — always visible, this is a QA training platform */}
-          <div data-testid="demo-accounts" className="mt-6 rounded-lg bg-[var(--bg-sidebar)] p-4">
-            <p className="text-xs font-semibold text-[var(--text-secondary)] mb-3 uppercase tracking-wide">
-              {t('auth.demoAccounts')}
-            </p>
-            <div className="space-y-1.5">
+          {/* Test accounts button */}
+          <button
+            data-testid="show-test-accounts"
+            type="button"
+            onClick={() => setShowAccounts(true)}
+            className="mt-4 w-full flex items-center justify-center gap-2 rounded-lg border border-dashed border-[var(--border)] py-2 text-xs text-[var(--text-secondary)] hover:border-accent hover:text-accent transition-colors"
+          >
+            <Users className="h-3.5 w-3.5" />
+            {t('auth.demoAccounts')}
+          </button>
+        </div>
+      </div>
+
+      {/* Sliding drawer with test accounts */}
+      {showAccounts && (
+        <div className="fixed inset-0 z-50" data-testid="demo-accounts-overlay">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setShowAccounts(false)} />
+          <div
+            data-testid="demo-accounts"
+            className="absolute right-0 top-0 h-full w-80 bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl p-5 overflow-y-auto animate-in slide-in-from-right"
+            style={{ animation: 'slideInRight 0.2s ease-out' }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-[var(--text-primary)]">{t('auth.demoAccounts')}</h3>
+              <button
+                data-testid="close-test-accounts"
+                onClick={() => setShowAccounts(false)}
+                className="p-1 rounded hover:bg-[var(--bg-sidebar)] text-[var(--text-secondary)]"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
               {DEMO_ACCOUNTS.map(acc => (
                 <button
                   key={acc.email}
                   type="button"
-                  onClick={() => fillDemo(acc.email, acc.password)}
-                  className="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors group"
+                  onClick={() => {
+                    fillDemo(acc.email, acc.password);
+                    setShowAccounts(false);
+                  }}
+                  className="w-full text-left text-xs px-3 py-2.5 rounded-lg border border-[var(--border)] hover:border-accent/40 hover:bg-accent/5 transition-colors group"
                   data-testid={`demo-account-${acc.email.split('@')[0]}`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-accent group-hover:text-accent-hover">
-                      {acc.email}
-                    </span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-accent text-sm">{acc.email}</span>
                     <span
                       className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                         acc.role === 'ADMIN'
@@ -293,16 +323,19 @@ export function LoginPage() {
                       {acc.role}
                     </span>
                   </div>
-                  <p className="text-[var(--text-secondary)] mt-0.5">{acc.label}</p>
+                  <p className="text-[var(--text-secondary)]">{acc.label}</p>
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-[var(--text-secondary)] mt-3 opacity-60">
-              {t('auth.demoPassword')}: Password1!
-            </p>
+
+            <div className="mt-4 rounded-lg bg-[var(--bg-sidebar)] p-3">
+              <p className="text-xs text-[var(--text-secondary)]">
+                <span className="font-medium">{t('auth.demoPassword')}:</span> Password1!
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
