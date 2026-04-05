@@ -659,7 +659,7 @@ export function ProductPage() {
         <div className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--bg-card)]">
           <iframe
             data-testid="product-video-iframe"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            src="https://www.youtube.com/embed/qJkBMXJoYpU"
             title={t('product.videoReview')}
             className="w-full aspect-video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
