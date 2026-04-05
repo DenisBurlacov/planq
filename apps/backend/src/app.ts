@@ -25,6 +25,7 @@ import realtimeNotificationsRouter from '@routes/realtime-notifications.js';
 import adminRouter from '@routes/admin.js';
 import webhooksRouter from '@routes/webhooks.js';
 import twoFactorRouter from '@routes/twoFactor.js';
+import captchaRouter from '@routes/captcha.js';
 import { contentNegotiation } from '@middleware/contentNegotiation.js';
 
 const app: Express = express();
@@ -80,6 +81,7 @@ app.use('/api/v1/notifications', realtimeNotificationsRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/webhooks', webhooksRouter);
 app.use('/api/v1/auth/2fa', twoFactorRouter);
+app.use('/api/v1/auth/captcha', captchaRouter);
 app.use('/api/test', resetRouter);
 
 // Global error handler (must be last)
