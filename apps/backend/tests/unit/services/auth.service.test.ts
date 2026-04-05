@@ -12,6 +12,11 @@ jest.mock('@utils/prisma.js', () => ({
       delete: jest.fn(),
       deleteMany: jest.fn(),
     },
+    emailVerificationToken: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      delete: jest.fn(),
+    },
   },
 }));
 

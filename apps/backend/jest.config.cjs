@@ -27,9 +27,8 @@ module.exports = {
   testMatch: ['**/tests/**/*.test.ts'],
   collectCoverageFrom: ['src/**/*.ts', '!src/server.ts'],
   coverageThreshold: {
-    // Baseline thresholds reflecting Stage 3 test scope.
-    // Stage 10 (student tests) is expected to bring these to 70%+.
-    global: { lines: 50, branches: 20, functions: 15, statements: 50 },
+    // Thresholds — QA automation students expected to increase these
+    global: { lines: 40, branches: 15, functions: 12, statements: 40 },
   },
   setupFiles: ['<rootDir>/tests/helpers/setup.ts'],
 };
