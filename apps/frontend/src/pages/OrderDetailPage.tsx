@@ -114,7 +114,7 @@ export function OrderDetailPage() {
       {/* Order Tracking Timeline */}
       <OrderTrackingTimeline status={order.status} createdAt={order.createdAt} />
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-6 items-start">
         <div className="md:col-span-2">
           <h2 className="font-semibold text-[var(--text-primary)] mb-3">{t('ordersPage.items')}</h2>
           <div className="space-y-3">
