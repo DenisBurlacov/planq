@@ -42,26 +42,25 @@ export async function getProducts(query: ProductsQuery) {
   } = query;
   const skip = (page - 1) * limit;
 
-  // Build JSON path filters for specs
+  // Build JSON path filters for specs (case-insensitive via multiple variants)
   const specsFilters: Record<string, unknown>[] = [];
-  if (material) {
-    const values = material.split(',');
+  const buildSpecsFilter = (field: string, value: string) => {
+    const values = value
+      .split(',')
+      .map(v => v.trim())
+      .filter(Boolean);
+    if (values.length === 0) return;
     specsFilters.push({
-      OR: values.map(v => ({ specs: { path: ['material'], string_contains: v.trim() } })),
+      OR: values.flatMap(v => [
+        { specs: { path: [field], string_contains: v } },
+        { specs: { path: [field], string_contains: v.charAt(0).toUpperCase() + v.slice(1) } },
+        { specs: { path: [field], string_contains: v.toLowerCase() } },
+      ]),
     });
-  }
-  if (color) {
-    const values = color.split(',');
-    specsFilters.push({
-      OR: values.map(v => ({ specs: { path: ['color'], string_contains: v.trim() } })),
-    });
-  }
-  if (style) {
-    const values = style.split(',');
-    specsFilters.push({
-      OR: values.map(v => ({ specs: { path: ['style'], string_contains: v.trim() } })),
-    });
-  }
+  };
+  if (material) buildSpecsFilter('material', material);
+  if (color) buildSpecsFilter('color', color);
+  if (style) buildSpecsFilter('style', style);
 
   const where = {
     deletedAt: null,
@@ -72,8 +71,12 @@ export async function getProducts(query: ProductsQuery) {
         { description: { contains: search, mode: 'insensitive' as const } },
       ],
     }),
-    ...(minPrice !== undefined && { price: { gte: minPrice } }),
-    ...(maxPrice !== undefined && { price: { lte: maxPrice } }),
+    ...((minPrice !== undefined || maxPrice !== undefined) && {
+      price: {
+        ...(minPrice !== undefined && { gte: minPrice }),
+        ...(maxPrice !== undefined && { lte: maxPrice }),
+      },
+    }),
     ...(inStock && { stock: { gt: 0 } }),
     ...(onSale && { salePrice: { not: null } }),
     ...(specsFilters.length > 0 && { AND: specsFilters }),
