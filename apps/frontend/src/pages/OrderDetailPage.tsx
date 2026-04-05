@@ -149,9 +149,7 @@ export function OrderDetailPage() {
             </div>
           )}
 
-          {(order.status === 'SHIPPED' ||
-            order.status === 'IN_TRANSIT' ||
-            order.status === 'OUT_FOR_DELIVERY') && (
+          {order.status === 'SHIPPED' && (
             <div data-testid="status-panel-shipping">
               <iframe
                 data-testid="order-map-iframe"
