@@ -139,10 +139,29 @@
     "almostGone": "Almost gone!",
     "onlyXLeft": "Only {{count}} left!",
     "share": "Share",
-    "shareWhatsApp": "Share on WhatsApp",
-    "shareTelegram": "Share on Telegram",
-    "shareEmail": "Share via Email",
     "copyLink": "Copy Link",
+    "shareModal": {
+      "send": "Open & Share",
+      "messagePreview": "Message preview",
+      "whatsapp": {
+        "title": "WhatsApp",
+        "subtitle": "Share with friends and family",
+        "description": "Send this product to your WhatsApp contacts. Perfect for getting a second opinion or sharing a find!",
+        "defaultMessage": "Check out this amazing piece: {{name}}"
+      },
+      "telegram": {
+        "title": "Telegram",
+        "subtitle": "Share in chats and channels",
+        "description": "Share this product in your Telegram chats, groups, or channels. Quick and easy!",
+        "defaultMessage": "Found something great: {{name}}"
+      },
+      "email": {
+        "title": "Email",
+        "subtitle": "Send via email",
+        "description": "Share this product with anyone via email. Great for sharing with family or sending to yourself for later.",
+        "defaultMessage": "I thought you might like this: {{name}}"
+      }
+    },
     "notifyMe": "Notify Me",
     "notifyPlaceholder": "Enter your email",
     "notifySuccess": "We'll notify you when this item is back in stock!",

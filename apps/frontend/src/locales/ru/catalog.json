@@ -139,10 +139,29 @@
     "almostGone": "Почти закончилось!",
     "onlyXLeft": "Осталось {{count}} шт.!",
     "share": "Поделиться",
-    "shareWhatsApp": "Поделиться в WhatsApp",
-    "shareTelegram": "Поделиться в Telegram",
-    "shareEmail": "Отправить по Email",
     "copyLink": "Копировать ссылку",
+    "shareModal": {
+      "send": "Открыть и отправить",
+      "messagePreview": "Предпросмотр сообщения",
+      "whatsapp": {
+        "title": "WhatsApp",
+        "subtitle": "Поделиться с друзьями и семьёй",
+        "description": "Отправьте этот товар контактам в WhatsApp. Идеально для совета или чтобы поделиться находкой!",
+        "defaultMessage": "Посмотри, какая классная вещь: {{name}}"
+      },
+      "telegram": {
+        "title": "Telegram",
+        "subtitle": "Поделиться в чатах и каналах",
+        "description": "Поделитесь этим товаром в чатах, группах или каналах Telegram. Быстро и удобно!",
+        "defaultMessage": "Нашёл кое-что интересное: {{name}}"
+      },
+      "email": {
+        "title": "Email",
+        "subtitle": "Отправить по почте",
+        "description": "Поделитесь товаром по email. Можно отправить себе на потом или близким.",
+        "defaultMessage": "Думаю, тебе понравится: {{name}}"
+      }
+    },
     "notifyMe": "Уведомить",
     "notifyPlaceholder": "Введите ваш email",
     "notifySuccess": "Мы уведомим вас, когда товар появится в наличии!",

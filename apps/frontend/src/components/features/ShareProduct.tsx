@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mail } from 'lucide-react';
 import { CopyButton } from '@components/ui/CopyButton';
+import { ShareModal } from '@components/features/ShareModal';
 
 interface ShareProductProps {
   productName: string;
@@ -23,62 +25,73 @@ function TelegramIcon({ className }: { className?: string }) {
   );
 }
 
+const SHARE_CHANNELS = [
+  {
+    key: 'whatsapp',
+    icon: <WhatsAppIcon className="h-5 w-5" />,
+    buttonIcon: <WhatsAppIcon className="h-4 w-4 text-green-600" />,
+    color: '#25D366',
+    buildUrl: (text: string, url: string) =>
+      `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`,
+  },
+  {
+    key: 'telegram',
+    icon: <TelegramIcon className="h-5 w-5" />,
+    buttonIcon: <TelegramIcon className="h-4 w-4 text-blue-500" />,
+    color: '#0088cc',
+    buildUrl: (text: string, url: string) =>
+      `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
+  },
+  {
+    key: 'email',
+    icon: <Mail className="h-5 w-5" />,
+    buttonIcon: <Mail className="h-4 w-4 text-[var(--text-secondary)]" />,
+    color: '#6b7280',
+    buildUrl: (text: string, url: string) =>
+      `mailto:?subject=${encodeURIComponent(text)}&body=${encodeURIComponent(url)}`,
+  },
+];
+
 export function ShareProduct({ productName, productUrl }: ShareProductProps) {
   const { t } = useTranslation('catalog');
-
-  const text = productName;
-  const url = productUrl;
-
-  const handleShare = async () => {
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({ title: text, url });
-        return;
-      } catch {
-        // user cancelled or error — fall through
-      }
-    }
-  };
-
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`;
-  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-  const emailUrl = `mailto:?subject=${encodeURIComponent(text)}&body=${encodeURIComponent(url)}`;
+  const [activeChannel, setActiveChannel] = useState<(typeof SHARE_CHANNELS)[number] | null>(null);
 
   const btnClass =
     'inline-flex items-center justify-center h-9 w-9 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] hover:border-accent/40 hover:bg-accent/5 transition-colors';
 
   return (
-    <div className="flex items-center gap-2" onClick={handleShare}>
-      <span className="text-xs text-[var(--text-secondary)] mr-1">{t('product.share')}</span>
-      <a
-        data-testid="share-whatsapp"
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={btnClass}
-        aria-label={t('product.shareWhatsApp')}
-      >
-        <WhatsAppIcon className="h-4 w-4 text-green-600" />
-      </a>
-      <a
-        data-testid="share-telegram"
-        href={telegramUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={btnClass}
-        aria-label={t('product.shareTelegram')}
-      >
-        <TelegramIcon className="h-4 w-4 text-blue-500" />
-      </a>
-      <a
-        data-testid="share-email"
-        href={emailUrl}
-        className={btnClass}
-        aria-label={t('product.shareEmail')}
-      >
-        <Mail className="h-4 w-4 text-[var(--text-secondary)]" />
-      </a>
-      <CopyButton data-testid="share-copy" text={url} label={t('product.copyLink')} />
-    </div>
+    <>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-[var(--text-secondary)] mr-1">{t('product.share')}</span>
+        {SHARE_CHANNELS.map(channel => (
+          <button
+            key={channel.key}
+            data-testid={`share-${channel.key}`}
+            className={btnClass}
+            aria-label={t(`product.shareModal.${channel.key}.title`)}
+            onClick={() => setActiveChannel(channel)}
+          >
+            {channel.buttonIcon}
+          </button>
+        ))}
+        <CopyButton data-testid="share-copy" text={productUrl} label={t('product.copyLink')} />
+      </div>
+
+      <ShareModal
+        channel={
+          activeChannel
+            ? {
+                key: activeChannel.key,
+                icon: activeChannel.icon,
+                color: activeChannel.color,
+                shareUrl: activeChannel.buildUrl(productName, productUrl),
+              }
+            : null
+        }
+        productName={productName}
+        productUrl={productUrl}
+        onClose={() => setActiveChannel(null)}
+      />
+    </>
   );
 }
