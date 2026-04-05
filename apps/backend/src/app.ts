@@ -45,6 +45,9 @@ app.use(express.json());
 // Serve uploaded files
 app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
+// Serve product/category/hero/blog placeholder images
+app.use('/images', express.static(path.resolve(process.cwd(), 'public/images')));
+
 // Request ID on every request
 app.use(requestIdMiddleware);
 

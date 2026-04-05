@@ -111,6 +111,7 @@ model RefreshToken {
 model Category {
   id       String    @id @default(uuid())
   name     String    @unique
+  nameRu   String?
   slug     String    @unique
   image    String?
   createdAt DateTime @default(now())
@@ -130,6 +131,8 @@ model Product {
   categoryId  String
   images      String[]
   rating      Float     @default(0)
+  nameRu        String?
+  descriptionRu String?
   reviewCount Int       @default(0)
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
