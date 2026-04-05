@@ -167,6 +167,32 @@
     "stars": "{{count}} star",
     "stars_other": "{{count}} stars"
   },
+  "featureFlags": {
+    "title": "Feature Flags",
+    "description": "Toggle features on or off. Changes take effect on next page load.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "toggled": "Feature flag updated.",
+    "toggleError": "Failed to update feature flag.",
+    "flags": {
+      "show_testimonials": "Show Testimonials",
+      "show_countdown": "Show Countdown Timers",
+      "enable_reviews": "Enable Review Submission",
+      "show_trust_badges": "Show Trust Badges",
+      "new_checkout_flow": "New Checkout Flow (A/B Test)",
+      "dark_mode_toggle": "Show Dark Mode Toggle",
+      "show_flaky_zone": "Show QA Training Zone"
+    },
+    "flagDescriptions": {
+      "show_testimonials": "Shows customer testimonials on the homepage.",
+      "show_countdown": "Shows sale countdown timers on the homepage.",
+      "enable_reviews": "Allows customers to submit product reviews.",
+      "show_trust_badges": "Shows trust badges (shipping, payment, etc.) on the homepage.",
+      "new_checkout_flow": "Enables the alternative hero section (A/B test variant B).",
+      "dark_mode_toggle": "Shows the dark mode toggle in the navigation bar.",
+      "show_flaky_zone": "Shows the QA Training Zone with flaky elements on the homepage."
+    }
+  },
   "settings": {
     "title": "Store Settings",
     "storeName": "Store Name",

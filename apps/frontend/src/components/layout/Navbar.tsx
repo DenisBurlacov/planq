@@ -25,6 +25,7 @@ import { productsApi } from '@api/products';
 import { MegaMenu } from './MegaMenu';
 import { Tooltip } from '@components/ui/Tooltip';
 import { NotificationDropdown } from '@components/features/NotificationDropdown';
+import { useFeatureFlag } from '@hooks/useFeatureFlag';
 
 export function Navbar() {
   const { t, i18n } = useTranslation('common');
@@ -141,6 +142,7 @@ export function Navbar() {
 
   const isAdminRole = user?.role === 'ADMIN';
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  const showDarkModeToggle = useFeatureFlag('dark_mode_toggle');
 
   // Search debounce
   useEffect(() => {
@@ -407,16 +409,18 @@ export function Navbar() {
               </button>
             </Tooltip>
 
-            <Tooltip text={isDark ? t('theme.light') : t('theme.dark')}>
-              <button
-                data-testid="theme-toggle"
-                onClick={toggle}
-                className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-                aria-label={isDark ? t('theme.light') : t('theme.dark')}
-              >
-                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </button>
-            </Tooltip>
+            {showDarkModeToggle && (
+              <Tooltip text={isDark ? t('theme.light') : t('theme.dark')}>
+                <button
+                  data-testid="theme-toggle"
+                  onClick={toggle}
+                  className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                  aria-label={isDark ? t('theme.light') : t('theme.dark')}
+                >
+                  {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </button>
+              </Tooltip>
+            )}
 
             {!isAdminRole && (
               <Tooltip text={t('tooltips.wishlist') ?? t('nav.wishlist')}>

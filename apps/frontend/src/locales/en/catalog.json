@@ -207,6 +207,31 @@
         "quote": "Beautifully designed furniture at fair prices. The bedside tables are minimalist perfection. Highly recommend PLANQ!"
       }
     },
+    "abVariant": {
+      "heroTitle1": "Design Your",
+      "heroTitle2": "Perfect Space",
+      "heroSubtitle": "Explore our curated collection of Scandinavian furniture and transform your home into a sanctuary of style and comfort.",
+      "exploreCta": "Explore Collection",
+      "badge": "A/B Test: Variant B"
+    },
+    "flakyZone": {
+      "title": "QA Training Zone",
+      "description": "This section contains elements that behave inconsistently, designed for QA automation training.",
+      "delayedButtonTitle": "Delayed Button",
+      "delayedButtonDesc": "This button appears after a random 1-5 second delay.",
+      "subscribe": "Subscribe",
+      "intermittentBannerTitle": "Intermittent Banner",
+      "intermittentBannerDesc": "This banner appears 70% of the time (random on each render).",
+      "bannerText": "Special offer! Get 15% off your next purchase with code PLANQ15.",
+      "bannerHidden": "Banner did not appear this time (30% chance).",
+      "disappearingTooltipTitle": "Disappearing Tooltip",
+      "disappearingTooltipDesc": "Hover the button to see a tooltip that auto-hides after 500ms.",
+      "hoverMe": "Hover Me",
+      "tooltipText": "Now you see me... gone in 500ms!",
+      "slowLoadingTitle": "Slow-Loading Recommendations",
+      "slowLoadingDesc": "Product recommendations that load with a 2-4 second artificial delay.",
+      "recommendations": "Recommended for You"
+    },
     "partners": {
       "title": "Our Partners",
       "names": {

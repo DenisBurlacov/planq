@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { CountdownTimer } from '@components/ui/CountdownTimer';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { productsApi } from '@api/products';
@@ -25,6 +25,8 @@ import { useTranslation } from 'react-i18next';
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '@constants/categoryIcons';
 import { TESTIMONIALS } from '@constants/testimonials';
 import { OnboardingTour } from '@components/OnboardingTour';
+import { useFeatureFlag } from '@hooks/useFeatureFlag';
+import { FlakyElements } from '@components/FlakyElements';
 
 // Verified Unsplash hero images (Scandinavian interior)
 const HERO_IMAGES = [
@@ -41,6 +43,35 @@ export function HomePage() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const showTestimonials = useFeatureFlag('show_testimonials');
+  const showCountdown = useFeatureFlag('show_countdown');
+  const showTrustBadges = useFeatureFlag('show_trust_badges');
+  const newCheckoutFlow = useFeatureFlag('new_checkout_flow');
+  const showFlakyZone = useFeatureFlag('show_flaky_zone');
+
+  // A/B test variant — persisted in localStorage
+  const [abVariant] = useState<'A' | 'B'>(() => {
+    if (!newCheckoutFlow) return 'A';
+    const stored = localStorage.getItem('planq-ab-variant');
+    if (stored === 'A' || stored === 'B') return stored;
+    const variant = Math.random() < 0.5 ? 'A' : 'B';
+    localStorage.setItem('planq-ab-variant', variant);
+    return variant;
+  });
+
+  // Update variant when flag changes
+  useEffect(() => {
+    if (newCheckoutFlow) {
+      const stored = localStorage.getItem('planq-ab-variant');
+      if (stored !== 'A' && stored !== 'B') {
+        const variant = Math.random() < 0.5 ? 'A' : 'B';
+        localStorage.setItem('planq-ab-variant', variant);
+      }
+    }
+  }, [newCheckoutFlow]);
+
+  const isVariantB = newCheckoutFlow && abVariant === 'B';
 
   const heroBgRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -89,111 +120,170 @@ export function HomePage() {
   return (
     <div className="space-y-16">
       {/* ── Hero with parallax ────────────────────────────────────────────── */}
-      <section
-        data-testid="hero-section"
-        className="relative rounded-2xl overflow-hidden h-[340px] md:h-[420px]"
-      >
-        {/* Parallax background */}
-        <div
-          ref={heroBgRef}
-          className="absolute inset-0 -top-16 -bottom-16 will-change-transform"
-          style={{
-            backgroundImage: `url(${HERO_IMAGES[0]})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center top',
-          }}
-        />
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/10" />
-
-        {/* Content */}
-        <div className="relative h-full flex flex-col justify-center px-8 md:px-14">
-          <div className="max-w-xl">
-            <span className="inline-block rounded-full bg-white/15 backdrop-blur-sm border border-white/20 px-3 py-1 text-xs font-semibold text-white/90 mb-4 tracking-widest uppercase">
-              {t('home.newCollection')}
-            </span>
-            <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight drop-shadow-md">
-              {t('home.heroTitle1')}
-              <br />
-              <span className="text-accent">{t('home.heroTitle2')}</span>
-            </h1>
-            <p className="mt-4 max-w-md text-white/75 leading-relaxed">{t('home.heroSubtitle')}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                data-testid="hero-cta"
-                to="/catalog"
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white hover:bg-accent-hover transition-colors shadow-lg shadow-black/30"
-              >
-                {t('home.shopNow')} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/catalog?onSale=true"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/30 backdrop-blur-sm px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors"
-              >
-                {t('home.viewSale')}
-              </Link>
+      {isVariantB ? (
+        /* ── A/B Variant B: image left, text right ──────────────────────── */
+        <section
+          data-testid="hero-section"
+          data-ab-variant="B"
+          className="relative rounded-2xl overflow-hidden border border-[var(--border)]"
+        >
+          <div className="grid md:grid-cols-2 min-h-[340px] md:min-h-[420px]">
+            <div className="relative">
+              <div
+                ref={heroBgRef}
+                className="absolute inset-0 will-change-transform"
+                style={{
+                  backgroundImage: `url(${HERO_IMAGES[0]})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
             </div>
-
-            {/* Stats */}
-            <div className="mt-10 flex gap-8">
-              {[
-                { value: '60+', label: t('home.products') },
-                { value: '10', label: t('home.categoriesCount') },
-                { value: '4.8★', label: t('home.avgRating') },
-              ].map(stat => (
-                <div key={stat.label}>
-                  <p className="text-xl font-bold text-white drop-shadow">{stat.value}</p>
-                  <p className="text-xs text-white/60">{stat.label}</p>
-                </div>
-              ))}
+            <div className="flex flex-col justify-center px-8 md:px-12 py-10 bg-[var(--bg-card)]">
+              <span className="inline-block w-fit rounded-full bg-accent/10 border border-accent/20 px-3 py-1 text-xs font-semibold text-accent mb-4 tracking-widest uppercase">
+                {t('home.newCollection')}
+              </span>
+              <h1 className="text-3xl md:text-5xl font-bold text-[var(--text-primary)] leading-tight">
+                {t('home.abVariant.heroTitle1')}
+                <br />
+                <span className="text-accent">{t('home.abVariant.heroTitle2')}</span>
+              </h1>
+              <p className="mt-4 max-w-md text-[var(--text-secondary)] leading-relaxed">
+                {t('home.abVariant.heroSubtitle')}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  data-testid="hero-cta"
+                  to="/catalog"
+                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white hover:bg-accent-hover transition-colors shadow-lg"
+                >
+                  {t('home.abVariant.exploreCta')} <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="mt-10 flex gap-8">
+                {[
+                  { value: '60+', label: t('home.products') },
+                  { value: '10', label: t('home.categoriesCount') },
+                  { value: '4.8', label: t('home.avgRating') },
+                ].map(stat => (
+                  <div key={stat.label}>
+                    <p className="text-xl font-bold text-[var(--text-primary)]">{stat.value}</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        /* ── Variant A: default overlay hero ────────────────────────────── */
+        <section
+          data-testid="hero-section"
+          data-ab-variant="A"
+          className="relative rounded-2xl overflow-hidden h-[340px] md:h-[420px]"
+        >
+          <div
+            ref={heroBgRef}
+            className="absolute inset-0 -top-16 -bottom-16 will-change-transform"
+            style={{
+              backgroundImage: `url(${HERO_IMAGES[0]})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/10" />
+          <div className="relative h-full flex flex-col justify-center px-8 md:px-14">
+            <div className="max-w-xl">
+              <span className="inline-block rounded-full bg-white/15 backdrop-blur-sm border border-white/20 px-3 py-1 text-xs font-semibold text-white/90 mb-4 tracking-widest uppercase">
+                {t('home.newCollection')}
+              </span>
+              <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight drop-shadow-md">
+                {t('home.heroTitle1')}
+                <br />
+                <span className="text-accent">{t('home.heroTitle2')}</span>
+              </h1>
+              <p className="mt-4 max-w-md text-white/75 leading-relaxed">
+                {t('home.heroSubtitle')}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  data-testid="hero-cta"
+                  to="/catalog"
+                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white hover:bg-accent-hover transition-colors shadow-lg shadow-black/30"
+                >
+                  {t('home.shopNow')} <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/catalog?onSale=true"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 backdrop-blur-sm px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-colors"
+                >
+                  {t('home.viewSale')}
+                </Link>
+              </div>
+              <div className="mt-10 flex gap-8">
+                {[
+                  { value: '60+', label: t('home.products') },
+                  { value: '10', label: t('home.categoriesCount') },
+                  { value: '4.8★', label: t('home.avgRating') },
+                ].map(stat => (
+                  <div key={stat.label}>
+                    <p className="text-xl font-bold text-white drop-shadow">{stat.value}</p>
+                    <p className="text-xs text-white/60">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Trust Badges ─────────────────────────────────────────────────── */}
-      <section data-testid="trust-badges" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          {
-            icon: Truck,
-            titleKey: 'home.trustBadges.shipping.title',
-            subtitleKey: 'home.trustBadges.shipping.subtitle',
-            testId: 'trust-badge-shipping',
-          },
-          {
-            icon: ShieldCheck,
-            titleKey: 'home.trustBadges.payment.title',
-            subtitleKey: 'home.trustBadges.payment.subtitle',
-            testId: 'trust-badge-payment',
-          },
-          {
-            icon: RefreshCw,
-            titleKey: 'home.trustBadges.returns.title',
-            subtitleKey: 'home.trustBadges.returns.subtitle',
-            testId: 'trust-badge-returns',
-          },
-          {
-            icon: Headphones,
-            titleKey: 'home.trustBadges.support.title',
-            subtitleKey: 'home.trustBadges.support.subtitle',
-            testId: 'trust-badge-support',
-          },
-        ].map(badge => (
-          <div
-            key={badge.testId}
-            data-testid={badge.testId}
-            className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-4"
-          >
-            <div className="rounded-lg bg-accent/10 p-2.5">
-              <badge.icon className="h-5 w-5 text-accent" />
+      {showTrustBadges && (
+        <section data-testid="trust-badges" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              icon: Truck,
+              titleKey: 'home.trustBadges.shipping.title',
+              subtitleKey: 'home.trustBadges.shipping.subtitle',
+              testId: 'trust-badge-shipping',
+            },
+            {
+              icon: ShieldCheck,
+              titleKey: 'home.trustBadges.payment.title',
+              subtitleKey: 'home.trustBadges.payment.subtitle',
+              testId: 'trust-badge-payment',
+            },
+            {
+              icon: RefreshCw,
+              titleKey: 'home.trustBadges.returns.title',
+              subtitleKey: 'home.trustBadges.returns.subtitle',
+              testId: 'trust-badge-returns',
+            },
+            {
+              icon: Headphones,
+              titleKey: 'home.trustBadges.support.title',
+              subtitleKey: 'home.trustBadges.support.subtitle',
+              testId: 'trust-badge-support',
+            },
+          ].map(badge => (
+            <div
+              key={badge.testId}
+              data-testid={badge.testId}
+              className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-4"
+            >
+              <div className="rounded-lg bg-accent/10 p-2.5">
+                <badge.icon className="h-5 w-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">
+                  {t(badge.titleKey)}
+                </p>
+                <p className="text-xs text-[var(--text-secondary)]">{t(badge.subtitleKey)}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-[var(--text-primary)]">{t(badge.titleKey)}</p>
-              <p className="text-xs text-[var(--text-secondary)]">{t(badge.subtitleKey)}</p>
-            </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </section>
+      )}
 
       {/* ── Category tiles ────────────────────────────────────────────────── */}
       {categories && categories.length > 0 && (
@@ -278,7 +368,7 @@ export function HomePage() {
       </section>
 
       {/* ── Testimonials Carousel ────────────────────────────────────────── */}
-      <TestimonialsSection carouselRef={carouselRef} t={t} />
+      {showTestimonials && <TestimonialsSection carouselRef={carouselRef} t={t} />}
 
       {/* ── Sale Banner ───────────────────────────────────────────────────── */}
       <section
@@ -301,11 +391,13 @@ export function HomePage() {
             </p>
             <h3 className="text-2xl font-bold text-white">{t('home.saleBannerTitle')}</h3>
             <p className="text-sm text-white/60 mt-1">{t('home.saleBannerSubtitle')}</p>
-            <div className="mt-3">
-              <CountdownTimer
-                endDate={new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()}
-              />
-            </div>
+            {showCountdown && (
+              <div className="mt-3">
+                <CountdownTimer
+                  endDate={new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()}
+                />
+              </div>
+            )}
           </div>
           <Link
             data-testid="sale-banner-cta"
@@ -337,8 +429,21 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── QA Training Zone (Flaky Elements) ────────────────────────────── */}
+      {showFlakyZone && <FlakyElements />}
+
       {/* Onboarding tour (shown once for logged-in users) */}
       {accessToken && <OnboardingTour />}
+
+      {/* A/B Test dev badge */}
+      {isVariantB && (
+        <div
+          data-testid="ab-test-badge"
+          className="fixed bottom-4 left-4 z-50 rounded-lg bg-accent/90 px-3 py-1.5 text-xs font-medium text-white shadow-lg"
+        >
+          {t('home.abVariant.badge')}
+        </div>
+      )}
     </div>
   );
 }

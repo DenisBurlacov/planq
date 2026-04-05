@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@components/ui/Button';
 import { Toggle } from '@components/ui/Toggle';
 import { useToast } from '@components/ui/Toast';
+import { featureFlagsApi, type FeatureFlag } from '@api/featureFlags';
+import { useFeatureFlagsStore } from '@store/featureFlags.store';
 
 interface StoreSettings {
   storeName: string;
@@ -188,6 +190,84 @@ export function AdminSettingsPage() {
             </Button>
           </div>
         </form>
+      </div>
+      {/* ── Feature Flags ──────────────────────────────────────────────── */}
+      <FeatureFlagsSection />
+    </div>
+  );
+}
+
+function FeatureFlagsSection() {
+  const { t } = useTranslation('admin');
+  const { toast } = useToast();
+  const fetchFlags = useFeatureFlagsStore(s => s.fetchFlags);
+  const [flags, setFlags] = useState<FeatureFlag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [togglingKey, setTogglingKey] = useState<string | null>(null);
+
+  const loadFlags = useCallback(async () => {
+    try {
+      const list = await featureFlagsApi.list();
+      setFlags(list);
+    } catch {
+      // silent
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadFlags();
+  }, [loadFlags]);
+
+  const handleToggle = async (key: string, enabled: boolean) => {
+    setTogglingKey(key);
+    try {
+      const updated = await featureFlagsApi.toggle(key, enabled);
+      setFlags(prev => prev.map(f => (f.key === updated.key ? updated : f)));
+      // Refresh global store
+      await fetchFlags();
+      toast('success', t('featureFlags.toggled'));
+    } catch {
+      toast('error', t('featureFlags.toggleError'));
+    }
+    setTogglingKey(null);
+  };
+
+  return (
+    <div data-testid="admin-feature-flags-section" className="mt-8">
+      <h2
+        data-testid="admin-feature-flags-title"
+        className="text-xl font-bold text-[var(--text-primary)] mb-2"
+      >
+        {t('featureFlags.title')}
+      </h2>
+      <p className="text-sm text-[var(--text-secondary)] mb-4">{t('featureFlags.description')}</p>
+
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] divide-y divide-[var(--border)]">
+        {loading ? (
+          <div className="p-6 text-center text-sm text-[var(--text-secondary)]">
+            {t('table.loading')}
+          </div>
+        ) : flags.length === 0 ? (
+          <div className="p-6 text-center text-sm text-[var(--text-secondary)]">
+            {t('table.empty')}
+          </div>
+        ) : (
+          flags.map(flag => (
+            <div key={flag.key} data-testid={`feature-flag-${flag.key}`} className="px-6 py-4">
+              <Toggle
+                data-testid={`feature-flag-toggle-${flag.key}`}
+                checked={flag.enabled}
+                onChange={v => handleToggle(flag.key, v)}
+                disabled={togglingKey === flag.key}
+                label={t(`featureFlags.flags.${flag.key}`, { defaultValue: flag.key })}
+                description={t(`featureFlags.flagDescriptions.${flag.key}`, {
+                  defaultValue: flag.description,
+                })}
+              />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

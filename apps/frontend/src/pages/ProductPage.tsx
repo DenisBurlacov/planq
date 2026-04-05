@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Star, ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
+import { useFeatureFlag } from '@hooks/useFeatureFlag';
 import { ImageCarousel } from '@components/ImageCarousel';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
@@ -51,6 +52,7 @@ export function ProductPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const qc = useQueryClient();
+  const enableReviews = useFeatureFlag('enable_reviews');
 
   const [activeImage, setActiveImage] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
@@ -731,7 +733,7 @@ export function ProductPage() {
         </div>
 
         {/* Write review */}
-        {accessToken && (
+        {accessToken && enableReviews && (
           <form
             data-testid="review-form"
             onSubmit={handleSubmitReview}

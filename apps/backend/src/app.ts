@@ -30,6 +30,7 @@ import cardsRouter from '@routes/cards.js';
 import blogRouter from '@routes/blog.js';
 import contactRouter from '@routes/contact.js';
 import newsletterRouter from '@routes/newsletter.js';
+import featureFlagsRouter, { adminFeatureFlagsRouter } from '@routes/featureFlags.js';
 import { contentNegotiation } from '@middleware/contentNegotiation.js';
 
 const app: Express = express();
@@ -93,6 +94,8 @@ app.use('/api/v1/cards', cardsRouter);
 app.use('/api/v1/blog', blogRouter);
 app.use('/api/v1/contact', contactRouter);
 app.use('/api/v1/newsletter', newsletterRouter);
+app.use('/api/v1/feature-flags', featureFlagsRouter);
+app.use('/api/v1/admin/feature-flags', adminFeatureFlagsRouter);
 app.use('/api/test', resetRouter);
 
 // Global error handler (must be last)
