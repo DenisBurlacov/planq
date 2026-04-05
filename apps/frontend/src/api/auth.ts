@@ -34,4 +34,16 @@ export const authApi = {
     apiFetch<{ message: string }>('/api/v1/auth/resend-verification', {
       method: 'POST',
     }),
+
+  forgotPassword: (email: string) =>
+    apiFetch<{ message: string; token?: string }>('/api/v1/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
+  resetPassword: (token: string, newPassword: string) =>
+    apiFetch<{ message: string }>('/api/v1/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    }),
 };

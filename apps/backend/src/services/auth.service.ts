@@ -172,15 +172,57 @@ export async function logout(token: string) {
   await prisma.refreshToken.deleteMany({ where: { token } });
 }
 
-export async function forgotPassword(email: string) {
-  const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
+// In-memory rate limiter for forgot password attempts
+const forgotPasswordAttempts = new Map<
+  string,
+  { count: number; firstAttempt: number; blockedUntil?: number }
+>();
+const FORGOT_PW_MAX_ATTEMPTS = 10;
+const FORGOT_PW_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+const FORGOT_PW_BLOCK_MS = 5 * 60 * 1000; // 5 minutes block
 
-  // Always return same message to prevent email enumeration
-  const message = 'If email exists, reset link sent';
+export async function forgotPassword(email: string) {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Check rate limit
+  const attempts = forgotPasswordAttempts.get(normalizedEmail);
+  const now = Date.now();
+
+  if (attempts?.blockedUntil && now < attempts.blockedUntil) {
+    const remainingSeconds = Math.ceil((attempts.blockedUntil - now) / 1000);
+    throw new AppError(
+      'TOO_MANY_ATTEMPTS',
+      `Too many attempts. Try again in ${remainingSeconds} seconds.`,
+      429
+    );
+  }
+
+  // Reset window if expired
+  if (attempts && now - attempts.firstAttempt > FORGOT_PW_WINDOW_MS) {
+    forgotPasswordAttempts.delete(normalizedEmail);
+  }
+
+  const user = await prisma.user.findFirst({ where: { email: normalizedEmail, deletedAt: null } });
 
   if (!user) {
-    return { message };
+    // Track failed attempt
+    const current = forgotPasswordAttempts.get(normalizedEmail) || { count: 0, firstAttempt: now };
+    current.count++;
+    if (current.count >= FORGOT_PW_MAX_ATTEMPTS) {
+      current.blockedUntil = now + FORGOT_PW_BLOCK_MS;
+      forgotPasswordAttempts.set(normalizedEmail, current);
+      throw new AppError(
+        'TOO_MANY_ATTEMPTS',
+        'Too many attempts. Your access has been temporarily blocked.',
+        429
+      );
+    }
+    forgotPasswordAttempts.set(normalizedEmail, current);
+    throw new AppError('EMAIL_NOT_FOUND', 'No account found with this email address.', 404);
   }
+
+  // Success — clear attempts
+  forgotPasswordAttempts.delete(normalizedEmail);
 
   // Delete existing tokens for this user
   await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
@@ -196,7 +238,7 @@ export async function forgotPassword(email: string) {
 
   // In dev/test environment, include token in response for QA testability
   const isDev = process.env.NODE_ENV !== 'production';
-  return isDev ? { message, token } : { message };
+  return { message: 'Password reset link has been sent to your email.', ...(isDev && { token }) };
 }
 
 export async function resetPassword(token: string, newPassword: string) {

@@ -174,7 +174,13 @@
     "hasAccount": "Already have an account?",
     "demoAccounts": "Demo Accounts",
     "resetPassword": "Reset Password",
-    "resetSent": "Check your email for reset instructions",
+    "resetPasswordDesc": "Enter your email and we'll send you a link to reset your password.",
+    "resetSent": "Reset link sent!",
+    "resetSentDesc": "Check your email for password reset instructions. The link expires in 1 hour.",
+    "sendResetLink": "Send Reset Link",
+    "backToLogin": "Back to Sign In",
+    "emailNotFound": "No account found with this email address.",
+    "tooManyAttempts": "Too many attempts",
     "orContinueWith": "or continue with"
   }
 }
