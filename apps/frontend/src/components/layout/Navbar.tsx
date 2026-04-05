@@ -37,6 +37,8 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [blogMenuOpen, setBlogMenuOpen] = useState(false);
+  const blogMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [catalogExpanded, setCatalogExpanded] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -244,6 +246,13 @@ export function Navbar() {
                     {t('nav.catalog')}
                   </Link>
                 </div>
+                <Link
+                  data-testid="nav-wishlist-link"
+                  to="/wishlist"
+                  className={navLinkClass('/wishlist')}
+                >
+                  {t('nav.wishlist')}
+                </Link>
                 <Link data-testid="nav-about" to="/about" className={navLinkClass('/about')}>
                   {t('nav.about')}
                 </Link>
@@ -270,6 +279,40 @@ export function Navbar() {
                     {t('nav.orders')}
                   </Link>
                 )}
+                {/* Blog with dropdown */}
+                <div
+                  className="relative"
+                  onMouseEnter={() => {
+                    if (blogMenuTimeoutRef.current) clearTimeout(blogMenuTimeoutRef.current);
+                    setBlogMenuOpen(true);
+                  }}
+                  onMouseLeave={() => {
+                    blogMenuTimeoutRef.current = setTimeout(() => setBlogMenuOpen(false), 250);
+                  }}
+                >
+                  <Link data-testid="nav-blog" to="/blog" className={navLinkClass('/blog')}>
+                    {t('nav.blog')}
+                  </Link>
+                  {blogMenuOpen && (
+                    <div
+                      data-testid="blog-dropdown"
+                      className="absolute top-full left-0 mt-1 w-48 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] shadow-xl py-1 z-50"
+                    >
+                      {['trends', 'guides', 'inspiration', 'sustainability'].map(cat => (
+                        <Link
+                          key={cat}
+                          data-testid={`blog-dropdown-${cat}`}
+                          to={`/blog?category=${cat}`}
+                          onClick={() => setBlogMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                        >
+                          {t(`nav.blogCategories.${cat}`)}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {isAdmin && (
                   <Link
                     data-testid="nav-admin"

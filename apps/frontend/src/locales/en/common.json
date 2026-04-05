@@ -14,6 +14,13 @@
     "about": "About",
     "sale": "Sale",
     "newArrivals": "New Arrivals",
+    "blog": "Blog",
+    "blogCategories": {
+      "trends": "Design Trends",
+      "guides": "Furniture Guides",
+      "inspiration": "Room Inspiration",
+      "sustainability": "Sustainability"
+    },
     "search": "Search",
     "searchPlaceholder": "Search products...",
     "searchNoResults": "No products found",

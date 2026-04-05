@@ -14,6 +14,13 @@
     "about": "О нас",
     "sale": "Скидки",
     "newArrivals": "Новинки",
+    "blog": "Блог",
+    "blogCategories": {
+      "trends": "Тренды дизайна",
+      "guides": "Гид по мебели",
+      "inspiration": "Вдохновение",
+      "sustainability": "Экологичность"
+    },
     "search": "Поиск",
     "searchPlaceholder": "Поиск товаров...",
     "searchNoResults": "Товары не найдены",
