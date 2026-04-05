@@ -76,6 +76,21 @@ router.patch(
  *       200:
  *         description: Avatar updated
  */
+/**
+ * @openapi
+ * /profile/avatar:
+ *   delete:
+ *     tags: [Profile]
+ *     summary: Delete avatar (set to null)
+ */
+router.delete('/avatar', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    ok(res, await profileService.deleteAvatar(getAuthUser(req).userId));
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/avatar', uploadAvatar, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const file = req.file;

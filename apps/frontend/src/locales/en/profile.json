@@ -69,14 +69,34 @@
     "dateFrom": "From",
     "dateTo": "To"
   },
+  "avatar": {
+    "change": "Change Avatar",
+    "upload": "Upload Avatar",
+    "delete": "Remove Avatar"
+  },
   "form": {
     "name": "Full Name",
     "email": "Email",
+    "emailInfo": "Changing email will update your login credentials",
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
     "saveChanges": "Save Changes",
     "changePassword": "Change Password"
+  },
+  "settingsTab": {
+    "unsavedChanges": "Unsaved changes",
+    "unsavedTitle": "Unsaved Changes",
+    "unsavedMessage": "You have unsaved profile changes. Would you like to save them before leaving?",
+    "saveAndContinue": "Save & Continue",
+    "discardChanges": "Discard"
+  },
+  "validation": {
+    "nameMin": "Name must be at least 2 characters",
+    "nameMax": "Name must be at most 15 characters",
+    "nameLatinOnly": "Name must contain only Latin letters, spaces, hyphens, and apostrophes",
+    "emailInvalid": "Please enter a valid email address",
+    "emailTaken": "This email is already taken"
   },
   "webhooks": {
     "title": "Webhooks",
@@ -133,6 +153,8 @@
   "toast": {
     "avatarUpdated": "Avatar updated",
     "avatarFailed": "Failed to update avatar",
+    "avatarDeleted": "Avatar removed",
+    "avatarDeleteFailed": "Failed to remove avatar",
     "profileUpdated": "Profile updated",
     "passwordChanged": "Password changed",
     "preferencesSaved": "Preferences saved",

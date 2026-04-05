@@ -17,6 +17,7 @@ interface FileUploadZoneProps {
   preview?: string | null;
   onRemove?: () => void;
   'data-testid'?: string;
+  'data-testid-remove'?: string;
 }
 
 export function FileUploadZone({
@@ -28,6 +29,7 @@ export function FileUploadZone({
   preview,
   onRemove,
   'data-testid': testId,
+  'data-testid-remove': testIdRemove,
 }: FileUploadZoneProps) {
   const { t } = useTranslation('common');
   const [dragActive, setDragActive] = useState(false);
@@ -122,7 +124,7 @@ export function FileUploadZone({
           />
           {onRemove && (
             <button
-              data-testid="upload-remove"
+              data-testid={testIdRemove ?? 'upload-remove'}
               onClick={onRemove}
               className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
               aria-label={t('upload.remove')}

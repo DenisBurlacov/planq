@@ -5,7 +5,13 @@ import { AppError } from '@utils/AppError.js';
 import { hashPassword } from '@utils/password.js';
 
 export const UpdateProfileSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
+  name: z
+    .string()
+    .min(2)
+    .max(15)
+    .regex(/^[a-zA-Z\s\-']+$/)
+    .optional(),
+  email: z.string().email().optional(),
   avatar: z.string().min(1).optional(),
 });
 
@@ -36,9 +42,25 @@ export async function getProfile(userId: string) {
 }
 
 export async function updateProfile(userId: string, input: z.infer<typeof UpdateProfileSchema>) {
+  if (input.email) {
+    const existing = await prisma.user.findFirst({
+      where: { email: input.email, id: { not: userId } },
+    });
+    if (existing) {
+      throw new AppError('EMAIL_TAKEN', 'This email is already taken', 409);
+    }
+  }
   return prisma.user.update({
     where: { id: userId },
     data: input,
+    select: { id: true, email: true, name: true, avatar: true, walletBalance: true },
+  });
+}
+
+export async function deleteAvatar(userId: string) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { avatar: null },
     select: { id: true, email: true, name: true, avatar: true, walletBalance: true },
   });
 }

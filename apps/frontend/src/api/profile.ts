@@ -4,8 +4,10 @@ import type { User, Transaction, PaginatedResponse } from '@appTypes/api';
 export const profileApi = {
   get: () => apiFetch<User>('/api/v1/profile'),
 
-  update: (data: { name?: string }) =>
+  update: (data: { name?: string; email?: string }) =>
     apiFetch<User>('/api/v1/profile', { method: 'PATCH', body: JSON.stringify(data) }),
+
+  deleteAvatar: () => apiFetch<User>('/api/v1/profile/avatar', { method: 'DELETE' }),
 
   changePassword: (currentPassword: string, newPassword: string) =>
     apiFetch<undefined>('/api/v1/profile/password', {

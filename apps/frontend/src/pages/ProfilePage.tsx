@@ -25,7 +25,6 @@ import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
 import { useConfirmModal } from '@hooks/useConfirmModal';
 
-const nameSchema = z.object({ name: z.string().min(2) });
 const pwSchema = z.object({
   currentPassword: z.string().min(1),
   newPassword: z
@@ -36,7 +35,6 @@ const pwSchema = z.object({
     .regex(/[^A-Za-z0-9]/),
 });
 
-type NameForm = z.infer<typeof nameSchema>;
 type PwForm = z.infer<typeof pwSchema>;
 type TabId =
   | 'settings'
@@ -88,6 +86,18 @@ export function ProfilePage() {
       notifPrefs.orderUpdates !== savedNotifPrefs.orderUpdates ||
       notifPrefs.promotions !== savedNotifPrefs.promotions);
 
+  // Settings tab state
+  const [settingsName, setSettingsName] = useState('');
+  const [settingsEmail, setSettingsEmail] = useState('');
+  const [savedSettingsName, setSavedSettingsName] = useState('');
+  const [savedSettingsEmail, setSavedSettingsEmail] = useState('');
+  const [settingsNameError, setSettingsNameError] = useState<string | null>(null);
+  const [settingsEmailError, setSettingsEmailError] = useState<string | null>(null);
+  const [savingSettings, setSavingSettings] = useState(false);
+
+  const hasUnsavedSettingsChanges =
+    settingsName !== savedSettingsName || settingsEmail !== savedSettingsEmail;
+
   // Address state
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -123,6 +133,16 @@ export function ProfilePage() {
   const [disabling2FA, setDisabling2FA] = useState(false);
 
   const { data: profile, isLoading } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
+
+  // Sync settings form with profile data
+  useEffect(() => {
+    if (profile) {
+      setSettingsName(profile.name);
+      setSettingsEmail(profile.email);
+      setSavedSettingsName(profile.name);
+      setSavedSettingsEmail(profile.email);
+    }
+  }, [profile]);
 
   // Fetch notifications
   useQuery({
@@ -197,25 +217,72 @@ export function ProfilePage() {
     }
   };
 
-  const nameForm = useForm<NameForm>({
-    resolver: zodResolver(nameSchema),
-    values: { name: profile?.name ?? '' },
-  });
-  const pwForm = useForm<PwForm>({ resolver: zodResolver(pwSchema) });
-
-  const onSaveName = async (data: NameForm) => {
+  const handleAvatarDelete = async () => {
     try {
-      const updated = await profileApi.update({ name: data.name });
+      const updated = await profileApi.deleteAvatar();
       setUser(updated);
+      await qc.invalidateQueries({ queryKey: ['profile'] });
+      toast('success', t('toast.avatarDeleted'));
+    } catch {
+      toast('error', t('toast.avatarDeleteFailed'));
+    }
+  };
+
+  const validateSettingsName = (value: string): string | null => {
+    if (value.length < 2) return t('validation.nameMin');
+    if (value.length > 15) return t('validation.nameMax');
+    if (!/^[a-zA-Z\s\-']+$/.test(value)) return t('validation.nameLatinOnly');
+    return null;
+  };
+
+  const validateSettingsEmail = (value: string): string | null => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return t('validation.emailInvalid');
+    return null;
+  };
+
+  const handleSettingsNameChange = (value: string) => {
+    setSettingsName(value);
+    setSettingsNameError(value ? validateSettingsName(value) : null);
+  };
+
+  const handleSettingsEmailChange = (value: string) => {
+    setSettingsEmail(value);
+    setSettingsEmailError(value ? validateSettingsEmail(value) : null);
+  };
+
+  const onSaveSettings = async () => {
+    const nameErr = validateSettingsName(settingsName);
+    const emailErr = validateSettingsEmail(settingsEmail);
+    setSettingsNameError(nameErr);
+    setSettingsEmailError(emailErr);
+    if (nameErr || emailErr) return;
+
+    setSavingSettings(true);
+    try {
+      const payload: { name?: string; email?: string } = {};
+      if (settingsName !== savedSettingsName) payload.name = settingsName;
+      if (settingsEmail !== savedSettingsEmail) payload.email = settingsEmail;
+      const updated = await profileApi.update(payload);
+      setUser(updated);
+      setSavedSettingsName(settingsName);
+      setSavedSettingsEmail(settingsEmail);
       await qc.invalidateQueries({ queryKey: ['profile'] });
       toast('success', t('toast.profileUpdated'));
     } catch (err) {
-      toast(
-        'error',
-        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
-      );
+      if (err instanceof ApiException && err.message.includes('already taken')) {
+        setSettingsEmailError(t('validation.emailTaken'));
+      } else {
+        toast(
+          'error',
+          err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+        );
+      }
+    } finally {
+      setSavingSettings(false);
     }
   };
+
+  const pwForm = useForm<PwForm>({ resolver: zodResolver(pwSchema) });
 
   const onChangePassword = async (data: PwForm) => {
     try {
@@ -251,30 +318,47 @@ export function ProfilePage() {
       setUnsavedModal(tab);
       return;
     }
+    if (activeTab === 'settings' && hasUnsavedSettingsChanges) {
+      setUnsavedModal(tab);
+      return;
+    }
     setActiveTab(tab as TabId);
   };
 
   const handleDiscardAndSwitch = () => {
-    if (savedNotifPrefs) setNotifPrefs({ ...savedNotifPrefs });
+    if (activeTab === 'notifications' && savedNotifPrefs) {
+      setNotifPrefs({ ...savedNotifPrefs });
+    }
+    if (activeTab === 'settings') {
+      setSettingsName(savedSettingsName);
+      setSettingsEmail(savedSettingsEmail);
+      setSettingsNameError(null);
+      setSettingsEmailError(null);
+    }
     if (unsavedModal) setActiveTab(unsavedModal as TabId);
     setUnsavedModal(null);
   };
 
   const handleSaveAndSwitch = async () => {
-    await handleSaveNotifications();
+    if (activeTab === 'notifications') {
+      await handleSaveNotifications();
+    }
+    if (activeTab === 'settings') {
+      await onSaveSettings();
+    }
     if (unsavedModal) setActiveTab(unsavedModal as TabId);
     setUnsavedModal(null);
   };
 
-  // Warn on page leave with unsaved notification changes
+  // Warn on page leave with unsaved changes
   useEffect(() => {
-    if (!hasUnsavedNotifChanges) return;
+    if (!hasUnsavedNotifChanges && !hasUnsavedSettingsChanges) return;
     const handler = (e: BeforeUnloadEvent) => {
       e.preventDefault();
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
-  }, [hasUnsavedNotifChanges]);
+  }, [hasUnsavedNotifChanges, hasUnsavedSettingsChanges]);
 
   const handleOpenAddressModal = (address?: Address) => {
     if (address) {
@@ -573,28 +657,54 @@ export function ProfilePage() {
                 maxSizeLabel="2MB"
                 onUpload={handleAvatarUpload}
                 preview={profile?.avatar}
-                onRemove={() => {
-                  if (profile) {
-                    setUser({ ...profile, avatar: null });
-                  }
-                }}
+                onRemove={handleAvatarDelete}
                 data-testid="avatar-upload"
+                data-testid-remove="avatar-delete"
               />
             )}
           </div>
 
-          <form onSubmit={nameForm.handleSubmit(onSaveName)} className="space-y-4">
+          <div className="space-y-4">
             <Input
               id="name"
+              data-testid="profile-name-input"
               label={t('form.name')}
-              error={nameForm.formState.errors.name?.message}
-              {...nameForm.register('name')}
+              value={settingsName}
+              onChange={e => handleSettingsNameChange(e.target.value)}
+              error={settingsNameError ?? undefined}
             />
-            <Input id="email" label={t('form.email')} value={profile?.email ?? ''} disabled />
-            <Button type="submit" size="sm" loading={nameForm.formState.isSubmitting}>
-              {t('form.saveChanges')}
-            </Button>
-          </form>
+            <div>
+              <Input
+                id="email"
+                data-testid="profile-email-input"
+                label={t('form.email')}
+                value={settingsEmail}
+                onChange={e => handleSettingsEmailChange(e.target.value)}
+                error={settingsEmailError ?? undefined}
+              />
+              <p className="text-xs text-[var(--text-secondary)] mt-1">{t('form.emailInfo')}</p>
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              {hasUnsavedSettingsChanges && (
+                <span
+                  data-testid="settings-unsaved-indicator"
+                  className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  {t('settingsTab.unsavedChanges')}
+                </span>
+              )}
+              <Button
+                data-testid="save-settings"
+                size="sm"
+                onClick={onSaveSettings}
+                loading={savingSettings}
+                variant={hasUnsavedSettingsChanges ? 'primary' : 'secondary'}
+              >
+                {t('form.saveChanges')}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1249,26 +1359,38 @@ export function ProfilePage() {
       )}
 
       {/* Tab: Payment Methods */}
-      {activeTab === 'paymentMethods' && <PaymentMethodsTab />}
+      {activeTab === 'paymentMethods' && <PaymentMethodsTab profileName={profile?.name ?? ''} />}
 
-      {/* Unsaved notification changes modal */}
+      {/* Unsaved changes modal (notifications + settings) */}
       <Modal
         open={!!unsavedModal}
-        title={t('notifications.unsavedTitle')}
+        title={
+          activeTab === 'settings' ? t('settingsTab.unsavedTitle') : t('notifications.unsavedTitle')
+        }
         onConfirm={handleSaveAndSwitch}
         onCancel={handleDiscardAndSwitch}
-        confirmLabel={t('notifications.saveAndContinue')}
-        cancelLabel={t('notifications.discardChanges')}
+        confirmLabel={
+          activeTab === 'settings'
+            ? t('settingsTab.saveAndContinue')
+            : t('notifications.saveAndContinue')
+        }
+        cancelLabel={
+          activeTab === 'settings'
+            ? t('settingsTab.discardChanges')
+            : t('notifications.discardChanges')
+        }
       >
         <p data-testid="unsaved-changes-modal" className="text-sm text-[var(--text-secondary)]">
-          {t('notifications.unsavedMessage')}
+          {activeTab === 'settings'
+            ? t('settingsTab.unsavedMessage')
+            : t('notifications.unsavedMessage')}
         </p>
       </Modal>
     </div>
   );
 }
 
-function PaymentMethodsTab() {
+function PaymentMethodsTab({ profileName }: { profileName: string }) {
   const { t } = useTranslation('profile');
   const { toast } = useToast();
   const [cards, setCards] = useState<import('@api/cards').SavedCard[]>([]);
@@ -1346,7 +1468,10 @@ function PaymentMethodsTab() {
         <Button
           data-testid="add-card-button"
           size="sm"
-          onClick={() => setAddModalOpen(true)}
+          onClick={() => {
+            setCardholderName(profileName);
+            setAddModalOpen(true);
+          }}
           disabled={cards.length >= 5}
         >
           <CreditCard className="h-4 w-4" /> {t('paymentMethods.addCard')}

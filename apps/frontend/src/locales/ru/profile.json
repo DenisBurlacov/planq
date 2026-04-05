@@ -69,14 +69,34 @@
     "dateFrom": "С",
     "dateTo": "По"
   },
+  "avatar": {
+    "change": "Изменить аватар",
+    "upload": "Загрузить аватар",
+    "delete": "Удалить аватар"
+  },
   "form": {
     "name": "Полное имя",
     "email": "Email",
+    "emailInfo": "Изменение email обновит ваши учётные данные для входа",
     "currentPassword": "Текущий пароль",
     "newPassword": "Новый пароль",
     "confirmPassword": "Подтвердите пароль",
     "saveChanges": "Сохранить",
     "changePassword": "Изменить пароль"
+  },
+  "settingsTab": {
+    "unsavedChanges": "Несохранённые изменения",
+    "unsavedTitle": "Несохранённые изменения",
+    "unsavedMessage": "У вас есть несохранённые изменения профиля. Сохранить перед уходом?",
+    "saveAndContinue": "Сохранить и продолжить",
+    "discardChanges": "Отменить"
+  },
+  "validation": {
+    "nameMin": "Имя должно содержать не менее 2 символов",
+    "nameMax": "Имя должно содержать не более 15 символов",
+    "nameLatinOnly": "Имя должно содержать только латинские буквы, пробелы, дефисы и апострофы",
+    "emailInvalid": "Введите корректный email",
+    "emailTaken": "Этот email уже занят"
   },
   "webhooks": {
     "title": "Вебхуки",
@@ -133,6 +153,8 @@
   "toast": {
     "avatarUpdated": "Аватар обновлён",
     "avatarFailed": "Не удалось обновить аватар",
+    "avatarDeleted": "Аватар удалён",
+    "avatarDeleteFailed": "Не удалось удалить аватар",
     "profileUpdated": "Профиль обновлён",
     "passwordChanged": "Пароль изменён",
     "preferencesSaved": "Настройки сохранены",
