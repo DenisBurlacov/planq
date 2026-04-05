@@ -81,10 +81,15 @@ export function ProductPage() {
   // Rating filter
   const [ratingFilter, setRatingFilter] = useState<number | undefined>(undefined);
 
-  const { data: product, isLoading } = useQuery({
+  const {
+    data: product,
+    isLoading,
+    error: productError,
+  } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productsApi.getById(id ?? ''),
     enabled: !!id,
+    retry: false,
   });
 
   const [reviewsPage, setReviewsPage] = useState(1);
@@ -251,6 +256,38 @@ export function ProductPage() {
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-12 w-full" />
         </div>
+      </div>
+    );
+  }
+
+  if (productError || (!isLoading && !product)) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="h-16 w-16 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-4">
+          <svg
+            className="h-8 w-8 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
+          {t('common:errorPages.notFound')}
+        </h2>
+        <p className="text-sm text-[var(--text-secondary)] mb-6">{t('product.notFoundDesc')}</p>
+        <Link
+          to="/catalog"
+          className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-medium text-white hover:bg-accent-hover transition-colors"
+        >
+          {t('common:errorPages.browseCatalog')}
+        </Link>
       </div>
     );
   }

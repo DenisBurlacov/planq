@@ -165,6 +165,7 @@
     "notifyMe": "Notify Me",
     "notifyPlaceholder": "Enter your email",
     "notifySuccess": "We'll notify you when this item is back in stock!",
+    "notFoundDesc": "This product may have been removed or is no longer available.",
     "notifyFailed": "Failed to subscribe. Please try again.",
     "selectColor": "Color",
     "selectSize": "Size",
