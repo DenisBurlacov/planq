@@ -109,6 +109,7 @@ export function AdminLayout() {
   const { t } = useTranslation('admin');
   const user = useAuthStore(s => s.user);
   const isManager = user?.role === 'MANAGER';
+  const isAdmin = user?.role === 'ADMIN';
 
   const visibleItems = navItems.filter(item => {
     if (isManager) {
@@ -122,7 +123,7 @@ export function AdminLayout() {
       {/* Sidebar */}
       <aside
         data-testid="admin-sidebar"
-        className="w-16 md:w-admin-sidebar shrink-0 bg-admin-sidebar border-r border-[var(--border)] flex flex-col"
+        className="w-16 md:w-admin-sidebar shrink-0 bg-admin-sidebar border-r border-[var(--border)] flex flex-col sticky top-0 h-screen"
       >
         <div className="hidden md:block px-5 py-4">
           <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
@@ -155,20 +156,22 @@ export function AdminLayout() {
           ))}
         </nav>
 
-        {/* Separator & back link */}
-        <div className="border-t border-[var(--border)] px-2 py-2">
-          <NavLink
-            to="/"
-            data-testid="admin-nav-back"
-            className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-admin-sidebar-active transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5 shrink-0" />
-            <span className="hidden md:block">{t('sidebar.backToStore')}</span>
-            <span className="md:hidden pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity z-10">
-              {t('sidebar.backToStore')}
-            </span>
-          </NavLink>
-        </div>
+        {/* Separator & back link — only for MANAGER (admin stays in admin) */}
+        {!isAdmin && (
+          <div className="border-t border-[var(--border)] px-2 py-2">
+            <NavLink
+              to="/"
+              data-testid="admin-nav-back"
+              className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-admin-sidebar-active transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5 shrink-0" />
+              <span className="hidden md:block">{t('sidebar.backToStore')}</span>
+              <span className="md:hidden pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                {t('sidebar.backToStore')}
+              </span>
+            </NavLink>
+          </div>
+        )}
       </aside>
 
       {/* Content */}
