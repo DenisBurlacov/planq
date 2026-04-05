@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { CountdownTimer } from '@components/ui/CountdownTimer';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useCallback } from 'react';
 import { ProductCard } from '@components/features/ProductCard';
@@ -294,6 +295,11 @@ export function HomePage() {
             </p>
             <h3 className="text-2xl font-bold text-white">{t('home.saleBannerTitle')}</h3>
             <p className="text-sm text-white/60 mt-1">{t('home.saleBannerSubtitle')}</p>
+            <div className="mt-3">
+              <CountdownTimer
+                endDate={new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()}
+              />
+            </div>
           </div>
           <Link
             data-testid="sale-banner-cta"

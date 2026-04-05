@@ -6,6 +6,7 @@ export interface CheckoutInput {
   paymentMethod: 'CARD' | 'WALLET';
   promoCode?: string;
   cardNumber?: string;
+  deliveryMethod?: 'STANDARD' | 'EXPRESS' | 'NEXT_DAY';
 }
 
 export const ordersApi = {

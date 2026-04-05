@@ -24,7 +24,33 @@
     "onSale": "Со скидкой",
     "inStock": "В наличии",
     "clear": "Сбросить",
-    "priceError": "Минимальная цена не может превышать максимальную"
+    "priceError": "Минимальная цена не может превышать максимальную",
+    "material": "Материал",
+    "materialOptions": {
+      "wood": "Дерево",
+      "metal": "Металл",
+      "fabric": "Ткань",
+      "glass": "Стекло",
+      "leather": "Кожа",
+      "plastic": "Пластик"
+    },
+    "color": "Цвет",
+    "colorOptions": {
+      "natural": "Натуральный",
+      "white": "Белый",
+      "black": "Чёрный",
+      "walnut": "Орех",
+      "gray": "Серый",
+      "blue": "Голубой"
+    },
+    "style": "Стиль",
+    "styleOptions": {
+      "scandinavian": "Скандинавский",
+      "modern": "Модерн",
+      "industrial": "Индустриальный",
+      "minimalist": "Минимализм",
+      "classic": "Классический"
+    }
   },
   "sort": {
     "label": "Сортировка",
@@ -88,7 +114,21 @@
     "ratingLabel": "Рейтинг",
     "videoReview": "Видеообзор",
     "recentlyViewed": "Недавно просмотренные",
-    "youMayAlsoLike": "Вам также может понравиться"
+    "youMayAlsoLike": "Вам также может понравиться",
+    "almostGone": "Почти закончилось!",
+    "onlyXLeft": "Осталось {{count}} шт.!",
+    "share": "Поделиться",
+    "shareWhatsApp": "Поделиться в WhatsApp",
+    "shareTelegram": "Поделиться в Telegram",
+    "shareEmail": "Отправить по Email",
+    "copyLink": "Копировать ссылку",
+    "notifyMe": "Уведомить",
+    "notifyPlaceholder": "Введите ваш email",
+    "notifySuccess": "Мы уведомим вас, когда товар появится в наличии!",
+    "notifyFailed": "Не удалось подписаться. Попробуйте ещё раз.",
+    "selectColor": "Цвет",
+    "selectSize": "Размер",
+    "variantStock": "{{count}} в наличии"
   },
   "compare": {
     "title": "Сравнение товаров",
@@ -186,6 +226,24 @@
     "removeMessage": "Вы уверены, что хотите удалить этот товар из избранного?",
     "removeConfirm": "Удалить",
     "removeCancel": "Отмена"
+  },
+  "countdown": {
+    "expired": "Акция завершена",
+    "days": "Дн",
+    "hours": "Час",
+    "minutes": "Мин",
+    "seconds": "Сек",
+    "saleEnds": "До конца акции"
+  },
+  "ratingBreakdown": {
+    "title": "Распределение оценок",
+    "stars": "{{count}} звезда",
+    "stars_other": "{{count}} звёзд",
+    "clearFilter": "Сбросить фильтр"
+  },
+  "photoReview": {
+    "addPhotos": "Добавить фото (макс. 3)",
+    "viewPhoto": "Просмотр фото"
   },
   "empty": "Товары не найдены. Попробуйте изменить фильтры.",
   "loading": "Загрузка товаров..."

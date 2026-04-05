@@ -205,5 +205,31 @@
   },
   "reviews": {
     "loadMore": "Load More Reviews"
+  },
+  "tracking": {
+    "title": "Order Tracking",
+    "cancelled": "Cancelled",
+    "steps": {
+      "ordered": "Ordered",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "inTransit": "In Transit",
+      "outForDelivery": "Out for Delivery",
+      "delivered": "Delivered"
+    }
+  },
+  "upload": {
+    "dragDrop": "Drag & drop or click to upload",
+    "maxSize": "Max size: {{size}}",
+    "formats": "Formats: {{formats}}",
+    "remove": "Remove",
+    "error": {
+      "tooLarge": "File too large. Max: {{size}}",
+      "invalidType": "Invalid file type"
+    }
+  },
+  "copy": {
+    "copy": "Copy",
+    "copied": "Copied!"
   }
 }

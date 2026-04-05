@@ -107,6 +107,9 @@ export function CatalogPage() {
     query.onSale,
     query.inStock,
     query.sort,
+    query.material,
+    query.color,
+    query.style,
   ]);
 
   // Accumulate items in load-more mode
@@ -370,6 +373,123 @@ export function CatalogPage() {
             >
               {t('filters.clear')}
             </Button>
+          </div>
+
+          {/* Material filter */}
+          <div>
+            <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              {t('filters.material')}
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {(['wood', 'metal', 'fabric', 'glass', 'leather', 'plastic'] as const).map(mat => {
+                const isActive = query.material?.includes(mat);
+                return (
+                  <button
+                    key={mat}
+                    type="button"
+                    data-testid={`filter-material-${mat}`}
+                    onClick={() =>
+                      setQuery(q => ({
+                        ...q,
+                        material: isActive
+                          ? (q.material ?? []).filter(m => m !== mat)
+                          : [...(q.material ?? []), mat],
+                        page: 1,
+                      }))
+                    }
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                      isActive
+                        ? 'bg-accent text-white'
+                        : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
+                    }`}
+                  >
+                    {t(`filters.materialOptions.${mat}`)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Color filter */}
+          <div>
+            <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              {t('filters.color')}
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  { key: 'natural', hex: '#d4a574' },
+                  { key: 'white', hex: '#f5f5f5' },
+                  { key: 'black', hex: '#222222' },
+                  { key: 'walnut', hex: '#5c4033' },
+                  { key: 'gray', hex: '#9ca3af' },
+                  { key: 'blue', hex: '#3b82f6' },
+                ] as const
+              ).map(({ key, hex }) => {
+                const isActive = query.color?.includes(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    data-testid={`filter-color-${key}`}
+                    onClick={() =>
+                      setQuery(q => ({
+                        ...q,
+                        color: isActive
+                          ? (q.color ?? []).filter(c => c !== key)
+                          : [...(q.color ?? []), key],
+                        page: 1,
+                      }))
+                    }
+                    className={`h-7 w-7 rounded-full border-2 transition-all ${
+                      isActive
+                        ? 'border-accent ring-2 ring-accent/30'
+                        : 'border-[var(--border)] hover:border-accent/50'
+                    }`}
+                    style={{ backgroundColor: hex }}
+                    aria-label={t(`filters.colorOptions.${key}`)}
+                    title={t(`filters.colorOptions.${key}`)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Style filter */}
+          <div>
+            <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-2">
+              {t('filters.style')}
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {(['scandinavian', 'modern', 'industrial', 'minimalist', 'classic'] as const).map(
+                sty => {
+                  const isActive = query.style?.includes(sty);
+                  return (
+                    <button
+                      key={sty}
+                      type="button"
+                      data-testid={`filter-style-${sty}`}
+                      onClick={() =>
+                        setQuery(q => ({
+                          ...q,
+                          style: isActive
+                            ? (q.style ?? []).filter(s => s !== sty)
+                            : [...(q.style ?? []), sty],
+                          page: 1,
+                        }))
+                      }
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        isActive
+                          ? 'bg-accent text-white'
+                          : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
+                      }`}
+                    >
+                      {t(`filters.styleOptions.${sty}`)}
+                    </button>
+                  );
+                }
+              )}
+            </div>
           </div>
         </div>
       )}

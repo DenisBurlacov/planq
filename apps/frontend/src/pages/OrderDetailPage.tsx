@@ -6,6 +6,7 @@ import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { Skeleton } from '@components/ui/Skeleton';
 import { Modal } from '@components/ui/Modal';
+import { OrderTrackingTimeline } from '@components/features/OrderTrackingTimeline';
 import { ordersApi } from '@api/orders';
 import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
@@ -110,6 +111,9 @@ export function OrderDetailPage() {
         </div>
       </div>
 
+      {/* Order Tracking Timeline */}
+      <OrderTrackingTimeline status={order.status} createdAt={order.createdAt} />
+
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <h2 className="font-semibold text-[var(--text-primary)] mb-3">Items</h2>
@@ -156,6 +160,18 @@ export function OrderDetailPage() {
                 <span>Address</span>
                 <span className="text-right max-w-32 truncate">{order.shippingAddress}</span>
               </div>
+              {order.deliveryMethod && (
+                <div className="flex justify-between">
+                  <span>{t('checkout:delivery.title', { ns: 'checkout' })}</span>
+                  <span>{order.deliveryMethod}</span>
+                </div>
+              )}
+              {order.deliveryCost !== undefined && order.deliveryCost > 0 && (
+                <div className="flex justify-between">
+                  <span>{t('checkout:delivery.deliveryCost', { ns: 'checkout' })}</span>
+                  <span>&euro;{order.deliveryCost.toFixed(2)}</span>
+                </div>
+              )}
             </div>
             <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--text-primary)]">
               <span>Total</span>

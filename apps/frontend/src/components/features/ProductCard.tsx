@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
+import { StockUrgencyBadge } from '@components/ui/StockUrgencyBadge';
 import { useCompareStore } from '@store/compare.store';
 import type { Product } from '@appTypes/api';
 
@@ -228,6 +229,13 @@ export function ProductCard({
               <span className="text-xs text-[var(--text-secondary)]">
                 Save €{(product.price - price).toFixed(2)}
               </span>
+            </div>
+          )}
+
+          {/* Stock urgency */}
+          {!isOutOfStock && product.stock <= 5 && (
+            <div className="mt-1">
+              <StockUrgencyBadge stock={product.stock} />
             </div>
           )}
 

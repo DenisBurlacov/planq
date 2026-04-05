@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Star, ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
 import { ImageCarousel } from '@components/ImageCarousel';
@@ -13,6 +13,11 @@ import { AddToCartModal } from '@components/ui/AddToCartModal';
 import { BackButton } from '@components/ui/BackButton';
 import { SpecsTable } from '@components/ui/SpecsTable';
 import { Modal } from '@components/ui/Modal';
+import { CountdownTimer } from '@components/ui/CountdownTimer';
+import { StockUrgencyBadge } from '@components/ui/StockUrgencyBadge';
+import { ShareProduct } from '@components/features/ShareProduct';
+import { NotifyWhenInStock } from '@components/features/NotifyWhenInStock';
+import { FileUploadZone } from '@components/ui/FileUploadZone';
 import { productsApi } from '@api/products';
 import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
@@ -25,6 +30,17 @@ import {
   RecentlyViewedSection,
   addToRecentlyViewed,
 } from '@components/features/RecentlyViewedSection';
+import type { ProductVariant } from '@appTypes/api';
+
+// --- Color map for swatches ---
+const COLOR_HEX: Record<string, string> = {
+  Natural: '#d4a574',
+  Walnut: '#5c4033',
+  White: '#f5f5f5',
+  Black: '#222222',
+  Gray: '#9ca3af',
+  Blue: '#3b82f6',
+};
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -45,6 +61,21 @@ export function ProductPage() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
+  // Variant state
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
+  // Photo review state
+  const [reviewImages, setReviewImages] = useState<string[]>([]);
+  const [reviewImageFiles, setReviewImageFiles] = useState<File[]>([]);
+
+  // Review photo modal
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [photoModalSrc, setPhotoModalSrc] = useState('');
+
+  // Rating filter
+  const [ratingFilter, setRatingFilter] = useState<number | undefined>(undefined);
+
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productsApi.getById(id ?? ''),
@@ -56,8 +87,8 @@ export function ProductPage() {
   const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
 
   const { data: reviews } = useQuery({
-    queryKey: ['reviews', id],
-    queryFn: () => productsApi.getReviews(id ?? '', 1),
+    queryKey: ['reviews', id, ratingFilter],
+    queryFn: () => productsApi.getReviews(id ?? '', 1, ratingFilter),
     enabled: !!id,
   });
 
@@ -74,12 +105,40 @@ export function ProductPage() {
     }
   }, [reviews?.items]);
 
+  // Auto-select first available variant
+  useEffect(() => {
+    if (!product?.variants?.length) return;
+    const colors = [...new Set(product.variants.filter(v => v.color).map(v => v.color as string))];
+    const sizes = [...new Set(product.variants.filter(v => v.size).map(v => v.size as string))];
+    if (colors.length > 0 && !selectedColor) setSelectedColor(colors[0]);
+    if (sizes.length > 0 && !selectedSize) setSelectedSize(sizes[0]);
+  }, [product?.variants, selectedColor, selectedSize]);
+
+  const selectedVariant: ProductVariant | undefined = useMemo(() => {
+    if (!product?.variants?.length) return undefined;
+    return product.variants.find(
+      v => (!v.color || v.color === selectedColor) && (!v.size || v.size === selectedSize)
+    );
+  }, [product?.variants, selectedColor, selectedSize]);
+
+  const availableColors = useMemo(() => {
+    if (!product?.variants) return [];
+    return [...new Set(product.variants.filter(v => v.color).map(v => v.color as string))];
+  }, [product?.variants]);
+
+  const availableSizes = useMemo(() => {
+    if (!product?.variants) return [];
+    return [...new Set(product.variants.filter(v => v.size).map(v => v.size as string))];
+  }, [product?.variants]);
+
+  const effectiveStock = selectedVariant ? selectedVariant.stock : (product?.stock ?? 0);
+
   const handleLoadMoreReviews = async () => {
     if (!id || loadingMoreReviews) return;
     setLoadingMoreReviews(true);
     try {
       const nextPage = reviewsPage + 1;
-      const result = await productsApi.getReviews(id, nextPage);
+      const result = await productsApi.getReviews(id, nextPage, ratingFilter);
       setAllReviews(prev => [...prev, ...result.items]);
       setReviewsPage(nextPage);
     } catch {
@@ -137,6 +196,19 @@ export function ProductPage() {
     }
   };
 
+  const handleReviewImageUpload = (files: File[]) => {
+    const remaining = 3 - reviewImages.length;
+    const toAdd = files.slice(0, remaining);
+    const urls = toAdd.map(f => URL.createObjectURL(f));
+    setReviewImages(prev => [...prev, ...urls]);
+    setReviewImageFiles(prev => [...prev, ...toAdd]);
+  };
+
+  const handleRemoveReviewImage = (index: number) => {
+    setReviewImages(prev => prev.filter((_, i) => i !== index));
+    setReviewImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!accessToken) {
@@ -145,15 +217,23 @@ export function ProductPage() {
     }
     setSubmittingReview(true);
     try {
-      await productsApi.createReview(id ?? '', reviewRating, reviewComment);
+      // In a real app we'd upload images first, but for now pass URLs
+      const imageUrls = reviewImageFiles.length > 0 ? reviewImages : undefined;
+      await productsApi.createReview(id ?? '', reviewRating, reviewComment, imageUrls);
       await qc.invalidateQueries({ queryKey: ['reviews', id] });
       setReviewComment('');
+      setReviewImages([]);
+      setReviewImageFiles([]);
       toast('success', t('product.reviewSubmitted'));
     } catch (err) {
       toast('error', err instanceof ApiException ? err.message : t('product.failedSubmitReview'));
     } finally {
       setSubmittingReview(false);
     }
+  };
+
+  const handleRatingBarClick = (rating: number) => {
+    setRatingFilter(prev => (prev === rating ? undefined : rating));
   };
 
   if (isLoading) {
@@ -172,8 +252,15 @@ export function ProductPage() {
 
   if (!product) return null;
 
-  const price = product.salePrice ?? product.price;
+  const basePrice = product.salePrice ?? product.price;
+  const priceAdjustment = selectedVariant?.priceAdjustment ?? 0;
+  const price = basePrice + priceAdjustment;
   const isOnSale = product.salePrice !== null;
+
+  // Use variant image if available
+  const displayImages = selectedVariant?.image
+    ? [selectedVariant.image, ...product.images.filter(img => img !== selectedVariant.image)]
+    : product.images;
 
   const breadcrumbItems = [
     { label: t('common:nav.home', { ns: 'common' }), to: '/' },
@@ -187,19 +274,22 @@ export function ProductPage() {
   const specsTableRows = [
     {
       label: t('product.material', { defaultValue: 'Material' }),
-      value: product.category?.name ?? '—',
+      value: product.specs?.material ?? product.category?.name ?? '—',
     },
     { label: t('product.dimensions', { defaultValue: 'Dimensions' }), value: '120 x 60 x 75 cm' },
     { label: t('product.weight', { defaultValue: 'Weight' }), value: '18.5 kg' },
-    { label: t('product.color', { defaultValue: 'Color' }), value: 'Natural' },
+    {
+      label: t('product.color', { defaultValue: 'Color' }),
+      value: product.specs?.color ?? 'Natural',
+    },
     { label: t('product.warranty', { defaultValue: 'Warranty' }), value: '2 years' },
     { label: t('product.sku'), value: product.id.slice(0, 8).toUpperCase() },
     { label: t('product.category'), value: product.category?.name ?? '—' },
     {
       label: t('product.availability'),
       value:
-        product.stock > 0
-          ? t('product.inStockUnits', { count: product.stock })
+        effectiveStock > 0
+          ? t('product.inStockUnits', { count: effectiveStock })
           : t('product.outOfStock'),
     },
     {
@@ -236,6 +326,12 @@ export function ProductPage() {
       ),
     },
   ];
+
+  // Rating breakdown
+  const ratingBreakdown = product.ratingBreakdown ?? {};
+  const totalReviews = product.reviewCount || 1;
+
+  const productUrl = `${window.location.origin}/catalog/${product.id}`;
 
   return (
     <div>
@@ -282,7 +378,6 @@ export function ProductPage() {
               </tr>
             </thead>
             <tbody>
-              {/* Size labels (Small, Medium, Large, XL) are kept in English as standard sizing notation */}
               <tr>
                 <td className="px-3 py-2">Small</td>
                 <td className="px-3 py-2">80</td>
@@ -315,16 +410,28 @@ export function ProductPage() {
         </div>
       </Modal>
 
+      {/* Photo modal */}
+      <Modal
+        open={photoModalOpen}
+        title={t('photoReview.viewPhoto')}
+        onConfirm={() => setPhotoModalOpen(false)}
+        onCancel={() => setPhotoModalOpen(false)}
+        confirmLabel={t('common:actions.cancel', { defaultValue: 'Close' })}
+        cancelLabel=""
+      >
+        <img src={photoModalSrc} alt="" className="w-full rounded-lg object-contain max-h-[60vh]" />
+      </Modal>
+
       <BackButton fallbackTo="/catalog" className="mb-3" />
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Image Gallery */}
         <div data-testid="product-gallery">
-          {product.images.length > 0 ? (
+          {displayImages.length > 0 ? (
             <div className="relative">
               <ImageCarousel
-                images={product.images}
+                images={displayImages}
                 activeIndex={activeImage}
                 onChange={setActiveImage}
                 alt={product.name}
@@ -346,9 +453,9 @@ export function ProductPage() {
             </div>
           )}
 
-          {product.images.length > 1 && (
+          {displayImages.length > 1 && (
             <div data-testid="product-thumbnails" className="flex gap-2 overflow-x-auto pb-1 mt-3">
-              {product.images.map((img, i) => (
+              {displayImages.map((img, i) => (
                 <button
                   key={i}
                   data-testid={`thumbnail-${i}`}
@@ -416,34 +523,114 @@ export function ProductPage() {
             )}
           </div>
 
-          <p data-testid="product-stock" className="text-sm mb-6">
-            {product.stock > 0 ? (
-              <span className="text-green-600">
-                {t('product.stockStatus', { count: product.stock })}
-              </span>
+          {/* Sale countdown */}
+          {isOnSale && product.saleEndsAt && (
+            <div className="mb-4">
+              <p className="text-xs text-[var(--text-secondary)] mb-1.5">
+                {t('countdown.saleEnds')}
+              </p>
+              <CountdownTimer endDate={product.saleEndsAt} />
+            </div>
+          )}
+
+          {/* Color swatches */}
+          {availableColors.length > 0 && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-2">
+                {t('product.selectColor')}
+              </p>
+              <div className="flex gap-2">
+                {availableColors.map(color => (
+                  <button
+                    key={color}
+                    data-testid={`variant-color-${color.toLowerCase()}`}
+                    onClick={() => setSelectedColor(color)}
+                    className={`h-8 w-8 rounded-full border-2 transition-all ${
+                      selectedColor === color
+                        ? 'border-accent ring-2 ring-accent/30'
+                        : 'border-[var(--border)] hover:border-accent/50'
+                    }`}
+                    style={{ backgroundColor: COLOR_HEX[color] ?? '#ccc' }}
+                    aria-label={color}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Size pills */}
+          {availableSizes.length > 0 && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-2">
+                {t('product.selectSize')}
+              </p>
+              <div className="flex gap-2">
+                {availableSizes.map(size => (
+                  <button
+                    key={size}
+                    data-testid={`variant-size-${size.toLowerCase()}`}
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      selectedSize === size
+                        ? 'bg-accent text-white'
+                        : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/50'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Stock display with urgency */}
+          <div data-testid="product-stock" className="flex items-center gap-2 text-sm mb-4">
+            {effectiveStock > 0 ? (
+              <>
+                <span data-testid="variant-stock" className="text-green-600">
+                  {t('product.stockStatus', { count: effectiveStock })}
+                </span>
+                <StockUrgencyBadge stock={effectiveStock} />
+              </>
             ) : (
               <span className="text-red-500">{t('common:outOfStock', { ns: 'common' })}</span>
             )}
-          </p>
+          </div>
 
-          <div className="flex gap-3 mb-6">
-            <Button
-              data-testid="add-to-cart-button"
-              loading={addingToCart}
-              disabled={product.stock === 0}
-              onClick={handleAddToCart}
-              className="flex-1"
-            >
-              <ShoppingCart className="h-4 w-4" /> {t('product.addToCart')}
-            </Button>
-            <Button
-              data-testid="wishlist-toggle-button"
-              variant="secondary"
-              onClick={handleToggleWishlist}
-              aria-label={t('product.addToWishlist')}
-            >
-              <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-            </Button>
+          {/* Add to cart / Notify */}
+          {effectiveStock > 0 ? (
+            <div className="flex gap-3 mb-4">
+              <Button
+                data-testid="add-to-cart-button"
+                loading={addingToCart}
+                disabled={effectiveStock === 0}
+                onClick={handleAddToCart}
+                className="flex-1"
+              >
+                <ShoppingCart className="h-4 w-4" /> {t('product.addToCart')}
+              </Button>
+              <Button
+                data-testid="wishlist-toggle-button"
+                variant="secondary"
+                onClick={handleToggleWishlist}
+                aria-label={t('product.addToWishlist')}
+              >
+                <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+              </Button>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <p className="text-sm text-[var(--text-secondary)] mb-2">
+                {t('common:outOfStock', { ns: 'common' })}
+              </p>
+              <NotifyWhenInStock productId={product.id} />
+            </div>
+          )}
+
+          {/* Share buttons */}
+          <div className="mb-4">
+            <ShareProduct productName={product.name} productUrl={productUrl} />
           </div>
 
           {/* Quick stats */}
@@ -493,6 +680,52 @@ export function ProductPage() {
           {t('product.reviews', { count: reviews?.total ?? 0 })}
         </h2>
 
+        {/* Rating Breakdown */}
+        <div
+          data-testid="rating-breakdown"
+          className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"
+        >
+          <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">
+            {t('ratingBreakdown.title')}
+          </h3>
+          <div className="space-y-2">
+            {[5, 4, 3, 2, 1].map(star => {
+              const count = ratingBreakdown[star] ?? 0;
+              const pct = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
+              const isActive = ratingFilter === star;
+              return (
+                <button
+                  key={star}
+                  data-testid={`rating-bar-${star}`}
+                  onClick={() => handleRatingBarClick(star)}
+                  className={`w-full flex items-center gap-3 group rounded-md px-2 py-1 transition-colors ${
+                    isActive ? 'bg-accent/10' : 'hover:bg-[var(--bg-sidebar)]'
+                  }`}
+                >
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-8 text-right">
+                    {star}★
+                  </span>
+                  <div className="flex-1 h-2.5 rounded-full bg-[var(--bg-sidebar)] overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-yellow-400 transition-all"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-[var(--text-secondary)] w-8">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+          {ratingFilter !== undefined && (
+            <button
+              onClick={() => setRatingFilter(undefined)}
+              className="text-xs text-accent hover:underline mt-2"
+            >
+              {t('ratingBreakdown.clearFilter')}
+            </button>
+          )}
+        </div>
+
         {/* Write review */}
         {accessToken && (
           <form
@@ -524,6 +757,42 @@ export function ProductPage() {
               placeholder={t('product.reviewPlaceholder')}
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-sidebar)] p-3 text-sm resize-none h-24 focus:outline-none focus:ring-2 focus:ring-accent"
             />
+
+            {/* Photo upload for reviews */}
+            <div className="mt-3" data-testid="review-images">
+              <p className="text-xs text-[var(--text-secondary)] mb-2">
+                {t('photoReview.addPhotos')}
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {reviewImages.map((url, i) => (
+                  <div key={i} className="relative" data-testid={`review-image-${i}`}>
+                    <img
+                      src={url}
+                      alt=""
+                      className="h-16 w-16 rounded-lg object-cover border border-[var(--border)]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveReviewImage(i)}
+                      className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+                {reviewImages.length < 3 && (
+                  <FileUploadZone
+                    accept="image/*"
+                    maxSize={5 * 1024 * 1024}
+                    maxSizeLabel="5MB"
+                    multiple
+                    onUpload={handleReviewImageUpload}
+                    data-testid="review-image-upload"
+                  />
+                )}
+              </div>
+            </div>
+
             <Button
               data-testid="review-submit"
               type="submit"
@@ -578,6 +847,24 @@ export function ProductPage() {
               </div>
               {review.comment && (
                 <p className="text-sm text-[var(--text-secondary)]">{review.comment}</p>
+              )}
+              {/* Review images */}
+              {review.images && review.images.length > 0 && (
+                <div data-testid="review-images" className="flex gap-2 mt-2">
+                  {review.images.map((img, i) => (
+                    <button
+                      key={i}
+                      data-testid={`review-image-${i}`}
+                      onClick={() => {
+                        setPhotoModalSrc(img);
+                        setPhotoModalOpen(true);
+                      }}
+                      className="h-12 w-12 rounded-lg overflow-hidden border border-[var(--border)] hover:border-accent transition-colors"
+                    >
+                      <img src={img} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
           ))}

@@ -56,6 +56,17 @@ export interface Category {
   image: string | null;
 }
 
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  name: string;
+  color?: string;
+  size?: string;
+  stock: number;
+  priceAdjustment: number;
+  image?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -63,12 +74,20 @@ export interface Product {
   description: string;
   price: number;
   salePrice: number | null;
+  saleEndsAt?: string | null;
   stock: number;
   categoryId: string;
   category?: Category;
   images: string[];
   rating: number;
   reviewCount: number;
+  ratingBreakdown?: Record<number, number>;
+  variants?: ProductVariant[];
+  specs?: {
+    material?: string;
+    color?: string;
+    style?: string;
+  };
 }
 
 export interface CartItem {
@@ -94,12 +113,16 @@ export interface OrderItem {
 export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 export type PaymentMethod = 'CARD' | 'WALLET';
 
+export type DeliveryMethod = 'STANDARD' | 'EXPRESS' | 'NEXT_DAY';
+
 export interface Order {
   id: string;
   status: OrderStatus;
   totalAmount: number;
   shippingAddress: string;
   paymentMethod: PaymentMethod;
+  deliveryMethod?: DeliveryMethod;
+  deliveryCost?: number;
   createdAt: string;
   items: OrderItem[];
 }
@@ -108,6 +131,7 @@ export interface Review {
   id: string;
   rating: number;
   comment: string | null;
+  images?: string[];
   createdAt: string;
   user: { id: string; name: string; avatar: string | null };
 }

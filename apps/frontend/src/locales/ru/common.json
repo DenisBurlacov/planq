@@ -205,5 +205,31 @@
   },
   "reviews": {
     "loadMore": "Показать ещё отзывы"
+  },
+  "tracking": {
+    "title": "Отслеживание заказа",
+    "cancelled": "Отменён",
+    "steps": {
+      "ordered": "Заказ оформлен",
+      "confirmed": "Подтверждён",
+      "shipped": "Отправлен",
+      "inTransit": "В пути",
+      "outForDelivery": "Передан курьеру",
+      "delivered": "Доставлен"
+    }
+  },
+  "upload": {
+    "dragDrop": "Перетащите или нажмите для загрузки",
+    "maxSize": "Макс. размер: {{size}}",
+    "formats": "Форматы: {{formats}}",
+    "remove": "Удалить",
+    "error": {
+      "tooLarge": "Файл слишком большой. Макс: {{size}}",
+      "invalidType": "Неверный тип файла"
+    }
+  },
+  "copy": {
+    "copy": "Копировать",
+    "copied": "Скопировано!"
   }
 }

@@ -24,7 +24,33 @@
     "onSale": "On Sale",
     "inStock": "In Stock",
     "clear": "Clear Filters",
-    "priceError": "Min price cannot exceed max price"
+    "priceError": "Min price cannot exceed max price",
+    "material": "Material",
+    "materialOptions": {
+      "wood": "Wood",
+      "metal": "Metal",
+      "fabric": "Fabric",
+      "glass": "Glass",
+      "leather": "Leather",
+      "plastic": "Plastic"
+    },
+    "color": "Color",
+    "colorOptions": {
+      "natural": "Natural",
+      "white": "White",
+      "black": "Black",
+      "walnut": "Walnut",
+      "gray": "Gray",
+      "blue": "Blue"
+    },
+    "style": "Style",
+    "styleOptions": {
+      "scandinavian": "Scandinavian",
+      "modern": "Modern",
+      "industrial": "Industrial",
+      "minimalist": "Minimalist",
+      "classic": "Classic"
+    }
   },
   "sort": {
     "label": "Sort by",
@@ -88,7 +114,21 @@
     "ratingLabel": "Rating",
     "videoReview": "Video Review",
     "recentlyViewed": "Recently Viewed",
-    "youMayAlsoLike": "You May Also Like"
+    "youMayAlsoLike": "You May Also Like",
+    "almostGone": "Almost gone!",
+    "onlyXLeft": "Only {{count}} left!",
+    "share": "Share",
+    "shareWhatsApp": "Share on WhatsApp",
+    "shareTelegram": "Share on Telegram",
+    "shareEmail": "Share via Email",
+    "copyLink": "Copy Link",
+    "notifyMe": "Notify Me",
+    "notifyPlaceholder": "Enter your email",
+    "notifySuccess": "We'll notify you when this item is back in stock!",
+    "notifyFailed": "Failed to subscribe. Please try again.",
+    "selectColor": "Color",
+    "selectSize": "Size",
+    "variantStock": "{{count}} in stock"
   },
   "compare": {
     "title": "Compare Products",
@@ -186,6 +226,24 @@
     "removeMessage": "Are you sure you want to remove this item from your wishlist?",
     "removeConfirm": "Remove",
     "removeCancel": "Cancel"
+  },
+  "countdown": {
+    "expired": "Sale ended",
+    "days": "Days",
+    "hours": "Hrs",
+    "minutes": "Min",
+    "seconds": "Sec",
+    "saleEnds": "Sale ends in"
+  },
+  "ratingBreakdown": {
+    "title": "Rating Breakdown",
+    "stars": "{{count}} star",
+    "stars_other": "{{count}} stars",
+    "clearFilter": "Clear filter"
+  },
+  "photoReview": {
+    "addPhotos": "Add photos (max 3)",
+    "viewPhoto": "View photo"
   },
   "empty": "No products found. Try adjusting your filters.",
   "loading": "Loading products..."

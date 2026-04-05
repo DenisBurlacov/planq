@@ -77,5 +77,17 @@
     "resume": "Resume previous checkout?",
     "accept": "Resume",
     "dismiss": "Start Fresh"
+  },
+  "delivery": {
+    "title": "Delivery Method",
+    "standard": "Standard",
+    "standardDesc": "Free — 5-7 business days",
+    "express": "Express",
+    "expressDesc": "€14.99 — 2-3 business days",
+    "nextDay": "Next Day",
+    "nextDayDesc": "€24.99 — 1 business day",
+    "estimatedDate": "Est. delivery: {{date}}",
+    "free": "Free",
+    "deliveryCost": "Delivery"
   }
 }

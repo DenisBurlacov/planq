@@ -13,10 +13,11 @@ import { ordersApi } from '@api/orders';
 import { profileApi } from '@api/profile';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
-import { CreditCard, Wallet, Check } from 'lucide-react';
+import { CreditCard, Wallet, Check, Truck, Zap, Clock } from 'lucide-react';
 
 const schema = z.object({
   shippingAddress: z.string().min(5),
+  deliveryMethod: z.enum(['STANDARD', 'EXPRESS', 'NEXT_DAY']),
   paymentMethod: z.enum(['CARD', 'WALLET']),
   cardNumber: z.string().optional(),
   termsAccepted: z.literal(true),
@@ -27,8 +28,9 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
   const { t } = useTranslation('checkout');
   const steps = [
     { label: t('steps.address'), number: 1 },
-    { label: t('steps.payment'), number: 2 },
-    { label: t('steps.confirm', { defaultValue: 'Review' }), number: 3 },
+    { label: t('delivery.title'), number: 2 },
+    { label: t('steps.payment'), number: 3 },
+    { label: t('steps.confirm', { defaultValue: 'Review' }), number: 4 },
   ];
 
   return (
@@ -98,7 +100,11 @@ export function CheckoutPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { paymentMethod: 'CARD', termsAccepted: undefined as unknown as true },
+    defaultValues: {
+      paymentMethod: 'CARD',
+      deliveryMethod: 'STANDARD',
+      termsAccepted: undefined as unknown as true,
+    },
   });
 
   const AUTOSAVE_KEY = 'planq-checkout-autosave';
@@ -157,6 +163,7 @@ export function CheckoutPage() {
   }, [allValues]);
 
   const paymentMethod = watch('paymentMethod');
+  const deliveryMethod = watch('deliveryMethod');
   const round2 = (n: number) => Math.round(n * 100) / 100;
   const subtotal = round2(
     cart?.items.reduce((sum, item) => {
@@ -165,13 +172,24 @@ export function CheckoutPage() {
     }, 0) ?? 0
   );
   const discountAmount = promoDiscount ? round2(subtotal * (promoDiscount / 100)) : 0;
-  const total = round2(subtotal - discountAmount);
+  const deliveryCostMap: Record<string, number> = { STANDARD: 0, EXPRESS: 14.99, NEXT_DAY: 24.99 };
+  const deliveryCost = deliveryCostMap[deliveryMethod] ?? 0;
+  const total = round2(subtotal - discountAmount + deliveryCost);
+
+  const getEstimatedDate = (method: string): string => {
+    const now = new Date();
+    const daysMap: Record<string, number> = { STANDARD: 6, EXPRESS: 2, NEXT_DAY: 1 };
+    const days = daysMap[method] ?? 6;
+    now.setDate(now.getDate() + days);
+    return now.toLocaleDateString();
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
       const order = await ordersApi.checkout({
         shippingAddress: data.shippingAddress,
         paymentMethod: data.paymentMethod,
+        deliveryMethod: data.deliveryMethod,
         promoCode,
         cardNumber:
           data.paymentMethod === 'CARD' ? (data.cardNumber ?? '').replace(/\s/g, '') : undefined,
@@ -263,10 +281,77 @@ export function CheckoutPage() {
           </div>
         </div>
 
-        {/* Payment */}
+        {/* Delivery */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
           <h2 className="font-semibold text-[var(--text-primary)] mb-4">
             <span className="text-accent font-bold mr-2">2</span>
+            {t('delivery.title')}
+          </h2>
+          <div className="space-y-3">
+            {(
+              [
+                {
+                  value: 'STANDARD' as const,
+                  icon: Truck,
+                  labelKey: 'delivery.standard',
+                  descKey: 'delivery.standardDesc',
+                  testId: 'delivery-standard',
+                },
+                {
+                  value: 'EXPRESS' as const,
+                  icon: Zap,
+                  labelKey: 'delivery.express',
+                  descKey: 'delivery.expressDesc',
+                  testId: 'delivery-express',
+                },
+                {
+                  value: 'NEXT_DAY' as const,
+                  icon: Clock,
+                  labelKey: 'delivery.nextDay',
+                  descKey: 'delivery.nextDayDesc',
+                  testId: 'delivery-nextday',
+                },
+              ] as const
+            ).map(opt => (
+              <label
+                key={opt.value}
+                data-testid={opt.testId}
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
+                  deliveryMethod === opt.value
+                    ? 'border-accent bg-accent/5'
+                    : 'border-[var(--border)]'
+                }`}
+              >
+                <input
+                  type="radio"
+                  value={opt.value}
+                  {...register('deliveryMethod')}
+                  className="sr-only"
+                />
+                <opt.icon className="h-5 w-5 text-accent shrink-0" />
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                    {t(opt.labelKey)}
+                  </span>
+                  <p className="text-xs text-[var(--text-secondary)]">{t(opt.descKey)}</p>
+                  <p className="text-xs text-accent mt-0.5">
+                    {t('delivery.estimatedDate', { date: getEstimatedDate(opt.value) })}
+                  </p>
+                </div>
+                <span className="text-sm font-medium text-[var(--text-primary)] shrink-0">
+                  {deliveryCostMap[opt.value] === 0
+                    ? t('delivery.free')
+                    : `€${deliveryCostMap[opt.value].toFixed(2)}`}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Payment */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">
+            <span className="text-accent font-bold mr-2">3</span>
             {t('payment.title')}
           </h2>
 
@@ -391,24 +476,34 @@ export function CheckoutPage() {
         {/* Order summary */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6 space-y-2">
           <h2 className="font-semibold text-[var(--text-primary)] mb-2">
-            <span className="text-accent font-bold mr-2">3</span>
+            <span className="text-accent font-bold mr-2">4</span>
             {t('cart.summary')}
           </h2>
+          <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+            <span>{t('cart.subtotal')}</span>
+            <span>€{subtotal.toFixed(2)}</span>
+          </div>
           {promoDiscount && (
-            <>
-              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
-                <span>{t('cart.subtotal')}</span>
-                <span>€{subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-green-600">
-                <span>
-                  {t('cart.discount')} ({promoDiscount}%)
-                </span>
-                <span>-€{discountAmount.toFixed(2)}</span>
-              </div>
-            </>
+            <div className="flex justify-between text-sm text-green-600">
+              <span>
+                {t('cart.discount')} ({promoDiscount}%)
+              </span>
+              <span>-€{discountAmount.toFixed(2)}</span>
+            </div>
           )}
-          <div className="flex justify-between font-bold text-[var(--text-primary)]">
+          {deliveryCost > 0 && (
+            <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+              <span>{t('delivery.deliveryCost')}</span>
+              <span>€{deliveryCost.toFixed(2)}</span>
+            </div>
+          )}
+          {deliveryCost === 0 && (
+            <div className="flex justify-between text-sm text-green-600">
+              <span>{t('delivery.deliveryCost')}</span>
+              <span>{t('delivery.free')}</span>
+            </div>
+          )}
+          <div className="flex justify-between font-bold text-[var(--text-primary)] border-t border-[var(--border)] pt-2">
             <span>{t('cart.total')}</span>
             <span>€{total.toFixed(2)}</span>
           </div>
