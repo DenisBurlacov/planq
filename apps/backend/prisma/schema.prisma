@@ -11,6 +11,7 @@ datasource db {
 
 enum Role {
   USER
+  MANAGER
   ADMIN
 }
 
@@ -62,6 +63,8 @@ model User {
   wishlist           Wishlist[]
   transactions       Transaction[]
   addresses          Address[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
 }
 
 model EmailVerificationToken {
@@ -261,4 +264,33 @@ model Address {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  action     String
+  resource   String
+  resourceId String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
 }

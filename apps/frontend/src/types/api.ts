@@ -136,8 +136,46 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  userId: string;
+  action: string;
+  resource: string;
+  resourceId: string | null;
+  details: Record<string, unknown> | null;
+  createdAt: string;
+  user?: { name: string };
+  userName?: string;
+}
+
+export interface Address {
+  id: string;
+  name: string;
+  street: string;
+  city: string;
+  zip: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface AdminStats {
+  totalOrders: number;
+  revenueToday: number;
+  pendingOrders: number;
+  activeUsers: number;
+}
+
 export interface WsMessage<T = unknown> {
-  event: 'payment.result' | 'order.status.updated' | 'cart.updated';
+  event: 'payment.result' | 'order.status.updated' | 'cart.updated' | 'notification.new';
   payload: T;
 }
 

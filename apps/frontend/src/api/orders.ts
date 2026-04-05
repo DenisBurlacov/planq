@@ -9,7 +9,14 @@ export interface CheckoutInput {
 }
 
 export const ordersApi = {
-  list: (page = 1) => apiFetch<PaginatedResponse<Order>>(`/api/v1/orders?page=${page}`),
+  list: (params?: { page?: number; dateFrom?: string; dateTo?: string }) => {
+    const p = new URLSearchParams();
+    if (params?.page) p.set('page', String(params.page));
+    if (params?.dateFrom) p.set('dateFrom', params.dateFrom);
+    if (params?.dateTo) p.set('dateTo', params.dateTo);
+    const qs = p.toString();
+    return apiFetch<PaginatedResponse<Order>>(`/api/v1/orders${qs ? `?${qs}` : ''}`);
+  },
 
   getById: (id: string) => apiFetch<Order>(`/api/v1/orders/${id}`),
 

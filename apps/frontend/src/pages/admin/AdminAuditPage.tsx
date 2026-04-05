@@ -63,7 +63,7 @@ export function AdminAuditPage() {
       header: t('audit.details'),
       render: row => (
         <span className="text-xs text-[var(--text-secondary)] truncate max-w-48 block">
-          {row.details ?? '-'}
+          {row.details ? JSON.stringify(row.details) : '-'}
         </span>
       ),
     },

@@ -24,6 +24,7 @@ export default tseslint.config(
       'coverage/',
       'playwright-report/',
       'test-results/',
+      'tests/performance/',
       '*.config.js',
       '*.config.ts',
       '**/*.config.cjs',
