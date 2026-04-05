@@ -311,7 +311,18 @@
     "summary": "Summary",
     "payment": "Payment",
     "address": "Address",
-    "total": "Total"
+    "total": "Total",
+    "statusPanel": {
+      "preparingTitle": "Preparing Your Order",
+      "preparingDesc": "Your order is being prepared. Tracking details will appear once it's shipped.",
+      "mapTitle": "Delivery tracking map",
+      "onTheWayTitle": "Your Order is On the Way!",
+      "onTheWayDesc": "Your package is currently in transit. Estimated delivery within 2-3 business days.",
+      "deliveredTitle": "Enjoy Your Purchase!",
+      "deliveredDesc": "Your order has been delivered. Thank you for shopping with PLANQ! We hope you love your new furniture.",
+      "cancelledTitle": "Order Cancelled",
+      "cancelledDesc": "This order has been cancelled. If you paid by wallet, the refund has been processed."
+    }
   },
   "onboarding": {
     "step1Title": "Search Products",

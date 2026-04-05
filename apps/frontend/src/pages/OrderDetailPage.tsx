@@ -111,8 +111,124 @@ export function OrderDetailPage() {
         </div>
       </div>
 
-      {/* Order Tracking Timeline */}
-      <OrderTrackingTimeline status={order.status} createdAt={order.createdAt} />
+      {/* Order Tracking + Status Panel */}
+      <div className="grid md:grid-cols-2 gap-6 items-start mb-8">
+        <OrderTrackingTimeline status={order.status} createdAt={order.createdAt} />
+
+        {/* Status-dependent panel */}
+        <div
+          data-testid="order-status-panel"
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden"
+        >
+          {(order.status === 'PENDING' || order.status === 'PROCESSING') && (
+            <div
+              className="flex flex-col items-center justify-center p-8 text-center"
+              data-testid="status-panel-pending"
+            >
+              <div className="h-16 w-16 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                <svg
+                  className="h-8 w-8 text-amber-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+                {t('ordersPage.statusPanel.preparingTitle')}
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)]">
+                {t('ordersPage.statusPanel.preparingDesc')}
+              </p>
+            </div>
+          )}
+
+          {(order.status === 'SHIPPED' ||
+            order.status === 'IN_TRANSIT' ||
+            order.status === 'OUT_FOR_DELIVERY') && (
+            <div data-testid="status-panel-shipping">
+              <iframe
+                data-testid="order-map-iframe"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=17.8,59.2,18.3,59.4&layer=mapnik"
+                className="w-full h-48 border-b border-[var(--border)]"
+                title={t('ordersPage.statusPanel.mapTitle')}
+              />
+              <div className="p-5 text-center">
+                <h3 className="font-semibold text-[var(--text-primary)] mb-1">
+                  {t('ordersPage.statusPanel.onTheWayTitle')}
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {t('ordersPage.statusPanel.onTheWayDesc')}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {order.status === 'DELIVERED' && (
+            <div
+              className="flex flex-col items-center justify-center p-8 text-center"
+              data-testid="status-panel-delivered"
+            >
+              <div className="h-16 w-16 rounded-full bg-green-50 dark:bg-green-500/10 flex items-center justify-center mb-4">
+                <svg
+                  className="h-8 w-8 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+                {t('ordersPage.statusPanel.deliveredTitle')}
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)]">
+                {t('ordersPage.statusPanel.deliveredDesc')}
+              </p>
+            </div>
+          )}
+
+          {order.status === 'CANCELLED' && (
+            <div
+              className="flex flex-col items-center justify-center p-8 text-center"
+              data-testid="status-panel-cancelled"
+            >
+              <div className="h-16 w-16 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-4">
+                <svg
+                  className="h-8 w-8 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+                {t('ordersPage.statusPanel.cancelledTitle')}
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)]">
+                {t('ordersPage.statusPanel.cancelledDesc')}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="grid md:grid-cols-3 gap-6 items-start">
         <div className="md:col-span-2">
