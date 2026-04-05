@@ -475,44 +475,6 @@ export function CatalogPage() {
               />
               {t('filters.inStock')}
             </label>
-          </div>
-
-          {/* Row 2: Material | Color | Style -- 3 equal columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* Material chips */}
-            <div>
-              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
-                {t('filters.material')}
-              </label>
-              <div className="flex flex-wrap gap-1">
-                {(['wood', 'metal', 'fabric', 'glass', 'leather', 'plastic'] as const).map(mat => {
-                  const isActive = query.material?.includes(mat);
-                  return (
-                    <button
-                      key={mat}
-                      type="button"
-                      data-testid={`filter-material-${mat}`}
-                      onClick={() =>
-                        setQuery(q => ({
-                          ...q,
-                          material: isActive
-                            ? (q.material ?? []).filter(m => m !== mat)
-                            : [...(q.material ?? []), mat],
-                          page: 1,
-                        }))
-                      }
-                      className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${
-                        isActive
-                          ? 'bg-accent text-white'
-                          : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
-                      }`}
-                    >
-                      {t(`filters.materialOptions.${mat}`)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
 
             {/* Color swatches */}
             <div>
@@ -558,6 +520,44 @@ export function CatalogPage() {
                 })}
               </div>
             </div>
+          </div>
+
+          {/* Row 3: Material + Style (same pill style, side by side) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Material pills */}
+            <div>
+              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
+                {t('filters.material')}
+              </label>
+              <div className="flex flex-wrap gap-1">
+                {(['wood', 'metal', 'fabric', 'glass', 'leather', 'plastic'] as const).map(mat => {
+                  const isActive = query.material?.includes(mat);
+                  return (
+                    <button
+                      key={mat}
+                      type="button"
+                      data-testid={`filter-material-${mat}`}
+                      onClick={() =>
+                        setQuery(q => ({
+                          ...q,
+                          material: isActive
+                            ? (q.material ?? []).filter(m => m !== mat)
+                            : [...(q.material ?? []), mat],
+                          page: 1,
+                        }))
+                      }
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        isActive
+                          ? 'bg-accent text-white'
+                          : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
+                      }`}
+                    >
+                      {t(`filters.materialOptions.${mat}`)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* Style pills */}
             <div>
@@ -582,7 +582,7 @@ export function CatalogPage() {
                             page: 1,
                           }))
                         }
-                        className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                           isActive
                             ? 'bg-accent text-white'
                             : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
