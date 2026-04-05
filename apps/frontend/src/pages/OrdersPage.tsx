@@ -6,6 +6,7 @@ import { Package } from 'lucide-react';
 import { Badge } from '@components/ui/Badge';
 import { Skeleton } from '@components/ui/Skeleton';
 import { EmptyState } from '@components/ui/EmptyState';
+import { DateRangeFilter } from '@components/ui/DateRangeFilter';
 import { ordersApi } from '@api/orders';
 import type { OrderStatus } from '@appTypes/api';
 
@@ -19,7 +20,6 @@ const statusVariant: Record<OrderStatus, 'success' | 'info' | 'warning' | 'defau
 
 export function OrdersPage() {
   const { t } = useTranslation('common');
-  const { t: tp } = useTranslation('profile');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
@@ -45,27 +45,14 @@ export function OrdersPage() {
       </h1>
 
       {/* Date Filter */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-[var(--text-secondary)]">{tp('orders.dateFrom')}</label>
-          <input
-            data-testid="orders-date-from"
-            type="date"
-            value={dateFrom}
-            onChange={e => setDateFrom(e.target.value)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-[var(--text-secondary)]">{tp('orders.dateTo')}</label>
-          <input
-            data-testid="orders-date-to"
-            type="date"
-            value={dateTo}
-            onChange={e => setDateTo(e.target.value)}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-        </div>
+      <div className="mb-6">
+        <DateRangeFilter
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onDateFromChange={setDateFrom}
+          onDateToChange={setDateTo}
+          data-testid="orders-date"
+        />
       </div>
 
       {!data?.items.length ? (

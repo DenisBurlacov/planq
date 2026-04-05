@@ -58,6 +58,11 @@
     "light": "Light",
     "dark": "Dark"
   },
+  "dateRange": {
+    "from": "From",
+    "to": "To",
+    "error": "From date cannot be after To date"
+  },
   "back": "Back",
   "viewAll": "View all",
   "termsLink": "Terms & Conditions",

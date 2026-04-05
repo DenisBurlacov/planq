@@ -8,6 +8,7 @@ import { Button } from '@components/ui/Button';
 import { Modal } from '@components/ui/Modal';
 import { DataTable, type Column } from '@components/ui/DataTable';
 import { useToast } from '@components/ui/Toast';
+import { DateRangeFilter } from '@components/ui/DateRangeFilter';
 import { adminApi } from '@api/admin';
 import type { Order, OrderStatus } from '@appTypes/api';
 
@@ -276,32 +277,19 @@ export function AdminOrdersPage() {
           className="flex-1 min-w-48 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
           aria-label={t('orders.search')}
         />
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-[var(--text-secondary)]">{t('orders.dateFrom')}</label>
-          <input
-            data-testid="order-filter-date-from"
-            type="date"
-            value={dateFrom}
-            onChange={e => {
-              setDateFrom(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-[var(--text-secondary)]">{t('orders.dateTo')}</label>
-          <input
-            data-testid="order-filter-date-to"
-            type="date"
-            value={dateTo}
-            onChange={e => {
-              setDateTo(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-          />
-        </div>
+        <DateRangeFilter
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onDateFromChange={v => {
+            setDateFrom(v);
+            setPage(1);
+          }}
+          onDateToChange={v => {
+            setDateTo(v);
+            setPage(1);
+          }}
+          data-testid="order-filter-date"
+        />
       </div>
 
       <DataTable
