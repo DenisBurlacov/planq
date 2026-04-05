@@ -184,7 +184,16 @@
     "expYear": "Expiry Year",
     "brand": "Brand",
     "maskedNumber": "**** **** **** {{last4}}",
-    "expires": "Expires {{month}}/{{year}}"
+    "expires": "Expires {{month}}/{{year}}",
+    "validation": {
+      "cardRequired": "Card number is required",
+      "cardInvalid": "Card number must be 13-19 digits",
+      "nameRequired": "Cardholder name is required",
+      "nameMin": "Name must be at least 2 characters",
+      "nameMax": "Name must be 15 characters or less",
+      "nameLatinOnly": "Only Latin characters allowed",
+      "expiryPast": "Card expiry date cannot be in the past"
+    }
   },
   "auth": {
     "login": "Sign In",

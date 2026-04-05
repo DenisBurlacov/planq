@@ -1399,9 +1399,10 @@ function PaymentMethodsTab({ profileName }: { profileName: string }) {
   const deleteCardConfirm = useConfirmModal<string>();
   const [cardNumber, setCardNumber] = useState('');
   const [cardholderName, setCardholderName] = useState('');
-  const [expMonth, setExpMonth] = useState(1);
+  const [expMonth, setExpMonth] = useState(new Date().getMonth() + 1);
   const [expYear, setExpYear] = useState(new Date().getFullYear() + 1);
   const [saving, setSaving] = useState(false);
+  const [cardErrors, setCardErrors] = useState<Record<string, string>>({});
 
   const loadCards = useCallback(async () => {
     const { cardsApi } = await import('@api/cards');
@@ -1414,11 +1415,44 @@ function PaymentMethodsTab({ profileName }: { profileName: string }) {
     loadCards();
   });
 
+  const validateCard = (): boolean => {
+    const errs: Record<string, string> = {};
+    const digits = cardNumber.replace(/\s/g, '');
+    if (!digits) {
+      errs.cardNumber = t('paymentMethods.validation.cardRequired');
+    } else if (!/^\d{13,19}$/.test(digits)) {
+      errs.cardNumber = t('paymentMethods.validation.cardInvalid');
+    }
+    if (!cardholderName.trim()) {
+      errs.cardholderName = t('paymentMethods.validation.nameRequired');
+    } else if (cardholderName.trim().length < 2) {
+      errs.cardholderName = t('paymentMethods.validation.nameMin');
+    } else if (cardholderName.trim().length > 15) {
+      errs.cardholderName = t('paymentMethods.validation.nameMax');
+    } else if (!/^[a-zA-Z\s\-']+$/.test(cardholderName.trim())) {
+      errs.cardholderName = t('paymentMethods.validation.nameLatinOnly');
+    }
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+      errs.expiry = t('paymentMethods.validation.expiryPast');
+    }
+    setCardErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleAdd = async () => {
+    if (!validateCard()) return;
     setSaving(true);
     try {
       const { cardsApi } = await import('@api/cards');
-      await cardsApi.add({ cardNumber, cardholderName, expMonth, expYear });
+      await cardsApi.add({
+        cardNumber: cardNumber.replace(/\s/g, ''),
+        cardholderName: cardholderName.trim(),
+        expMonth,
+        expYear,
+      });
       toast('success', t('toast.cardAdded'));
       setAddModalOpen(false);
       setCardNumber('');
@@ -1565,10 +1599,18 @@ function PaymentMethodsTab({ profileName }: { profileName: string }) {
                 <input
                   data-testid="card-number-input"
                   value={cardNumber}
-                  onChange={e => setCardNumber(e.target.value)}
+                  onChange={e => {
+                    setCardNumber(e.target.value);
+                    setCardErrors(prev => ({ ...prev, cardNumber: '' }));
+                  }}
                   placeholder={t('paymentMethods.cardNumberPlaceholder')}
-                  className={inputCls}
+                  className={`${inputCls} ${cardErrors.cardNumber ? 'border-red-500' : ''}`}
                 />
+                {cardErrors.cardNumber && (
+                  <p data-testid="card-number-error" className="text-xs text-red-500 mt-1">
+                    {cardErrors.cardNumber}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="text-sm font-medium text-[var(--text-primary)] mb-1 block">
@@ -1577,10 +1619,19 @@ function PaymentMethodsTab({ profileName }: { profileName: string }) {
                 <input
                   data-testid="cardholder-name-input"
                   value={cardholderName}
-                  onChange={e => setCardholderName(e.target.value)}
+                  onChange={e => {
+                    setCardholderName(e.target.value);
+                    setCardErrors(prev => ({ ...prev, cardholderName: '' }));
+                  }}
                   placeholder={t('paymentMethods.cardholderPlaceholder')}
-                  className={inputCls}
+                  maxLength={15}
+                  className={`${inputCls} ${cardErrors.cardholderName ? 'border-red-500' : ''}`}
                 />
+                {cardErrors.cardholderName && (
+                  <p data-testid="cardholder-name-error" className="text-xs text-red-500 mt-1">
+                    {cardErrors.cardholderName}
+                  </p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1616,9 +1667,21 @@ function PaymentMethodsTab({ profileName }: { profileName: string }) {
                   </select>
                 </div>
               </div>
+              {cardErrors.expiry && (
+                <p data-testid="card-expiry-error" className="text-xs text-red-500 mt-1">
+                  {cardErrors.expiry}
+                </p>
+              )}
             </div>
             <div className="flex justify-end gap-2 mt-6">
-              <Button variant="secondary" size="sm" onClick={() => setAddModalOpen(false)}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setAddModalOpen(false);
+                  setCardErrors({});
+                }}
+              >
                 {t('common:actions.cancel', { ns: 'common' })}
               </Button>
               <Button size="sm" onClick={handleAdd} loading={saving}>
