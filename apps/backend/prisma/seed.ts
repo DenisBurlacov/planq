@@ -1752,6 +1752,110 @@ async function main() {
     });
   }
 
+  // ─── Store Settings ──────────────────────────────────────────────────────
+
+  const defaultSettings = [
+    { key: 'storeName', value: 'PLANQ' },
+    { key: 'currency', value: 'EUR' },
+    { key: 'contactEmail', value: 'support@planq.com' },
+    { key: 'maxCartItems', value: '20' },
+    { key: 'freeShippingThreshold', value: '200' },
+    { key: 'returnDays', value: '30' },
+  ];
+
+  for (const setting of defaultSettings) {
+    await prisma.storeSetting.upsert({
+      where: { key: setting.key },
+      update: {},
+      create: setting,
+    });
+  }
+
+  // ─── Blog Articles ────────────────────────────────────────────────────────
+
+  const blogArticles = [
+    {
+      title: 'Scandinavian Design Trends for 2026',
+      slug: 'scandinavian-design-trends-2026',
+      excerpt:
+        'Explore the latest Scandinavian design trends that are shaping modern interiors this year.',
+      content:
+        '<h2>The Evolution of Nordic Minimalism</h2><p>Scandinavian design continues to evolve, blending functionality with warmth. This year, we see a shift toward organic shapes, earth tones, and sustainable materials that bring nature indoors.</p><h2>Key Trends</h2><ul><li><strong>Curved furniture:</strong> Soft, rounded edges replace sharp angles</li><li><strong>Natural textures:</strong> Bouclé, linen, and raw wood dominate</li><li><strong>Warm neutrals:</strong> Sand, terracotta, and warm grey replace cool whites</li><li><strong>Biophilic design:</strong> Indoor plants and natural light take center stage</li></ul><p>These trends reflect a broader movement toward creating homes that feel both modern and deeply comfortable.</p>',
+      coverImage:
+        'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=450&fit=crop',
+      category: 'trends',
+      authorName: 'Emma Lindqvist',
+    },
+    {
+      title: 'Small-Space Furniture Guide: Maximize Every Square Meter',
+      slug: 'small-space-furniture-guide',
+      excerpt:
+        'Smart furniture solutions for apartments and compact living spaces without sacrificing style.',
+      content:
+        '<h2>Living Large in Small Spaces</h2><p>Urban living often means working with limited square footage, but that does not mean compromising on style or comfort. The key is choosing furniture that works harder.</p><h2>Essential Strategies</h2><ul><li><strong>Multi-functional pieces:</strong> Sofa beds, extendable tables, and storage ottomans</li><li><strong>Vertical storage:</strong> Tall bookshelves and wall-mounted solutions</li><li><strong>Light colors:</strong> Pale tones create an illusion of space</li><li><strong>Transparent furniture:</strong> Glass and acrylic pieces reduce visual clutter</li></ul><p>With thoughtful selection, even the smallest apartment can feel spacious and inviting.</p>',
+      coverImage:
+        'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&h=450&fit=crop',
+      category: 'guides',
+      authorName: 'Marcus Berg',
+    },
+    {
+      title: 'Color Palettes That Transform Your Living Room',
+      slug: 'living-room-color-palettes',
+      excerpt:
+        'Discover how the right color combinations can completely change the mood of your living space.',
+      content:
+        '<h2>The Power of Color</h2><p>Color is one of the most powerful tools in interior design. The right palette can make a room feel larger, cozier, more energetic, or more serene.</p><h2>Our Favorite Palettes</h2><ul><li><strong>Warm Earth:</strong> Terracotta, sand, olive green, and cream</li><li><strong>Coastal Calm:</strong> Soft blue, white, driftwood grey, and sand</li><li><strong>Modern Luxe:</strong> Deep navy, gold accents, marble white, and charcoal</li><li><strong>Forest Retreat:</strong> Deep green, brown, cream, and moss</li></ul><p>Start with a neutral base and layer in accent colors through textiles, art, and accessories.</p>',
+      coverImage:
+        'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&h=450&fit=crop',
+      category: 'inspiration',
+      authorName: 'Sofia Andersson',
+    },
+    {
+      title: 'Sustainable Materials: The Future of Furniture',
+      slug: 'sustainable-materials-furniture',
+      excerpt:
+        'How eco-friendly materials are revolutionizing furniture manufacturing without compromising quality.',
+      content:
+        '<h2>Building a Greener Future</h2><p>The furniture industry is undergoing a sustainability revolution. Consumers increasingly demand products that are kind to the planet without sacrificing quality or aesthetics.</p><h2>Materials Leading the Change</h2><ul><li><strong>Bamboo:</strong> Fast-growing, durable, and beautiful</li><li><strong>Recycled metals:</strong> Aluminum and steel get a second life</li><li><strong>FSC-certified wood:</strong> Responsibly sourced timber</li><li><strong>Recycled plastics:</strong> Ocean plastics transformed into furniture</li><li><strong>Cork:</strong> Renewable, lightweight, and naturally antimicrobial</li></ul><p>At PLANQ, we are committed to increasing our range of sustainably sourced products every year.</p>',
+      coverImage:
+        'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=450&fit=crop',
+      category: 'sustainability',
+      authorName: 'Lars Eriksson',
+    },
+    {
+      title: 'The Perfect Home Office Setup',
+      slug: 'perfect-home-office-setup',
+      excerpt:
+        'Create a productive and comfortable workspace at home with the right furniture and layout.',
+      content:
+        '<h2>Work From Home, Done Right</h2><p>A well-designed home office can dramatically improve your productivity and well-being. The key is balancing ergonomics, aesthetics, and functionality.</p><h2>Essential Elements</h2><ul><li><strong>Ergonomic chair:</strong> Invest in proper lumbar support</li><li><strong>Standing desk:</strong> Alternate between sitting and standing</li><li><strong>Good lighting:</strong> Natural light supplemented by task lighting</li><li><strong>Cable management:</strong> Keep your workspace tidy and organized</li><li><strong>Personal touches:</strong> Plants, art, and photos boost mood</li></ul><p>Remember: your home office should inspire you, not feel like a corporate cubicle.</p>',
+      coverImage:
+        'https://images.unsplash.com/photo-1593642634315-48f5414c3ad9?w=800&h=450&fit=crop',
+      category: 'guides',
+      authorName: 'Anna Johansson',
+    },
+    {
+      title: 'Bedroom Makeover Inspiration: From Dull to Dream',
+      slug: 'bedroom-makeover-inspiration',
+      excerpt:
+        'Transform your bedroom into a serene retreat with these design ideas and furniture picks.',
+      content:
+        '<h2>Your Personal Sanctuary</h2><p>The bedroom should be your most peaceful room. A well-designed sleeping space promotes better rest and starts each day on the right note.</p><h2>Makeover Ideas</h2><ul><li><strong>Layer your bedding:</strong> Mix textures with linen, cotton, and knit throws</li><li><strong>Ambient lighting:</strong> Ditch the overhead light for bedside lamps and fairy lights</li><li><strong>Declutter:</strong> A clean room equals a calm mind</li><li><strong>Statement headboard:</strong> Make the bed the focal point</li><li><strong>Soft rugs:</strong> Warm your feet and add visual warmth</li></ul><p>Small changes can make a dramatic difference. Start with one element and build from there.</p>',
+      coverImage:
+        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&h=450&fit=crop',
+      category: 'inspiration',
+      authorName: 'Emma Lindqvist',
+    },
+  ];
+
+  for (const article of blogArticles) {
+    await prisma.blogArticle.upsert({
+      where: { slug: article.slug },
+      update: {},
+      create: article,
+    });
+  }
+
   // eslint-disable-next-line no-console
   console.log('Seed completed successfully');
   // eslint-disable-next-line no-console
@@ -1762,6 +1866,10 @@ async function main() {
   console.log(`  Products: ${products.length}`);
   // eslint-disable-next-line no-console
   console.log(`  Promo codes: 3`);
+  // eslint-disable-next-line no-console
+  console.log(`  Store settings: ${defaultSettings.length}`);
+  // eslint-disable-next-line no-console
+  console.log(`  Blog articles: ${blogArticles.length}`);
 }
 
 // Export for use in /api/test/reset endpoint

@@ -7,9 +7,10 @@ import { AppError } from '@utils/AppError.js';
 const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
 const AVATARS_DIR = path.join(UPLOADS_DIR, 'avatars');
 const PRODUCTS_DIR = path.join(UPLOADS_DIR, 'products');
+const CATEGORIES_DIR = path.join(UPLOADS_DIR, 'categories');
 
 // Ensure directories exist
-for (const dir of [UPLOADS_DIR, AVATARS_DIR, PRODUCTS_DIR]) {
+for (const dir of [UPLOADS_DIR, AVATARS_DIR, PRODUCTS_DIR, CATEGORIES_DIR]) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -62,4 +63,14 @@ export function uploadAvatar(req: Request, res: Response, next: NextFunction): v
 
 export function uploadProductImages(req: Request, res: Response, next: NextFunction): void {
   productImagesUpload.array('images', 10)(req, res, next);
+}
+
+const categoryImageUpload = multer({
+  storage: createStorage(CATEGORIES_DIR),
+  limits: { fileSize: MAX_PRODUCT_IMAGE_SIZE },
+  fileFilter,
+});
+
+export function uploadCategoryImage(req: Request, res: Response, next: NextFunction): void {
+  categoryImageUpload.single('image')(req, res, next);
 }

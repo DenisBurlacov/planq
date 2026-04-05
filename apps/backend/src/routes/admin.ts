@@ -9,6 +9,8 @@ import { uploadProductImages } from '@middleware/upload.js';
 import { getAuthUser } from '@utils/getAuthUser.js';
 import * as adminService from '@services/admin.service.js';
 import * as auditService from '@services/audit.service.js';
+import * as settingsService from '@services/settings.service.js';
+import { uploadCategoryImage } from '@middleware/upload.js';
 import { ok, created, noContent } from '@utils/response.js';
 
 const router: ExpressRouter = Router();
@@ -534,6 +536,449 @@ router.get(
   }
 );
 
+// ─── Promo Codes ────────────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /admin/promos:
+ *   get:
+ *     tags: [Admin]
+ *     summary: List all promo codes (paginated)
+ *     parameters:
+ *       - { in: query, name: page, schema: { type: integer, default: 1 } }
+ *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
+ *       - { in: query, name: search, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Paginated promo codes list
+ */
+router.get('/promos', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit, search } = adminService.AdminPromosQuerySchema.parse(req.query);
+    ok(res, await adminService.listPromos(page, limit, search));
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/promos:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Create a promo code
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [code, discountPercent, validFrom, validUntil, maxUses]
+ *             properties:
+ *               code: { type: string }
+ *               discountPercent: { type: integer }
+ *               validFrom: { type: string, format: date-time }
+ *               validUntil: { type: string, format: date-time }
+ *               minOrderAmount: { type: number, nullable: true }
+ *               maxUses: { type: integer }
+ *               isActive: { type: boolean }
+ *     responses:
+ *       201:
+ *         description: Promo code created
+ */
+router.post(
+  '/promos',
+  managerRestrictions,
+  validate(adminService.CreatePromoSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const promo = await adminService.createPromo(req.body as adminService.CreatePromoInput);
+      await auditService.logAction(getAuthUser(req).userId, 'promo_create', 'promo', promo.id, {
+        code: promo.code,
+      });
+      created(res, promo);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/promos/{id}:
+ *   put:
+ *     tags: [Admin]
+ *     summary: Update a promo code
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Promo code updated
+ */
+router.put(
+  '/promos/:id',
+  managerRestrictions,
+  validate(adminService.UpdatePromoSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const promo = await adminService.updatePromo(
+        req.params.id as string,
+        req.body as adminService.UpdatePromoInput
+      );
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'promo_update',
+        'promo',
+        promo.id,
+        req.body as Record<string, unknown>
+      );
+      ok(res, promo);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/promos/{id}:
+ *   delete:
+ *     tags: [Admin]
+ *     summary: Delete a promo code
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Promo code deleted
+ */
+router.delete(
+  '/promos/:id',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await adminService.deletePromo(req.params.id as string);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'promo_delete',
+        'promo',
+        req.params.id as string
+      );
+      noContent(res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ─── Categories (Admin) ────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /admin/categories:
+ *   get:
+ *     tags: [Admin]
+ *     summary: List all categories (paginated)
+ *     parameters:
+ *       - { in: query, name: page, schema: { type: integer, default: 1 } }
+ *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
+ *       - { in: query, name: search, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Paginated categories list
+ */
+router.get('/categories', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit, search } = adminService.AdminPaginationSchema.parse(req.query);
+    ok(res, await adminService.listAdminCategories(page, limit, search));
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/categories:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Create a category
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, slug]
+ *             properties:
+ *               name: { type: string }
+ *               slug: { type: string }
+ *               image: { type: string, nullable: true }
+ *     responses:
+ *       201:
+ *         description: Category created
+ */
+router.post(
+  '/categories',
+  managerRestrictions,
+  validate(adminService.CreateCategorySchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const category = await adminService.createCategory(
+        req.body as adminService.CreateCategoryInput
+      );
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'category_create',
+        'category',
+        category.id,
+        { name: category.name }
+      );
+      created(res, category);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/categories/{id}:
+ *   put:
+ *     tags: [Admin]
+ *     summary: Update a category
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Category updated
+ */
+router.put(
+  '/categories/:id',
+  managerRestrictions,
+  validate(adminService.UpdateCategorySchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const category = await adminService.updateCategory(
+        req.params.id as string,
+        req.body as adminService.UpdateCategoryInput
+      );
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'category_update',
+        'category',
+        category.id,
+        req.body as Record<string, unknown>
+      );
+      ok(res, category);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/categories/{id}:
+ *   delete:
+ *     tags: [Admin]
+ *     summary: Delete a category
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Category deleted
+ *       400:
+ *         description: Category has products
+ */
+router.delete(
+  '/categories/:id',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await adminService.deleteCategory(req.params.id as string);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'category_delete',
+        'category',
+        req.params.id as string
+      );
+      noContent(res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /admin/categories/{id}/image:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Upload category image
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Category image uploaded
+ */
+router.post(
+  '/categories/:id/image',
+  managerRestrictions,
+  uploadCategoryImage,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        res.status(400).json({ error: 'NO_FILE', message: 'No file uploaded', statusCode: 400 });
+        return;
+      }
+      const imagePath = `/uploads/categories/${file.filename}`;
+      const category = await adminService.updateCategory(req.params.id as string, {
+        image: imagePath,
+      });
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'category_image_upload',
+        'category',
+        req.params.id as string
+      );
+      ok(res, category);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ─── Review Moderation ──────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /admin/reviews:
+ *   get:
+ *     tags: [Admin]
+ *     summary: List all reviews with user and product info
+ *     parameters:
+ *       - { in: query, name: page, schema: { type: integer, default: 1 } }
+ *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
+ *       - { in: query, name: search, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Paginated reviews list
+ */
+router.get('/reviews', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit, search } = adminService.AdminReviewsQuerySchema.parse(req.query);
+    ok(res, await adminService.listAdminReviews(page, limit, search));
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/reviews/{id}:
+ *   delete:
+ *     tags: [Admin]
+ *     summary: Soft-delete a review
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Review deleted
+ *       404:
+ *         description: Review not found
+ */
+router.delete('/reviews/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await adminService.deleteReview(req.params.id as string);
+    await auditService.logAction(
+      getAuthUser(req).userId,
+      'review_delete',
+      'review',
+      req.params.id as string
+    );
+    noContent(res);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── Store Settings ─────────────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /admin/settings:
+ *   get:
+ *     tags: [Admin]
+ *     summary: List all store settings
+ *     responses:
+ *       200:
+ *         description: List of key-value settings
+ */
+router.get('/settings', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    ok(res, await settingsService.listSettings());
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/settings:
+ *   put:
+ *     tags: [Admin]
+ *     summary: Update store settings
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [settings]
+ *             properties:
+ *               settings:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     key: { type: string }
+ *                     value: { type: string }
+ *     responses:
+ *       200:
+ *         description: Settings updated
+ */
+router.put(
+  '/settings',
+  managerRestrictions,
+  validate(settingsService.UpdateSettingsSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { settings } = req.body as settingsService.UpdateSettingsInput;
+      const updated = await settingsService.updateSettings(settings);
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'settings_update',
+        'settings',
+        undefined,
+        { keys: settings.map(s => s.key) }
+      );
+      ok(res, updated);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // ─── Stats ───────────────────────────────────────────────────────────────────
 
 /**
@@ -549,6 +994,60 @@ router.get(
 router.get('/stats', async (_req: Request, res: Response, next: NextFunction) => {
   try {
     ok(res, await adminService.getStats());
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/stats/revenue-chart:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Daily revenue for last 30 days
+ *     responses:
+ *       200:
+ *         description: Array of { date, revenue } for each day
+ */
+router.get('/stats/revenue-chart', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    ok(res, await adminService.getRevenueChart());
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/stats/top-products:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Top 10 products by revenue
+ *     responses:
+ *       200:
+ *         description: Array of { product, totalRevenue, totalOrders }
+ */
+router.get('/stats/top-products', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    ok(res, await adminService.getTopProducts());
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * @openapi
+ * /admin/stats/orders-by-status:
+ *   get:
+ *     tags: [Admin]
+ *     summary: Order count per status
+ *     responses:
+ *       200:
+ *         description: Object with status keys and count values
+ */
+router.get('/stats/orders-by-status', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    ok(res, await adminService.getOrdersByStatus());
   } catch (err) {
     next(err);
   }

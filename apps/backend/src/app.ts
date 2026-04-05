@@ -26,6 +26,10 @@ import adminRouter from '@routes/admin.js';
 import webhooksRouter from '@routes/webhooks.js';
 import twoFactorRouter from '@routes/twoFactor.js';
 import captchaRouter from '@routes/captcha.js';
+import cardsRouter from '@routes/cards.js';
+import blogRouter from '@routes/blog.js';
+import contactRouter from '@routes/contact.js';
+import newsletterRouter from '@routes/newsletter.js';
 import { contentNegotiation } from '@middleware/contentNegotiation.js';
 
 const app: Express = express();
@@ -82,6 +86,10 @@ app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/webhooks', webhooksRouter);
 app.use('/api/v1/auth/2fa', twoFactorRouter);
 app.use('/api/v1/auth/captcha', captchaRouter);
+app.use('/api/v1/cards', cardsRouter);
+app.use('/api/v1/blog', blogRouter);
+app.use('/api/v1/contact', contactRouter);
+app.use('/api/v1/newsletter', newsletterRouter);
 app.use('/api/test', resetRouter);
 
 // Global error handler (must be last)

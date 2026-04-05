@@ -435,6 +435,230 @@ export async function appendProductImages(id: string, imagePaths: string[]) {
   return product;
 }
 
+// ─── Promo Codes ────────────────────────────────────────────────────────────
+
+export const AdminPromosQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+});
+
+export const CreatePromoSchema = z.object({
+  code: z.string().min(1).max(50),
+  discountPercent: z.number().int().min(1).max(100),
+  validFrom: z.string().datetime(),
+  validUntil: z.string().datetime(),
+  minOrderAmount: z.number().positive().nullable().optional(),
+  maxUses: z.number().int().positive(),
+  isActive: z.boolean().default(true),
+});
+
+export const UpdatePromoSchema = z.object({
+  code: z.string().min(1).max(50).optional(),
+  discountPercent: z.number().int().min(1).max(100).optional(),
+  validFrom: z.string().datetime().optional(),
+  validUntil: z.string().datetime().optional(),
+  minOrderAmount: z.number().positive().nullable().optional(),
+  maxUses: z.number().int().positive().optional(),
+  isActive: z.boolean().optional(),
+});
+
+export type CreatePromoInput = z.infer<typeof CreatePromoSchema>;
+export type UpdatePromoInput = z.infer<typeof UpdatePromoSchema>;
+
+export async function listPromos(page: number, limit: number, search?: string) {
+  const skip = (page - 1) * limit;
+  const where = {
+    ...(search && {
+      code: { contains: search, mode: 'insensitive' as const },
+    }),
+  };
+  const [items, total] = await Promise.all([
+    prisma.promoCode.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: limit }),
+    prisma.promoCode.count({ where }),
+  ]);
+  return { items, total, page, limit, pages: Math.ceil(total / limit) };
+}
+
+export async function createPromo(input: CreatePromoInput) {
+  const existing = await prisma.promoCode.findUnique({ where: { code: input.code } });
+  if (existing) throw new AppError('PROMO_CODE_EXISTS', 'Promo code already exists', 409);
+
+  const promo = await prisma.promoCode.create({
+    data: {
+      ...input,
+      validFrom: new Date(input.validFrom),
+      validUntil: new Date(input.validUntil),
+      minOrderAmount: input.minOrderAmount ?? null,
+    },
+  });
+  logger.info({ message: 'Promo code created by admin', promoId: promo.id });
+  return promo;
+}
+
+export async function updatePromo(id: string, input: UpdatePromoInput) {
+  const existing = await prisma.promoCode.findUnique({ where: { id } });
+  if (!existing) throw new AppError('PROMO_NOT_FOUND', 'Promo code not found', 404);
+
+  if (input.code && input.code !== existing.code) {
+    const codeTaken = await prisma.promoCode.findUnique({ where: { code: input.code } });
+    if (codeTaken) throw new AppError('PROMO_CODE_EXISTS', 'Promo code already exists', 409);
+  }
+
+  const promo = await prisma.promoCode.update({
+    where: { id },
+    data: {
+      ...input,
+      ...(input.validFrom && { validFrom: new Date(input.validFrom) }),
+      ...(input.validUntil && { validUntil: new Date(input.validUntil) }),
+    },
+  });
+  logger.info({ message: 'Promo code updated by admin', promoId: promo.id });
+  return promo;
+}
+
+export async function deletePromo(id: string) {
+  const existing = await prisma.promoCode.findUnique({ where: { id } });
+  if (!existing) throw new AppError('PROMO_NOT_FOUND', 'Promo code not found', 404);
+
+  await prisma.promoCode.delete({ where: { id } });
+  logger.info({ message: 'Promo code deleted by admin', promoId: id });
+}
+
+// ─── Categories (Admin) ────────────────────────────────────────────────────
+
+export const CreateCategorySchema = z.object({
+  name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
+  image: z.string().nullable().optional(),
+});
+
+export const UpdateCategorySchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  slug: z.string().min(1).max(100).optional(),
+  image: z.string().nullable().optional(),
+});
+
+export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
+export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
+
+export async function listAdminCategories(page: number, limit: number, search?: string) {
+  const skip = (page - 1) * limit;
+  const where = {
+    ...(search && {
+      name: { contains: search, mode: 'insensitive' as const },
+    }),
+  };
+  const [items, total] = await Promise.all([
+    prisma.category.findMany({ where, orderBy: { name: 'asc' }, skip, take: limit }),
+    prisma.category.count({ where }),
+  ]);
+  return { items, total, page, limit, pages: Math.ceil(total / limit) };
+}
+
+export async function createCategory(input: CreateCategoryInput) {
+  const existingName = await prisma.category.findUnique({ where: { name: input.name } });
+  if (existingName) throw new AppError('CATEGORY_NAME_EXISTS', 'Category name already exists', 409);
+
+  const existingSlug = await prisma.category.findUnique({ where: { slug: input.slug } });
+  if (existingSlug) throw new AppError('CATEGORY_SLUG_EXISTS', 'Category slug already exists', 409);
+
+  const category = await prisma.category.create({ data: input });
+  logger.info({ message: 'Category created by admin', categoryId: category.id });
+  return category;
+}
+
+export async function updateCategory(id: string, input: UpdateCategoryInput) {
+  const existing = await prisma.category.findUnique({ where: { id } });
+  if (!existing) throw new AppError('CATEGORY_NOT_FOUND', 'Category not found', 404);
+
+  if (input.name && input.name !== existing.name) {
+    const nameTaken = await prisma.category.findUnique({ where: { name: input.name } });
+    if (nameTaken) throw new AppError('CATEGORY_NAME_EXISTS', 'Category name already exists', 409);
+  }
+
+  if (input.slug && input.slug !== existing.slug) {
+    const slugTaken = await prisma.category.findUnique({ where: { slug: input.slug } });
+    if (slugTaken) throw new AppError('CATEGORY_SLUG_EXISTS', 'Category slug already exists', 409);
+  }
+
+  const category = await prisma.category.update({ where: { id }, data: input });
+  logger.info({ message: 'Category updated by admin', categoryId: category.id });
+  return category;
+}
+
+export async function deleteCategory(id: string) {
+  const existing = await prisma.category.findUnique({ where: { id } });
+  if (!existing) throw new AppError('CATEGORY_NOT_FOUND', 'Category not found', 404);
+
+  const productCount = await prisma.product.count({ where: { categoryId: id } });
+  if (productCount > 0) {
+    throw new AppError(
+      'CATEGORY_HAS_PRODUCTS',
+      `Cannot delete category with ${productCount} products`,
+      400
+    );
+  }
+
+  await prisma.category.delete({ where: { id } });
+  logger.info({ message: 'Category deleted by admin', categoryId: id });
+}
+
+// ─── Review Moderation ──────────────────────────────────────────────────────
+
+export const AdminReviewsQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+});
+
+export async function listAdminReviews(page: number, limit: number, search?: string) {
+  const skip = (page - 1) * limit;
+  const where = {
+    deletedAt: null,
+    ...(search && {
+      OR: [{ comment: { contains: search, mode: 'insensitive' as const } }],
+    }),
+  };
+  const [items, total] = await Promise.all([
+    prisma.review.findMany({
+      where,
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        product: { select: { id: true, name: true, slug: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.review.count({ where }),
+  ]);
+  return { items, total, page, limit, pages: Math.ceil(total / limit) };
+}
+
+export async function deleteReview(id: string) {
+  const review = await prisma.review.findFirst({ where: { id, deletedAt: null } });
+  if (!review) throw new AppError('REVIEW_NOT_FOUND', 'Review not found', 404);
+
+  await prisma.review.update({ where: { id }, data: { deletedAt: new Date() } });
+
+  // Update product rating
+  const stats = await prisma.review.aggregate({
+    where: { productId: review.productId, deletedAt: null },
+    _avg: { rating: true },
+    _count: true,
+  });
+  await prisma.product.update({
+    where: { id: review.productId },
+    data: {
+      rating: stats._avg.rating ?? 0,
+      reviewCount: stats._count,
+    },
+  });
+
+  logger.info({ message: 'Review deleted by admin', reviewId: id });
+}
+
 // ─── Dashboard Stats ─────────────────────────────────────────────────────────
 
 export async function getStats() {
@@ -461,4 +685,89 @@ export async function getStats() {
     pendingOrders,
     activeUsers,
   };
+}
+
+// ─── Enhanced Stats ��───────────────────────────��────────────────────────────
+
+export async function getRevenueChart() {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const orders = await prisma.order.findMany({
+    where: {
+      deletedAt: null,
+      status: { not: OrderStatus.CANCELLED },
+      createdAt: { gte: thirtyDaysAgo },
+    },
+    select: { totalAmount: true, createdAt: true },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  const revenueByDay: Record<string, number> = {};
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(thirtyDaysAgo);
+    d.setDate(d.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    revenueByDay[key] = 0;
+  }
+
+  for (const order of orders) {
+    const key = order.createdAt.toISOString().slice(0, 10);
+    if (key in revenueByDay) {
+      revenueByDay[key] += order.totalAmount;
+    }
+  }
+
+  return Object.entries(revenueByDay).map(([date, revenue]) => ({
+    date,
+    revenue: Math.round(revenue * 100) / 100,
+  }));
+}
+
+export async function getTopProducts() {
+  const items = await prisma.orderItem.groupBy({
+    by: ['productId'],
+    _sum: { priceAtOrder: true },
+    _count: { id: true },
+    orderBy: { _sum: { priceAtOrder: 'desc' } },
+    take: 10,
+  });
+
+  const productIds = items.map(i => i.productId);
+  const products = await prisma.product.findMany({
+    where: { id: { in: productIds } },
+    select: { id: true, name: true, slug: true, images: true },
+  });
+
+  const productMap = new Map(products.map(p => [p.id, p]));
+
+  return items.map(item => ({
+    product: productMap.get(item.productId) ?? {
+      id: item.productId,
+      name: 'Unknown',
+      slug: '',
+      images: [],
+    },
+    totalRevenue: Math.round((item._sum.priceAtOrder ?? 0) * 100) / 100,
+    totalOrders: item._count.id,
+  }));
+}
+
+export async function getOrdersByStatus() {
+  const counts = await prisma.order.groupBy({
+    by: ['status'],
+    where: { deletedAt: null },
+    _count: { id: true },
+  });
+
+  const result: Record<string, number> = {};
+  for (const status of Object.values(OrderStatus)) {
+    result[status] = 0;
+  }
+  for (const item of counts) {
+    result[item.status] = item._count.id;
+  }
+
+  return result;
 }
