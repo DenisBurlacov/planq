@@ -123,7 +123,7 @@ export function AdminLayout() {
       {/* Sidebar */}
       <aside
         data-testid="admin-sidebar"
-        className="w-16 md:w-admin-sidebar shrink-0 bg-admin-sidebar border-r border-[var(--border)] flex flex-col sticky top-0 h-screen"
+        className="w-16 md:w-admin-sidebar shrink-0 bg-admin-sidebar border-r border-[var(--border)] flex flex-col sticky top-0 self-start"
       >
         <div className="hidden md:block px-5 py-4">
           <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
