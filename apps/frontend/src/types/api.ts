@@ -13,7 +13,7 @@ export interface PaginatedResponse<T> {
   pages: number;
 }
 
-export type UserRole = 'USER' | 'ADMIN';
+export type UserRole = 'USER' | 'MANAGER' | 'ADMIN';
 
 export interface User {
   id: string;
