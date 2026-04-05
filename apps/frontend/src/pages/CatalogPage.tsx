@@ -298,19 +298,9 @@ export function CatalogPage() {
         </div>
       )}
       <Breadcrumb items={breadcrumbItems} />
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-          {activeCategoryName ?? t('title')}
-        </h1>
-        <button
-          data-testid="catalog-filter-toggle"
-          onClick={handleFilterToggle}
-          className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          {t('filters.title')}
-        </button>
-      </div>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">
+        {activeCategoryName ?? t('title')}
+      </h1>
 
       {/* Category Bar */}
       <CategoryBar
@@ -319,15 +309,20 @@ export function CatalogPage() {
         onCategoryChange={handleCategoryChange}
       />
 
-      {/* Search */}
-      <form onSubmit={handleSearch} className="mb-6 flex gap-2">
-        <div className="relative flex-1">
+      {/* Search + Filters toggle */}
+      <form
+        onSubmit={handleSearch}
+        data-testid="catalog-search-form"
+        className="mb-6 flex items-center gap-2"
+      >
+        <div className="relative flex-1 max-w-lg">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-secondary)]" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t('search')}
             aria-label={t('search')}
+            data-testid="catalog-search-input"
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
           />
           {search.length > 0 && (
@@ -350,6 +345,15 @@ export function CatalogPage() {
         <Button type="submit" variant="secondary">
           {t('common:actions.submit', { ns: 'common' })}
         </Button>
+        <button
+          type="button"
+          data-testid="catalog-filter-toggle"
+          onClick={handleFilterToggle}
+          className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-accent/40 transition-colors"
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          <span className="hidden sm:inline">{t('filters.title')}</span>
+        </button>
       </form>
 
       {/* Desktop Filters */}
@@ -379,8 +383,8 @@ export function CatalogPage() {
             </Button>
           </div>
 
-          {/* Row 1: Price + Checkboxes -- 2 columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+          {/* Row 1: Price + On Sale + In Stock -- all inline */}
+          <div className="flex flex-wrap items-end gap-4 mb-3">
             {/* Price range */}
             <div>
               <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
@@ -444,33 +448,33 @@ export function CatalogPage() {
               {priceError && <p className="text-xs text-red-500 mt-1">{priceError}</p>}
             </div>
 
-            {/* Checkboxes: On Sale + In Stock -- inline, tight */}
-            <div className="flex items-end gap-4 pb-0.5">
-              <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)]">
-                <input
-                  type="checkbox"
-                  data-testid="filter-on-sale"
-                  className="rounded"
-                  checked={!!query.onSale}
-                  onChange={e =>
-                    setQuery(q => ({ ...q, onSale: e.target.checked || undefined, page: 1 }))
-                  }
-                />
-                {t('filters.onSale')}
-              </label>
-              <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)]">
-                <input
-                  type="checkbox"
-                  data-testid="filter-in-stock"
-                  className="rounded"
-                  checked={!!query.inStock}
-                  onChange={e =>
-                    setQuery(q => ({ ...q, inStock: e.target.checked || undefined, page: 1 }))
-                  }
-                />
-                {t('filters.inStock')}
-              </label>
-            </div>
+            {/* On Sale checkbox */}
+            <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)] pb-0.5">
+              <input
+                type="checkbox"
+                data-testid="filter-on-sale"
+                className="rounded"
+                checked={!!query.onSale}
+                onChange={e =>
+                  setQuery(q => ({ ...q, onSale: e.target.checked || undefined, page: 1 }))
+                }
+              />
+              {t('filters.onSale')}
+            </label>
+
+            {/* In Stock checkbox */}
+            <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)] pb-0.5">
+              <input
+                type="checkbox"
+                data-testid="filter-in-stock"
+                className="rounded"
+                checked={!!query.inStock}
+                onChange={e =>
+                  setQuery(q => ({ ...q, inStock: e.target.checked || undefined, page: 1 }))
+                }
+              />
+              {t('filters.inStock')}
+            </label>
           </div>
 
           {/* Row 2: Material | Color | Style -- 3 equal columns */}
