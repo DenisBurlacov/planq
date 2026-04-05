@@ -132,6 +132,8 @@
     "inStockUnits_other": "In stock ({{count}} units)",
     "ratingLabel": "Rating",
     "videoReview": "Video Review",
+    "videoComingSoon": "Video Coming Soon",
+    "videoComingSoonDesc": "We're working on a detailed video review for this product.",
     "recentlyViewed": "Recently Viewed",
     "youMayAlsoLike": "You May Also Like",
     "almostGone": "Almost gone!",

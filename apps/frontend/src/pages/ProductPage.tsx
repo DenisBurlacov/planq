@@ -656,15 +656,27 @@ export function ProductPage() {
         <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
           {t('product.videoReview')}
         </h2>
-        <div className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--bg-card)]">
-          <iframe
-            data-testid="product-video-iframe"
-            src="https://www.youtube.com/embed/qJkBMXJoYpU"
-            title={t('product.videoReview')}
-            className="w-full aspect-video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+        <div
+          data-testid="product-video-placeholder"
+          className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--bg-sidebar)] flex flex-col items-center justify-center aspect-video"
+        >
+          <svg
+            className="h-16 w-16 text-[var(--text-secondary)] mb-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          <p className="text-lg font-semibold text-[var(--text-primary)]">
+            {t('product.videoComingSoon')}
+          </p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            {t('product.videoComingSoonDesc')}
+          </p>
         </div>
       </div>
 

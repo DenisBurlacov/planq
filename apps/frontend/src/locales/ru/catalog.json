@@ -132,6 +132,8 @@
     "inStockUnits_other": "В наличии ({{count}} шт.)",
     "ratingLabel": "Рейтинг",
     "videoReview": "Видеообзор",
+    "videoComingSoon": "Видео скоро появится",
+    "videoComingSoonDesc": "Мы готовим подробный видеообзор этого товара.",
     "recentlyViewed": "Недавно просмотренные",
     "youMayAlsoLike": "Вам также может понравиться",
     "almostGone": "Почти закончилось!",
