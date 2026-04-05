@@ -447,4 +447,160 @@ router.post('/trigger-ws', (req: Request, res: Response, next: NextFunction) => 
   res.json({ status: 'ok', sent: true });
 });
 
+/**
+ * @openapi
+ * /test/orders/{id}/auto-progress:
+ *   post:
+ *     tags: [Test]
+ *     summary: Auto-progress order through statuses (PENDING → PROCESSING → SHIPPED → DELIVERED)
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               intervalSeconds: { type: number, default: 10 }
+ *     responses:
+ *       200:
+ *         description: Auto-progress started
+ */
+const AutoProgressSchema = z.object({
+  intervalSeconds: z.coerce.number().min(3).max(120).default(10),
+});
+
+const PROGRESS_CHAIN: Array<'PROCESSING' | 'SHIPPED' | 'DELIVERED'> = [
+  'PROCESSING',
+  'SHIPPED',
+  'DELIVERED',
+];
+
+// Track active auto-progress timers
+const activeProgressions = new Map<string, NodeJS.Timeout[]>();
+
+router.post(
+  '/orders/:id/auto-progress',
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!requireResetToken(req, next)) return;
+
+    try {
+      const id = req.params.id as string;
+      const { intervalSeconds } = AutoProgressSchema.parse(req.body ?? {});
+
+      // Check order exists
+      const order = await prisma.order.findFirst({ where: { id, deletedAt: null } });
+      if (!order) {
+        next(new AppError('ORDER_NOT_FOUND', 'Order not found', 404));
+        return;
+      }
+
+      // Cancel any existing progression for this order
+      const existing = activeProgressions.get(id);
+      if (existing) {
+        existing.forEach(t => clearTimeout(t));
+        activeProgressions.delete(id);
+      }
+
+      // Determine starting point in chain
+      const statusIndex: Record<string, number> = {
+        PENDING: 0,
+        PROCESSING: 1,
+        SHIPPED: 2,
+      };
+      const startIdx = statusIndex[order.status];
+      if (startIdx === undefined) {
+        res.json({
+          status: 'skipped',
+          message: `Order is already ${order.status}, cannot progress further`,
+        });
+        return;
+      }
+
+      const remainingSteps = PROGRESS_CHAIN.slice(startIdx);
+      const timers: NodeJS.Timeout[] = [];
+
+      remainingSteps.forEach((nextStatus, i) => {
+        const delay = (i + 1) * intervalSeconds * 1000;
+        const timer = setTimeout(async () => {
+          try {
+            const current = await prisma.order.findFirst({ where: { id } });
+            if (!current || current.status === 'CANCELLED' || current.status === 'DELIVERED')
+              return;
+
+            // Update status + tracking event
+            const existingEvents =
+              (current.trackingEvents as Array<{ status: string; timestamp: string }>) ?? [];
+            const trackingEvents = [
+              ...existingEvents,
+              { status: nextStatus.toLowerCase(), timestamp: new Date().toISOString() },
+            ];
+
+            await prisma.order.update({
+              where: { id },
+              data: { status: nextStatus, trackingEvents },
+            });
+
+            // WS broadcast
+            wsServer.sendToUser(current.userId, 'order.status.updated', {
+              orderId: id,
+              status: nextStatus,
+            });
+
+            logger.info({
+              message: 'Auto-progress: order status updated',
+              orderId: id,
+              status: nextStatus,
+              step: i + 1,
+              totalSteps: remainingSteps.length,
+            });
+          } catch (err) {
+            logger.error({ message: 'Auto-progress failed', orderId: id, error: String(err) });
+          }
+        }, delay);
+        timers.push(timer);
+      });
+
+      activeProgressions.set(id, timers);
+
+      const schedule = remainingSteps.map((s, i) => ({
+        status: s,
+        inSeconds: (i + 1) * intervalSeconds,
+      }));
+
+      logger.info({
+        message: 'Auto-progress started',
+        orderId: id,
+        intervalSeconds,
+        steps: schedule,
+      });
+
+      res.json({
+        status: 'started',
+        orderId: id,
+        currentStatus: order.status,
+        intervalSeconds,
+        schedule,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// Stop auto-progress for an order
+router.delete('/orders/:id/auto-progress', (req: Request, res: Response, next: NextFunction) => {
+  if (!requireResetToken(req, next)) return;
+
+  const id = req.params.id as string;
+  const existing = activeProgressions.get(id);
+  if (existing) {
+    existing.forEach(t => clearTimeout(t));
+    activeProgressions.delete(id);
+    res.json({ status: 'stopped', orderId: id });
+  } else {
+    res.json({ status: 'not_found', orderId: id, message: 'No active progression for this order' });
+  }
+});
+
 export default router;
