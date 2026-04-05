@@ -29,7 +29,7 @@ export const ordersApi = {
 
   cancel: (id: string, reason: string) =>
     apiFetch<Order>(`/api/v1/orders/${id}/cancel`, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify({ reason }),
     }),
 };
