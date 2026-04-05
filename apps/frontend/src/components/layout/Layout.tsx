@@ -7,8 +7,28 @@ import { SessionExpiredModal } from '@components/SessionExpiredModal';
 import { CookieConsent } from '@components/CookieConsent';
 import { EmailVerificationBanner } from '@components/EmailVerificationBanner';
 import { KeyboardShortcutsModal } from '@components/KeyboardShortcutsModal';
+import { useAuthStore } from '@store/auth.store';
+import { useCartStore } from '@store/cart.store';
+import { cartApi } from '@api/cart';
 
 export function Layout() {
+  const { accessToken } = useAuthStore();
+  const { setItemCount } = useCartStore();
+
+  // Sync cart count from API on mount / login
+  useEffect(() => {
+    if (!accessToken) {
+      setItemCount(0);
+      return;
+    }
+    cartApi
+      .get()
+      .then(cart => {
+        const total = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+        setItemCount(total);
+      })
+      .catch(() => setItemCount(0));
+  }, [accessToken, setItemCount]);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const location = useLocation();
   const [transitionKey, setTransitionKey] = useState(location.key);
