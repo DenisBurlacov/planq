@@ -20,10 +20,42 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const DEMO_ACCOUNTS = [
-  { email: 'alice@example.com', password: 'Password1!', label: 'regular user (orders, wallet)' },
-  { email: 'bob@example.com', password: 'Password1!', label: 'regular user' },
-  { email: 'admin@planq.com', password: 'Password1!', label: 'admin' },
-  { email: 'manager@planq.com', password: 'Password1!', label: 'manager' },
+  {
+    email: 'alice@example.com',
+    password: 'Password1!',
+    role: 'USER',
+    label: 'Regular user with orders, wallet & reviews',
+  },
+  {
+    email: 'bob@example.com',
+    password: 'Password1!',
+    role: 'USER',
+    label: 'Regular user (clean account)',
+  },
+  {
+    email: 'admin@planq.com',
+    password: 'Password1!',
+    role: 'ADMIN',
+    label: 'Full admin access — manage products, orders, users',
+  },
+  {
+    email: 'manager@planq.com',
+    password: 'Password1!',
+    role: 'MANAGER',
+    label: 'Limited admin — orders & reviews only',
+  },
+  {
+    email: 'blocked@example.com',
+    password: 'Password1!',
+    role: 'BLOCKED',
+    label: 'Blocked account — login should fail',
+  },
+  {
+    email: 'unverified@example.com',
+    password: 'Password1!',
+    role: 'UNVERIFIED',
+    label: 'Unverified email — shows verification banner',
+  },
 ];
 
 export function LoginPage() {
@@ -33,7 +65,7 @@ export function LoginPage() {
   const location = useLocation();
   const [serverError, setServerError] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const showDemo = import.meta.env.VITE_SHOW_TEST_CREDENTIALS === 'true';
+  // Always show demo accounts — this is a QA training platform
 
   // 2FA state
   const [requires2FA, setRequires2FA] = useState(false);
@@ -227,28 +259,48 @@ export function LoginPage() {
             </Link>
           </p>
 
-          {/* Demo accounts */}
-          {showDemo && (
-            <div data-testid="demo-accounts" className="mt-6 rounded-lg bg-[var(--bg-sidebar)] p-4">
-              <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2 uppercase tracking-wide">
-                {t('auth.demoAccounts')}
-              </p>
-              <div className="space-y-1">
-                {DEMO_ACCOUNTS.map(acc => (
-                  <button
-                    key={acc.email}
-                    type="button"
-                    onClick={() => fillDemo(acc.email, acc.password)}
-                    className="w-full text-left text-xs px-2 py-1.5 rounded hover:bg-[var(--bg-card)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                    data-testid={`demo-account-${acc.email.split('@')[0]}`}
-                  >
-                    <span className="font-medium text-accent">{acc.email}</span>
-                    <span className="ml-1 text-[var(--text-secondary)]">— {acc.label}</span>
-                  </button>
-                ))}
-              </div>
+          {/* Demo accounts — always visible, this is a QA training platform */}
+          <div data-testid="demo-accounts" className="mt-6 rounded-lg bg-[var(--bg-sidebar)] p-4">
+            <p className="text-xs font-semibold text-[var(--text-secondary)] mb-3 uppercase tracking-wide">
+              {t('auth.demoAccounts')}
+            </p>
+            <div className="space-y-1.5">
+              {DEMO_ACCOUNTS.map(acc => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  onClick={() => fillDemo(acc.email, acc.password)}
+                  className="w-full text-left text-xs px-3 py-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors group"
+                  data-testid={`demo-account-${acc.email.split('@')[0]}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-accent group-hover:text-accent-hover">
+                      {acc.email}
+                    </span>
+                    <span
+                      className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                        acc.role === 'ADMIN'
+                          ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+                          : acc.role === 'MANAGER'
+                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
+                            : acc.role === 'BLOCKED'
+                              ? 'bg-gray-200 text-gray-600 dark:bg-gray-500/10 dark:text-gray-400'
+                              : acc.role === 'UNVERIFIED'
+                                ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
+                                : 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400'
+                      }`}
+                    >
+                      {acc.role}
+                    </span>
+                  </div>
+                  <p className="text-[var(--text-secondary)] mt-0.5">{acc.label}</p>
+                </button>
+              ))}
             </div>
-          )}
+            <p className="text-[10px] text-[var(--text-secondary)] mt-3 opacity-60">
+              {t('auth.demoPassword')}: Password1!
+            </p>
+          </div>
         </div>
       </div>
     </div>

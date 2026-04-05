@@ -200,6 +200,7 @@
     "noAccount": "Нет аккаунта?",
     "hasAccount": "Уже есть аккаунт?",
     "demoAccounts": "Тестовые аккаунты",
+    "demoPassword": "Пароль для всех",
     "resetPassword": "Сбросить пароль",
     "resetPasswordDesc": "Введите email и мы отправим ссылку для сброса пароля.",
     "resetSent": "Ссылка отправлена!",
