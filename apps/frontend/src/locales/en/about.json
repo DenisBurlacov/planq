@@ -28,6 +28,12 @@
     "expansion": "European expansion"
   },
   "team": {
-    "title": "Meet the Team"
+    "title": "Meet the Team",
+    "roles": {
+      "ceo": "CEO & Founder",
+      "cto": "CTO",
+      "design": "Head of Design",
+      "operations": "Operations"
+    }
   }
 }

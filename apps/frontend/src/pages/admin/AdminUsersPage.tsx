@@ -38,10 +38,10 @@ export function AdminUsersPage() {
       adminApi.toggleBlockUser(id, blocked),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-      toast('success', blockAction === 'block' ? 'User blocked' : 'User unblocked');
+      toast('success', blockAction === 'block' ? t('users.blocked') : t('users.active'));
       setBlockTarget(null);
     },
-    onError: () => toast('error', 'Failed to update user'),
+    onError: () => toast('error', t('common:errors.generic', { ns: 'common' })),
   });
 
   const openBlockModal = (user: AdminUser, action: 'block' | 'unblock') => {

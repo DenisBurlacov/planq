@@ -444,7 +444,7 @@ export function ProductPage() {
               />
               {isOnSale && (
                 <div className="absolute top-3 left-3 z-10">
-                  <Badge variant="sale">SALE</Badge>
+                  <Badge variant="sale">{t('common:sale', { ns: 'common' })}</Badge>
                 </div>
               )}
             </div>
@@ -524,7 +524,7 @@ export function ProductPage() {
             )}
             {isOnSale && (
               <span className="text-sm font-medium text-red-500">
-                Save €{(product.price - price).toFixed(2)}
+                {t('product.saveAmount', { amount: `€${(product.price - price).toFixed(2)}` })}
               </span>
             )}
           </div>

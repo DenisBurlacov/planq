@@ -150,6 +150,10 @@
   "errorPages": {
     "forbidden": "Access Denied",
     "forbiddenMessage": "You don't have permission to access this page.",
+    "notFoundMessage": "The page you're looking for doesn't exist or has been moved.",
+    "browseCatalog": "Browse Catalog",
+    "serverError": "Server Error",
+    "serverErrorMessage": "Something went wrong on our end.",
     "rateLimited": "Too Many Requests",
     "rateLimitedMessage": "You've made too many requests. Please wait before trying again.",
     "retryIn": "Retry in {{seconds}}s",
@@ -248,7 +252,14 @@
     "title": "My Orders",
     "empty": "No orders yet",
     "emptyDesc": "When you place an order, it will appear here.",
-    "browseCatalog": "Browse Catalog"
+    "browseCatalog": "Browse Catalog",
+    "order": "Order",
+    "items": "Items",
+    "qty": "Qty: {{count}}",
+    "summary": "Summary",
+    "payment": "Payment",
+    "address": "Address",
+    "total": "Total"
   },
   "onboarding": {
     "step1Title": "Search Products",

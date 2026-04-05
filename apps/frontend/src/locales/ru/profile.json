@@ -49,6 +49,8 @@
     "topUpPlaceholder": "50.00",
     "transactions": "История операций",
     "noTransactions": "Операций пока нет",
+    "topUpSuccess": "Кошелёк пополнен. Новый баланс: {{balance}}",
+    "cardNumber": "Номер карты",
     "types": {
       "TOPUP": "Пополнение",
       "PURCHASE": "Покупка",
@@ -58,7 +60,9 @@
   "orders": {
     "title": "Мои заказы",
     "empty": "Заказов пока нет",
-    "viewAll": "Все заказы"
+    "viewAll": "Все заказы",
+    "dateFrom": "С",
+    "dateTo": "По"
   },
   "form": {
     "name": "Полное имя",
@@ -122,6 +126,8 @@
     "required": "Пожалуйста, пройдите проверку"
   },
   "toast": {
+    "avatarUpdated": "Аватар обновлён",
+    "avatarFailed": "Не удалось обновить аватар",
     "profileUpdated": "Профиль обновлён",
     "passwordChanged": "Пароль изменён",
     "preferencesSaved": "Настройки сохранены",

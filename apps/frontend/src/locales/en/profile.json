@@ -49,6 +49,8 @@
     "topUpPlaceholder": "50.00",
     "transactions": "Transaction History",
     "noTransactions": "No transactions yet",
+    "topUpSuccess": "Wallet topped up. New balance: {{balance}}",
+    "cardNumber": "Card Number",
     "types": {
       "TOPUP": "Top Up",
       "PURCHASE": "Purchase",
@@ -58,7 +60,9 @@
   "orders": {
     "title": "My Orders",
     "empty": "No orders yet",
-    "viewAll": "View All Orders"
+    "viewAll": "View All Orders",
+    "dateFrom": "From",
+    "dateTo": "To"
   },
   "form": {
     "name": "Full Name",
@@ -122,6 +126,8 @@
     "required": "Please complete the captcha verification"
   },
   "toast": {
+    "avatarUpdated": "Avatar updated",
+    "avatarFailed": "Failed to update avatar",
     "profileUpdated": "Profile updated",
     "passwordChanged": "Password changed",
     "preferencesSaved": "Preferences saved",

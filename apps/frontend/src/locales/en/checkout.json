@@ -16,7 +16,12 @@
     "removeConfirmBody": "Are you sure you want to remove this item from your cart?",
     "removeConfirmYes": "Remove",
     "removeConfirmNo": "Keep",
-    "checkout": "Proceed to Checkout"
+    "checkout": "Proceed to Checkout",
+    "failedUpdate": "Failed to update cart",
+    "itemRemoved": "Item removed from cart",
+    "failedRemove": "Failed to remove item",
+    "promoApplied": "Promo applied: {{percent}}% off",
+    "invalidPromo": "Invalid promo code"
   },
   "steps": {
     "address": "Address",

@@ -16,7 +16,12 @@
     "removeConfirmBody": "Вы уверены, что хотите убрать этот товар из корзины?",
     "removeConfirmYes": "Удалить",
     "removeConfirmNo": "Оставить",
-    "checkout": "Оформить заказ"
+    "checkout": "Оформить заказ",
+    "failedUpdate": "Не удалось обновить корзину",
+    "itemRemoved": "Товар удалён из корзины",
+    "failedRemove": "Не удалось удалить товар",
+    "promoApplied": "Промокод применён: скидка {{percent}}%",
+    "invalidPromo": "Недействительный промокод"
   },
   "steps": {
     "address": "Адрес",
@@ -26,6 +31,8 @@
   "address": {
     "title": "Адрес доставки",
     "placeholder": "Улица, город, почтовый индекс",
+    "selectSaved": "Выберите сохранённый адрес",
+    "enterNew": "Ввести новый адрес",
     "deliveryArea": "Зона доставки"
   },
   "payment": {

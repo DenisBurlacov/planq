@@ -128,7 +128,8 @@
     "notifyFailed": "Не удалось подписаться. Попробуйте ещё раз.",
     "selectColor": "Цвет",
     "selectSize": "Размер",
-    "variantStock": "{{count}} в наличии"
+    "variantStock": "{{count}} в наличии",
+    "saveAmount": "Скидка {{amount}}"
   },
   "compare": {
     "title": "Сравнение товаров",
@@ -141,7 +142,13 @@
     "max": "Максимум 4 товара",
     "remove": "Удалить",
     "productsToCompare": "{{count}} товар к сравнению",
-    "productsToCompare_other": "{{count}} товаров к сравнению"
+    "productsToCompare_other": "{{count}} товаров к сравнению",
+    "specName": "Название",
+    "specPrice": "Цена",
+    "specRating": "Рейтинг",
+    "specCategory": "Категория",
+    "specStock": "Наличие",
+    "noImage": "Нет фото"
   },
   "viewToggle": {
     "grid": "Сетка",

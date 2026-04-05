@@ -16,11 +16,11 @@ import { ApiException } from '@api/client';
 import type { Product } from '@appTypes/api';
 
 const SPEC_KEYS = [
-  { key: 'name', labelKey: 'Name' },
-  { key: 'price', labelKey: 'Price' },
-  { key: 'rating', labelKey: 'Rating' },
-  { key: 'category', labelKey: 'Category' },
-  { key: 'stock', labelKey: 'Stock' },
+  { key: 'name', labelKey: 'compare.specName' },
+  { key: 'price', labelKey: 'compare.specPrice' },
+  { key: 'rating', labelKey: 'compare.specRating' },
+  { key: 'category', labelKey: 'compare.specCategory' },
+  { key: 'stock', labelKey: 'compare.specStock' },
 ];
 
 export function ComparePage() {
@@ -45,9 +45,9 @@ export function ComparePage() {
     try {
       await cartApi.add(product.id, 1);
       increment(1);
-      toast('success', `${product.name} added to cart`);
+      toast('success', t('product.addedToCartName', { name: product.name }));
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed to add to cart');
+      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
     }
   };
 
@@ -64,7 +64,9 @@ export function ComparePage() {
       case 'category':
         return product.category?.name ?? '—';
       case 'stock':
-        return product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock';
+        return product.stock > 0
+          ? t('product.inStockUnits', { count: product.stock })
+          : t('product.outOfStock');
       default:
         return '—';
     }
@@ -163,7 +165,7 @@ export function ComparePage() {
                             />
                           ) : (
                             <div className="flex h-full items-center justify-center text-[var(--text-secondary)] text-xs">
-                              No image
+                              {t('compare.noImage')}
                             </div>
                           )}
                         </div>
@@ -202,7 +204,7 @@ export function ComparePage() {
                     className={rowIdx % 2 === 1 ? 'bg-[var(--table-stripe)]' : ''}
                   >
                     <td className="sticky left-0 bg-[var(--bg-card)] min-w-[120px] px-4 py-3 font-medium text-sm text-[var(--text-secondary)] border-r border-[var(--border)]">
-                      {spec.labelKey}
+                      {t(spec.labelKey)}
                     </td>
                     {products?.map(product => {
                       const val = getSpecValue(product, spec.key);

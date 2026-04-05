@@ -59,10 +59,16 @@ export function WalletPage() {
       await qc.invalidateQueries({ queryKey: ['transactions'] });
       const updated = await profileApi.get();
       setUser(updated);
-      toast('success', `Wallet topped up. New balance: €${result.walletBalance.toFixed(2)}`);
+      toast(
+        'success',
+        t('wallet.topUpSuccess', { balance: `€${result.walletBalance.toFixed(2)}` })
+      );
       reset();
     } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : 'Failed');
+      toast(
+        'error',
+        err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
+      );
     }
   };
 
@@ -91,7 +97,7 @@ export function WalletPage() {
           />
           <Input
             id="cardNumber"
-            label="Card Number"
+            label={t('wallet.cardNumber')}
             placeholder="4242 4242 4242 4242"
             error={errors.cardNumber?.message}
             {...register('cardNumber')}

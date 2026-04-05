@@ -128,7 +128,8 @@
     "notifyFailed": "Failed to subscribe. Please try again.",
     "selectColor": "Color",
     "selectSize": "Size",
-    "variantStock": "{{count}} in stock"
+    "variantStock": "{{count}} in stock",
+    "saveAmount": "Save {{amount}}"
   },
   "compare": {
     "title": "Compare Products",
@@ -141,7 +142,13 @@
     "max": "Maximum 4 products allowed",
     "remove": "Remove",
     "productsToCompare": "{{count}} product to compare",
-    "productsToCompare_other": "{{count}} products to compare"
+    "productsToCompare_other": "{{count}} products to compare",
+    "specName": "Name",
+    "specPrice": "Price",
+    "specRating": "Rating",
+    "specCategory": "Category",
+    "specStock": "Stock",
+    "noImage": "No image"
   },
   "viewToggle": {
     "grid": "Grid view",

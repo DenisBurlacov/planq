@@ -18,10 +18,10 @@ const MILESTONES = [
 ];
 
 const TEAM = [
-  { name: 'Anna Lindberg', role: 'CEO & Founder' },
-  { name: 'Max Fischer', role: 'CTO' },
-  { name: 'Sofia Johansson', role: 'Head of Design' },
-  { name: 'Denis Petrov', role: 'Operations' },
+  { name: 'Anna Lindberg', roleKey: 'team.roles.ceo' },
+  { name: 'Max Fischer', roleKey: 'team.roles.cto' },
+  { name: 'Sofia Johansson', roleKey: 'team.roles.design' },
+  { name: 'Denis Petrov', roleKey: 'team.roles.operations' },
 ];
 
 export function AboutPage() {
@@ -126,7 +126,7 @@ export function AboutPage() {
                 <span className="text-2xl font-bold text-accent">{member.name[0]}</span>
               </div>
               <p className="font-medium text-[var(--text-primary)] text-sm">{member.name}</p>
-              <p className="text-xs text-[var(--text-secondary)]">{member.role}</p>
+              <p className="text-xs text-[var(--text-secondary)]">{t(member.roleKey)}</p>
             </div>
           ))}
         </div>
