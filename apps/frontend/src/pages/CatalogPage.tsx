@@ -609,31 +609,26 @@ export function CatalogPage() {
         resultCount={data?.total}
       />
 
-      {/* Sort + View Toggle */}
+      {/* View Toggle + Sort */}
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-sm text-[var(--text-secondary)]">
-          {data ? t('common:items', { count: data.total }) : ''}
-        </span>
-        <div className="flex items-center gap-3">
-          <ViewToggle value={viewMode} onChange={setViewMode} />
-          <select
-            value={query.sort ?? 'newest'}
-            aria-label={t('sort.label')}
-            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm focus:outline-none"
-            onChange={e =>
-              setQuery(q => ({
-                ...q,
-                sort: e.target.value as ProductsQuery['sort'],
-                page: 1,
-              }))
-            }
-          >
-            <option value="newest">{t('sort.newest')}</option>
-            <option value="priceAsc">{t('sort.priceAsc')}</option>
-            <option value="priceDesc">{t('sort.priceDesc')}</option>
-            <option value="rating">{t('sort.rating')}</option>
-          </select>
-        </div>
+        <ViewToggle value={viewMode} onChange={setViewMode} />
+        <select
+          value={query.sort ?? 'newest'}
+          aria-label={t('sort.label')}
+          className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm focus:outline-none h-9"
+          onChange={e =>
+            setQuery(q => ({
+              ...q,
+              sort: e.target.value as ProductsQuery['sort'],
+              page: 1,
+            }))
+          }
+        >
+          <option value="newest">{t('sort.newest')}</option>
+          <option value="priceAsc">{t('sort.priceAsc')}</option>
+          <option value="priceDesc">{t('sort.priceDesc')}</option>
+          <option value="rating">{t('sort.rating')}</option>
+        </select>
       </div>
 
       {/* Products */}
