@@ -139,6 +139,11 @@ const AdminReviewsPage = lazy(() =>
     default: m.AdminReviewsPage,
   }))
 );
+const AdminAuditPage = lazy(() =>
+  import('@pages/admin/AdminAuditPage').then(m => ({
+    default: m.AdminAuditPage,
+  }))
+);
 const AdminSettingsPage = lazy(() =>
   import('@pages/admin/AdminSettingsPage').then(m => ({
     default: m.AdminSettingsPage,
@@ -191,6 +196,7 @@ export default function App() {
                     <Route path="reviews" element={<AdminReviewsPage />} />
                     <Route path="stats" element={<AdminStatsPage />} />
                     <Route path="settings" element={<AdminSettingsPage />} />
+                    <Route path="audit" element={<AdminAuditPage />} />
                   </Route>
                 </Route>
 
