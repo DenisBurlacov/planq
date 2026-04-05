@@ -15,34 +15,18 @@
     "removeConfirmBody": "Are you sure you want to remove this item from your cart?",
     "removeConfirmYes": "Remove",
     "removeConfirmNo": "Keep",
-    "checkout": "Proceed to Checkout",
-    "failedUpdate": "Failed to update quantity",
-    "failedRemove": "Failed to remove item",
-    "itemRemoved": "Item removed",
-    "invalidPromo": "Invalid promo code",
-    "promoApplied": "Promo applied: {{percent}}% off"
+    "checkout": "Proceed to Checkout"
   },
   "steps": {
-    "address": "Shipping",
+    "address": "Address",
     "payment": "Payment",
-    "confirm": "Review"
-  },
-  "stepper": {
-    "next": "Next",
-    "back": "Back",
-    "step": "Step {{current}} of {{total}}"
+    "confirm": "Confirm"
   },
   "address": {
     "title": "Shipping Address",
     "placeholder": "Street, city, postal code",
     "selectSaved": "Select a saved address",
-    "enterNew": "Enter new address",
-    "useSaved": "Use saved address",
-    "newAddress": "New address",
-    "city": "City",
-    "zip": "ZIP",
-    "country": "Country",
-    "searchCountry": "Search country..."
+    "enterNew": "Enter new address"
   },
   "payment": {
     "title": "Payment Method",
@@ -77,25 +61,16 @@
     "tryAgain": "Try Again",
     "reason": "Reason: {{reason}}"
   },
-  "review": {
-    "title": "Review Order",
-    "editShipping": "Edit Shipping",
-    "editPayment": "Edit Payment",
-    "shippingAddress": "Shipping Address",
-    "paymentMethod": "Payment Method",
-    "orderItems": "Order Items"
-  },
-  "testCards": {
-    "title": "Test Cards",
-    "success": "4242 4242 4242 4242 — Success",
-    "declined": "4000 0000 0000 0002 — Declined",
-    "timeout": "4000 0000 0000 0069 — Timeout"
-  },
   "checkoutTitle": "Checkout",
   "placeOrder": "Place Order",
   "terms": {
     "label": "I agree to the",
     "and": "and",
     "required": "You must accept the terms to continue"
+  },
+  "autosave": {
+    "resume": "Resume previous checkout?",
+    "accept": "Resume",
+    "dismiss": "Start Fresh"
   }
 }

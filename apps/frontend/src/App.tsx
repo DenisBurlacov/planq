@@ -29,11 +29,13 @@ import { AboutPage } from '@pages/AboutPage';
 import { ComparePage } from '@pages/ComparePage';
 import { NotFoundPage } from '@pages/NotFoundPage';
 import { ServerErrorPage } from '@pages/ServerErrorPage';
+import { VerifyEmailPage } from '@pages/VerifyEmailPage';
+import { ForbiddenPage } from '@pages/ForbiddenPage';
+import { RateLimitedPage } from '@pages/RateLimitedPage';
 import { AdminDashboardPage } from '@pages/admin/AdminDashboardPage';
 import { AdminProductsPage } from '@pages/admin/AdminProductsPage';
 import { AdminOrdersPage } from '@pages/admin/AdminOrdersPage';
 import { AdminUsersPage } from '@pages/admin/AdminUsersPage';
-import { AdminAuditPage } from '@pages/admin/AdminAuditPage';
 
 import './i18n';
 
@@ -55,6 +57,7 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/verify-email" element={<VerifyEmailPage />} />
 
               {/* Admin */}
               <Route element={<Layout />}>
@@ -70,7 +73,6 @@ export default function App() {
                   <Route path="products" element={<AdminProductsPage />} />
                   <Route path="orders" element={<AdminOrdersPage />} />
                   <Route path="users" element={<AdminUsersPage />} />
-                  <Route path="audit" element={<AdminAuditPage />} />
                 </Route>
               </Route>
 
@@ -159,6 +161,8 @@ export default function App() {
                 />
 
                 {/* System */}
+                <Route path="/403" element={<ForbiddenPage />} />
+                <Route path="/429" element={<RateLimitedPage />} />
                 <Route path="/500" element={<ServerErrorPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>

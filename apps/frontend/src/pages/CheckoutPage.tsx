@@ -1,123 +1,149 @@
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
+import { Input } from '@components/ui/Input';
 import { Button } from '@components/ui/Button';
 import { Breadcrumb } from '@components/ui/Breadcrumb';
-import { Stepper } from '@components/ui/Stepper';
-import { SearchableSelect } from '@components/ui/SearchableSelect';
 import { cartApi } from '@api/cart';
 import { ordersApi } from '@api/orders';
 import { profileApi } from '@api/profile';
-import { addressesApi, type Address } from '@api/addresses';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
-import { CreditCard, Wallet, Pencil } from 'lucide-react';
+import { CreditCard, Wallet, Check } from 'lucide-react';
 
-const COUNTRIES = [
-  'Sweden',
-  'Germany',
-  'France',
-  'United Kingdom',
-  'Netherlands',
-  'Spain',
-  'Italy',
-  'Norway',
-  'Denmark',
-  'Finland',
-  'Poland',
-  'United States',
-  'Canada',
-  'Australia',
-  'Japan',
-  'South Korea',
-  'Brazil',
-  'Mexico',
-  'India',
-  'China',
-  'Switzerland',
-  'Austria',
-  'Belgium',
-  'Czech Republic',
-  'Portugal',
-  'Ireland',
-  'Greece',
-  'Hungary',
-  'Romania',
-  'Bulgaria',
-  'Croatia',
-  'Slovakia',
-  'Slovenia',
-  'Lithuania',
-  'Latvia',
-  'Estonia',
-  'Luxembourg',
-  'Malta',
-  'Cyprus',
-  'Iceland',
-  'New Zealand',
-  'Singapore',
-  'Thailand',
-  'Turkey',
-  'Ukraine',
-  'Argentina',
-  'Chile',
-  'Colombia',
-  'Peru',
-  'South Africa',
-  'Egypt',
-  'Nigeria',
-  'Kenya',
-];
+const schema = z.object({
+  shippingAddress: z.string().min(5),
+  paymentMethod: z.enum(['CARD', 'WALLET']),
+  cardNumber: z.string().optional(),
+  termsAccepted: z.literal(true),
+});
+type FormData = z.infer<typeof schema>;
+
+function StepIndicator({ currentStep }: { currentStep: number }) {
+  const { t } = useTranslation('checkout');
+  const steps = [
+    { label: t('steps.address'), number: 1 },
+    { label: t('steps.payment'), number: 2 },
+    { label: t('steps.confirm', { defaultValue: 'Review' }), number: 3 },
+  ];
+
+  return (
+    <div
+      data-testid="checkout-step-indicator"
+      className="flex items-center justify-center gap-0 mb-8"
+    >
+      {steps.map((step, i) => (
+        <div key={step.number} className="flex items-center">
+          <div className="flex flex-col items-center">
+            <div
+              data-testid={`checkout-step-${step.number}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                step.number < currentStep
+                  ? 'bg-accent text-white'
+                  : step.number === currentStep
+                    ? 'bg-accent text-white'
+                    : 'bg-[var(--border)] text-[var(--text-secondary)]'
+              }`}
+            >
+              {step.number < currentStep ? <Check className="h-4 w-4" /> : step.number}
+            </div>
+            <span className="text-xs mt-1 text-[var(--text-secondary)]">{step.label}</span>
+          </div>
+          {i < steps.length - 1 && (
+            <div
+              className={`w-12 sm:w-20 h-0.5 mx-1 ${
+                step.number < currentStep ? 'bg-accent' : 'bg-[var(--border)]'
+              }`}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function CheckoutPage() {
   const { t } = useTranslation('checkout');
-  const { t: tc } = useTranslation('common');
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const { promoCode, promoDiscount } =
     (location.state as { promoCode?: string; promoDiscount?: number }) ?? {};
 
-  const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Step 1: Shipping
-  const [addressMode, setAddressMode] = useState<'saved' | 'new'>('new');
-  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
-  const [newAddress, setNewAddress] = useState({
-    street: '',
-    city: '',
-    zip: '',
-    country: 'Sweden',
-  });
-
-  // Step 2: Payment
-  const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'WALLET'>('CARD');
-  const [cardNumber, setCardNumber] = useState('');
-
-  // Step 3: Terms
-  const [termsAccepted, setTermsAccepted] = useState(false);
-
   const { data: cart } = useQuery({ queryKey: ['cart'], queryFn: cartApi.get });
   const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
-  const { data: addresses } = useQuery({
-    queryKey: ['addresses'],
-    queryFn: async () => {
-      try {
-        return await addressesApi.list();
-      } catch {
-        return [] as Address[];
-      }
-    },
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { paymentMethod: 'CARD', termsAccepted: undefined as unknown as true },
   });
 
-  const steps = [
-    { label: t('steps.address'), number: 1 },
-    { label: t('steps.payment'), number: 2 },
-    { label: t('steps.confirm'), number: 3 },
-  ];
+  const AUTOSAVE_KEY = 'planq-checkout-autosave';
+  const [showResume, setShowResume] = useState(false);
 
+  // Check for saved form data on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) {
+        setShowResume(true);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const handleResumeAccept = useCallback(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved) as Partial<FormData>;
+        if (data.shippingAddress) setValue('shippingAddress', data.shippingAddress);
+        if (data.paymentMethod) setValue('paymentMethod', data.paymentMethod);
+        if (data.cardNumber) setValue('cardNumber', data.cardNumber);
+      }
+    } catch {
+      // ignore
+    }
+    setShowResume(false);
+  }, [setValue]);
+
+  const handleResumeDismiss = useCallback(() => {
+    try {
+      localStorage.removeItem(AUTOSAVE_KEY);
+    } catch {
+      // ignore
+    }
+    setShowResume(false);
+  }, []);
+
+  // Auto-save form data on every change
+  const allValues = watch();
+  useEffect(() => {
+    try {
+      const { shippingAddress, paymentMethod: pm, cardNumber } = allValues;
+      if (shippingAddress || cardNumber) {
+        localStorage.setItem(
+          AUTOSAVE_KEY,
+          JSON.stringify({ shippingAddress, paymentMethod: pm, cardNumber })
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, [allValues]);
+
+  const paymentMethod = watch('paymentMethod');
   const round2 = (n: number) => Math.round(n * 100) / 100;
   const subtotal = round2(
     cart?.items.reduce((sum, item) => {
@@ -128,41 +154,23 @@ export function CheckoutPage() {
   const discountAmount = promoDiscount ? round2(subtotal * (promoDiscount / 100)) : 0;
   const total = round2(subtotal - discountAmount);
 
-  const getShippingAddress = (): string => {
-    if (addressMode === 'saved' && selectedAddressId) {
-      const addr = addresses?.find(a => a.id === selectedAddressId);
-      if (addr) return `${addr.street}, ${addr.zip} ${addr.city}, ${addr.country}`;
-    }
-    return `${newAddress.street}, ${newAddress.zip} ${newAddress.city}, ${newAddress.country}`;
-  };
-
-  const canProceedStep1 = () => {
-    if (addressMode === 'saved') return !!selectedAddressId;
-    return (
-      newAddress.street.length >= 3 && newAddress.city.length >= 2 && newAddress.zip.length >= 3
-    );
-  };
-
-  const canProceedStep2 = () => {
-    if (paymentMethod === 'WALLET') return true;
-    return cardNumber.replace(/\s/g, '').length >= 12;
-  };
-
-  const handlePlaceOrder = async () => {
-    if (!termsAccepted) return;
-    setSubmitting(true);
+  const onSubmit = async (data: FormData) => {
     try {
       const order = await ordersApi.checkout({
-        shippingAddress: getShippingAddress(),
-        paymentMethod,
+        shippingAddress: data.shippingAddress,
+        paymentMethod: data.paymentMethod,
         promoCode,
-        cardNumber: paymentMethod === 'CARD' ? cardNumber.replace(/\s/g, '') : undefined,
+        cardNumber:
+          data.paymentMethod === 'CARD' ? (data.cardNumber ?? '').replace(/\s/g, '') : undefined,
       });
+      try {
+        localStorage.removeItem(AUTOSAVE_KEY);
+      } catch {
+        // ignore
+      }
       navigate('/checkout/processing', { state: { orderId: order.id }, replace: true });
     } catch (err) {
       toast('error', err instanceof ApiException ? err.message : t('failed.title'));
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -170,7 +178,7 @@ export function CheckoutPage() {
     <div className="max-w-lg mx-auto">
       <Breadcrumb
         items={[
-          { label: tc('nav.home'), to: '/' },
+          { label: t('common:nav.home', { ns: 'common' }), to: '/' },
           { label: t('cart.title'), to: '/cart' },
           { label: t('checkoutTitle') },
         ]}
@@ -182,366 +190,177 @@ export function CheckoutPage() {
         {t('checkoutTitle')}
       </h1>
 
-      <Stepper steps={steps} currentStep={step} data-testid="checkout-step-indicator" />
-
-      {/* Step 1: Shipping */}
-      {step === 1 && (
-        <div data-testid="checkout-step-shipping" className="space-y-4">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-            <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('address.title')}</h2>
-
-            {addresses && addresses.length > 0 && (
-              <div className="flex gap-3 mb-4">
-                <button
-                  data-testid="address-mode-saved"
-                  onClick={() => setAddressMode('saved')}
-                  className={`flex-1 rounded-lg border p-3 text-sm text-center transition-colors ${
-                    addressMode === 'saved'
-                      ? 'border-accent bg-accent/5 font-medium'
-                      : 'border-[var(--border)]'
-                  }`}
-                >
-                  {t('address.useSaved')}
-                </button>
-                <button
-                  data-testid="address-mode-new"
-                  onClick={() => setAddressMode('new')}
-                  className={`flex-1 rounded-lg border p-3 text-sm text-center transition-colors ${
-                    addressMode === 'new'
-                      ? 'border-accent bg-accent/5 font-medium'
-                      : 'border-[var(--border)]'
-                  }`}
-                >
-                  {t('address.newAddress')}
-                </button>
-              </div>
-            )}
-
-            {addressMode === 'saved' && addresses && addresses.length > 0 ? (
-              <div className="space-y-2">
-                {addresses.map(addr => (
-                  <label
-                    key={addr.id}
-                    data-testid={`saved-address-${addr.id}`}
-                    className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
-                      selectedAddressId === addr.id
-                        ? 'border-accent bg-accent/5'
-                        : 'border-[var(--border)]'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="savedAddress"
-                      value={addr.id}
-                      checked={selectedAddressId === addr.id}
-                      onChange={() => setSelectedAddressId(addr.id)}
-                      className="mt-1 accent-accent"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-[var(--text-primary)]">{addr.name}</p>
-                      <p className="text-xs text-[var(--text-secondary)]">
-                        {addr.street}, {addr.zip} {addr.city}, {addr.country}
-                      </p>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-[var(--text-secondary)]">
-                    {t('address.placeholder')}
-                  </label>
-                  <input
-                    data-testid="checkout-street"
-                    value={newAddress.street}
-                    onChange={e => setNewAddress(a => ({ ...a, street: e.target.value }))}
-                    placeholder={t('address.placeholder')}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    data-testid="checkout-city"
-                    value={newAddress.city}
-                    onChange={e => setNewAddress(a => ({ ...a, city: e.target.value }))}
-                    placeholder={t('address.city')}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                  <input
-                    data-testid="checkout-zip"
-                    value={newAddress.zip}
-                    onChange={e => setNewAddress(a => ({ ...a, zip: e.target.value }))}
-                    placeholder={t('address.zip')}
-                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-[var(--text-secondary)]">
-                    {t('address.country')}
-                  </label>
-                  <SearchableSelect
-                    options={COUNTRIES}
-                    value={newAddress.country}
-                    onChange={country => setNewAddress(a => ({ ...a, country }))}
-                    searchPlaceholder={t('address.searchCountry')}
-                    data-testid="checkout-country-select"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="flex justify-end">
-            <Button
-              data-testid="checkout-next-step"
-              disabled={!canProceedStep1()}
-              onClick={() => setStep(2)}
+      {/* Resume checkout toast */}
+      {showResume && (
+        <div
+          data-testid="checkout-resume-toast"
+          className="mb-6 rounded-xl border border-accent/30 bg-accent/5 p-4 flex items-center justify-between gap-4"
+        >
+          <p className="text-sm text-[var(--text-primary)]">{t('autosave.resume')}</p>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              data-testid="checkout-resume-dismiss"
+              onClick={handleResumeDismiss}
+              className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
-              {t('stepper.next')}
-            </Button>
+              {t('autosave.dismiss')}
+            </button>
+            <button
+              data-testid="checkout-resume-accept"
+              onClick={handleResumeAccept}
+              className="text-xs font-medium text-accent hover:underline"
+            >
+              {t('autosave.accept')}
+            </button>
           </div>
         </div>
       )}
 
-      {/* Step 2: Payment */}
-      {step === 2 && (
-        <div data-testid="checkout-step-payment" className="space-y-4">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-            <h2 className="font-semibold text-[var(--text-primary)] mb-4">{t('payment.title')}</h2>
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <label
-                data-testid="payment-card"
-                className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
-                  paymentMethod === 'CARD' ? 'border-accent bg-accent/5' : 'border-[var(--border)]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="CARD"
-                  checked={paymentMethod === 'CARD'}
-                  onChange={() => setPaymentMethod('CARD')}
-                  className="sr-only"
-                />
-                <CreditCard className="h-5 w-5 text-accent" />
-                <span className="text-sm font-medium">{t('payment.card')}</span>
-              </label>
-              <label
-                data-testid="payment-wallet"
-                className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
-                  paymentMethod === 'WALLET'
-                    ? 'border-accent bg-accent/5'
-                    : 'border-[var(--border)]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  value="WALLET"
-                  checked={paymentMethod === 'WALLET'}
-                  onChange={() => setPaymentMethod('WALLET')}
-                  className="sr-only"
-                />
-                <Wallet className="h-5 w-5 text-accent" />
-                <div>
-                  <span className="text-sm font-medium">{t('payment.wallet')}</span>
-                  {profile && (
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      {t('payment.walletBalance', {
-                        amount: `\u20AC${profile.walletBalance.toFixed(2)}`,
-                      })}
-                    </p>
-                  )}
-                </div>
-              </label>
-            </div>
+      <StepIndicator currentStep={1} />
 
-            {paymentMethod === 'CARD' && (
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs font-medium text-[var(--text-secondary)]">
-                    {t('payment.cardNumber')}
-                  </label>
-                  <input
-                    data-testid="checkout-card-number"
-                    value={cardNumber}
-                    onChange={e => setCardNumber(e.target.value)}
-                    placeholder={t('payment.cardNumberPlaceholder')}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-                {import.meta.env.VITE_SHOW_TEST_CREDENTIALS === 'true' && (
-                  <div
-                    data-testid="test-cards-hint"
-                    className="rounded-lg bg-[var(--bg-sidebar)] p-3 text-xs text-[var(--text-secondary)] space-y-1"
-                  >
-                    <p className="font-medium text-[var(--text-primary)]">{t('testCards.title')}</p>
-                    <p>{t('testCards.success')}</p>
-                    <p>{t('testCards.declined')}</p>
-                    <p>{t('testCards.timeout')}</p>
-                  </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Address */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">
+            <span className="text-accent font-bold mr-2">1</span>
+            {t('address.title')}
+          </h2>
+          <Input
+            id="address"
+            data-testid="checkout-address"
+            label={t('address.title')}
+            placeholder={t('address.placeholder')}
+            error={errors.shippingAddress?.message}
+            {...register('shippingAddress')}
+          />
+        </div>
+
+        {/* Payment */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
+          <h2 className="font-semibold text-[var(--text-primary)] mb-4">
+            <span className="text-accent font-bold mr-2">2</span>
+            {t('payment.title')}
+          </h2>
+
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <label
+              data-testid="payment-card"
+              className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${paymentMethod === 'CARD' ? 'border-accent bg-accent/5' : 'border-[var(--border)]'}`}
+            >
+              <input type="radio" value="CARD" {...register('paymentMethod')} className="sr-only" />
+              <CreditCard className="h-5 w-5 text-accent" />
+              <span className="text-sm font-medium">{t('payment.card')}</span>
+            </label>
+
+            <label
+              data-testid="payment-wallet"
+              className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${paymentMethod === 'WALLET' ? 'border-accent bg-accent/5' : 'border-[var(--border)]'}`}
+            >
+              <input
+                type="radio"
+                value="WALLET"
+                {...register('paymentMethod')}
+                className="sr-only"
+              />
+              <Wallet className="h-5 w-5 text-accent" />
+              <div>
+                <span className="text-sm font-medium">{t('payment.wallet')}</span>
+                {profile && (
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    {t('payment.walletBalance', { amount: `€${profile.walletBalance.toFixed(2)}` })}
+                  </p>
                 )}
               </div>
-            )}
-          </div>
-          <div className="flex justify-between">
-            <Button data-testid="checkout-prev-step" variant="secondary" onClick={() => setStep(1)}>
-              {t('stepper.back')}
-            </Button>
-            <Button
-              data-testid="checkout-next-step"
-              disabled={!canProceedStep2()}
-              onClick={() => setStep(3)}
-            >
-              {t('stepper.next')}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Review */}
-      {step === 3 && (
-        <div data-testid="checkout-step-review" className="space-y-4">
-          {/* Shipping Summary */}
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold text-[var(--text-primary)]">
-                {t('review.shippingAddress')}
-              </h2>
-              <button
-                data-testid="edit-shipping"
-                onClick={() => setStep(1)}
-                className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover"
-              >
-                <Pencil className="h-3 w-3" /> {t('review.editShipping')}
-              </button>
-            </div>
-            <p className="text-sm text-[var(--text-secondary)]">{getShippingAddress()}</p>
-          </div>
-
-          {/* Payment Summary */}
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold text-[var(--text-primary)]">
-                {t('review.paymentMethod')}
-              </h2>
-              <button
-                data-testid="edit-payment"
-                onClick={() => setStep(2)}
-                className="flex items-center gap-1 text-xs text-accent hover:text-accent-hover"
-              >
-                <Pencil className="h-3 w-3" /> {t('review.editPayment')}
-              </button>
-            </div>
-            <p className="text-sm text-[var(--text-secondary)]">
-              {paymentMethod === 'CARD'
-                ? `${t('payment.card')} ****${cardNumber.replace(/\s/g, '').slice(-4)}`
-                : t('payment.wallet')}
-            </p>
-          </div>
-
-          {/* Order Items */}
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-            <h2 className="font-semibold text-[var(--text-primary)] mb-3">
-              {t('review.orderItems')}
-            </h2>
-            <div className="space-y-2">
-              {cart?.items.map(item => {
-                const price = item.product.salePrice ?? item.product.price;
-                return (
-                  <div key={item.id} className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded bg-[var(--bg-sidebar)] overflow-hidden">
-                        {item.product.images[0] && (
-                          <img
-                            src={item.product.images[0]}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <span className="text-[var(--text-primary)] truncate max-w-48">
-                        {item.product.name} x{item.quantity}
-                      </span>
-                    </div>
-                    <span className="font-medium text-[var(--text-primary)]">
-                      {'\u20AC'}
-                      {(price * item.quantity).toFixed(2)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Totals */}
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6 space-y-2">
-            <h2 className="font-semibold text-[var(--text-primary)] mb-2">{t('cart.summary')}</h2>
-            {promoDiscount && (
-              <>
-                <div className="flex justify-between text-sm text-[var(--text-secondary)]">
-                  <span>{t('cart.subtotal')}</span>
-                  <span>
-                    {'\u20AC'}
-                    {subtotal.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>
-                    {t('cart.discount')} ({promoDiscount}%)
-                  </span>
-                  <span>
-                    -{'\u20AC'}
-                    {discountAmount.toFixed(2)}
-                  </span>
-                </div>
-              </>
-            )}
-            <div className="flex justify-between font-bold text-[var(--text-primary)]">
-              <span>{t('cart.total')}</span>
-              <span>
-                {'\u20AC'}
-                {total.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          {/* Terms */}
-          <div className="flex items-start gap-3 py-4">
-            <input
-              type="checkbox"
-              data-testid="checkout-terms-checkbox"
-              checked={termsAccepted}
-              onChange={e => setTermsAccepted(e.target.checked)}
-              className="w-5 h-5 rounded border mt-0.5 shrink-0 accent-accent border-[var(--border)]"
-            />
-            <label className="text-sm text-[var(--text-secondary)]">
-              {t('terms.label')}{' '}
-              <a href="#" className="text-accent hover:underline">
-                {tc('termsLink')}
-              </a>{' '}
-              {t('terms.and')}{' '}
-              <a href="#" className="text-accent hover:underline">
-                {tc('privacyLink')}
-              </a>
             </label>
           </div>
 
-          <div className="flex justify-between">
-            <Button data-testid="checkout-prev-step" variant="secondary" onClick={() => setStep(2)}>
-              {t('stepper.back')}
-            </Button>
-            <Button
-              data-testid="place-order-button"
-              loading={submitting}
-              disabled={!termsAccepted}
-              onClick={handlePlaceOrder}
-            >
-              {t('placeOrder')}
-            </Button>
+          {paymentMethod === 'CARD' && (
+            <div className="space-y-3">
+              <Input
+                id="cardNumber"
+                data-testid="checkout-card-number"
+                label={t('payment.cardNumber')}
+                placeholder={t('payment.cardNumberPlaceholder')}
+                {...register('cardNumber')}
+              />
+
+              {import.meta.env.VITE_SHOW_TEST_CREDENTIALS === 'true' && (
+                <div className="rounded-lg bg-[var(--bg-sidebar)] p-3 text-xs text-[var(--text-secondary)] space-y-1">
+                  <p className="font-medium text-[var(--text-primary)]">{t('payment.testCards')}</p>
+                  <p>✓ {t('payment.cardSuccess')}</p>
+                  <p>✗ {t('payment.cardDeclined')}</p>
+                  <p>✗ {t('payment.cardInsufficient')}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Order summary */}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6 space-y-2">
+          <h2 className="font-semibold text-[var(--text-primary)] mb-2">
+            <span className="text-accent font-bold mr-2">3</span>
+            {t('cart.summary')}
+          </h2>
+          {promoDiscount && (
+            <>
+              <div className="flex justify-between text-sm text-[var(--text-secondary)]">
+                <span>{t('cart.subtotal')}</span>
+                <span>€{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-green-600">
+                <span>
+                  {t('cart.discount')} ({promoDiscount}%)
+                </span>
+                <span>-€{discountAmount.toFixed(2)}</span>
+              </div>
+            </>
+          )}
+          <div className="flex justify-between font-bold text-[var(--text-primary)]">
+            <span>{t('cart.total')}</span>
+            <span>€{total.toFixed(2)}</span>
           </div>
         </div>
-      )}
+
+        {/* Terms & Conditions */}
+        <div className="flex items-start gap-3 py-4">
+          <input
+            type="checkbox"
+            data-testid="checkout-terms-checkbox"
+            {...register('termsAccepted')}
+            className={`w-5 h-5 rounded border mt-0.5 shrink-0 accent-accent ${
+              errors.termsAccepted ? 'border-red-500' : 'border-[var(--border)]'
+            }`}
+          />
+          <div>
+            <label className="text-sm text-[var(--text-secondary)]">
+              {t('terms.label', { defaultValue: 'I agree to the' })}{' '}
+              <a href="#" className="text-accent hover:underline">
+                {t('common:termsLink', { ns: 'common' })}
+              </a>{' '}
+              {t('terms.and', { defaultValue: 'and' })}{' '}
+              <a href="#" className="text-accent hover:underline">
+                {t('common:privacyLink', { ns: 'common' })}
+              </a>
+            </label>
+            {errors.termsAccepted && (
+              <p data-testid="checkout-terms-error" className="text-xs text-red-500 mt-1">
+                {t('terms.required', { defaultValue: 'You must accept the terms to continue' })}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <Button
+          data-testid="place-order-button"
+          type="submit"
+          loading={isSubmitting}
+          className="w-full"
+          size="lg"
+        >
+          {t('placeOrder')}
+        </Button>
+      </form>
     </div>
   );
 }

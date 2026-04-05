@@ -3,6 +3,13 @@ import { useAuthStore } from '@store/auth.store';
 
 const BASE_URL = import.meta.env.VITE_API_URL as string;
 
+// Global session expired event
+export const SESSION_EXPIRED_EVENT = 'planq:session-expired';
+
+export function emitSessionExpired() {
+  window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+}
+
 export class ApiException extends Error {
   constructor(
     public readonly code: string,
@@ -26,6 +33,7 @@ async function refreshAccessToken(): Promise<string | null> {
 
   if (!res.ok) {
     logout();
+    emitSessionExpired();
     return null;
   }
 

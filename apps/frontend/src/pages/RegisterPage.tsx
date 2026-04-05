@@ -9,6 +9,7 @@ import { useAuthStore } from '@store/auth.store';
 import { authApi } from '@api/auth';
 import { useState } from 'react';
 import { ApiException } from '@api/client';
+import { SocialLoginButtons } from '@components/SocialLoginButtons';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -41,7 +42,7 @@ export function RegisterPage() {
     try {
       const res = await authApi.register(data.name, data.email, data.password);
       setAuth(res.accessToken, res.refreshToken, res.user);
-      navigate('/');
+      navigate('/verify-email');
     } catch (err) {
       if (err instanceof ApiException) setServerError(err.message);
     }
@@ -102,6 +103,8 @@ export function RegisterPage() {
               {t('auth.register')}
             </Button>
           </form>
+
+          <SocialLoginButtons onError={setServerError} />
 
           <p className="mt-4 text-center text-sm text-[var(--text-secondary)]">
             {t('auth.hasAccount')}{' '}

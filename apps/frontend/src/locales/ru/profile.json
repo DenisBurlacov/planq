@@ -56,10 +56,7 @@
   "orders": {
     "title": "Мои заказы",
     "empty": "Заказов пока нет",
-    "viewAll": "Все заказы",
-    "dateFrom": "С",
-    "dateTo": "По",
-    "filterByDate": "Фильтр по дате"
+    "viewAll": "Все заказы"
   },
   "form": {
     "name": "Полное имя",
@@ -70,10 +67,6 @@
     "saveChanges": "Сохранить",
     "changePassword": "Изменить пароль"
   },
-  "avatar": {
-    "upload": "Загрузить аватар",
-    "change": "Сменить аватар"
-  },
   "toast": {
     "profileUpdated": "Профиль обновлён",
     "passwordChanged": "Пароль изменён",
@@ -81,9 +74,7 @@
     "addressAdded": "Адрес добавлен",
     "addressUpdated": "Адрес обновлён",
     "addressDeleted": "Адрес удалён",
-    "defaultAddressUpdated": "Адрес по умолчанию обновлён",
-    "avatarUpdated": "Аватар обновлён",
-    "avatarFailed": "Не удалось загрузить аватар"
+    "defaultAddressUpdated": "Адрес по умолчанию обновлён"
   },
   "auth": {
     "login": "Войти",
@@ -100,6 +91,7 @@
     "hasAccount": "Уже есть аккаунт?",
     "demoAccounts": "Тестовые аккаунты",
     "resetPassword": "Сбросить пароль",
-    "resetSent": "Проверьте почту для инструкций"
+    "resetSent": "Проверьте почту для инструкций",
+    "orContinueWith": "или продолжить через"
   }
 }

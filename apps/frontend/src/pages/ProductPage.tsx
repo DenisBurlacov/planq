@@ -1,9 +1,9 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, ShoppingCart, Heart, ImageOff, Home, Tag, Share2 } from 'lucide-react';
-import { CopyButton } from '@components/ui/CopyButton';
+import { Star, ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
+import { ImageCarousel } from '@components/ImageCarousel';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
 import { Skeleton } from '@components/ui/Skeleton';
@@ -46,11 +46,38 @@ export function ProductPage() {
     enabled: !!id,
   });
 
+  const [reviewsPage, setReviewsPage] = useState(1);
+  const [allReviews, setAllReviews] = useState<import('@appTypes/api').Review[]>([]);
+  const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
+
   const { data: reviews } = useQuery({
     queryKey: ['reviews', id],
-    queryFn: () => productsApi.getReviews(id ?? ''),
+    queryFn: () => productsApi.getReviews(id ?? '', 1),
     enabled: !!id,
   });
+
+  // Sync initial reviews
+  useEffect(() => {
+    if (reviews?.items) {
+      setAllReviews(reviews.items);
+      setReviewsPage(1);
+    }
+  }, [reviews?.items]);
+
+  const handleLoadMoreReviews = async () => {
+    if (!id || loadingMoreReviews) return;
+    setLoadingMoreReviews(true);
+    try {
+      const nextPage = reviewsPage + 1;
+      const result = await productsApi.getReviews(id, nextPage);
+      setAllReviews(prev => [...prev, ...result.items]);
+      setReviewsPage(nextPage);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingMoreReviews(false);
+    }
+  };
 
   // Poll stock every 60s
   useQuery({
@@ -284,30 +311,33 @@ export function ProductPage() {
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Image Gallery */}
         <div data-testid="product-gallery">
-          <div
-            data-testid="product-image-main"
-            className="relative rounded-xl overflow-hidden bg-[var(--bg-sidebar)] h-96 mb-3"
-          >
-            {product.images.length > 0 ? (
-              <img
-                src={product.images[activeImage]}
+          {product.images.length > 0 ? (
+            <div className="relative">
+              <ImageCarousel
+                images={product.images}
+                activeIndex={activeImage}
+                onChange={setActiveImage}
                 alt={product.name}
-                className="h-full w-full object-cover transition-opacity duration-200"
               />
-            ) : (
+              {isOnSale && (
+                <div className="absolute top-3 left-3 z-10">
+                  <Badge variant="sale">SALE</Badge>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div
+              data-testid="product-image-main"
+              className="relative rounded-xl overflow-hidden bg-[var(--bg-sidebar)] h-96 mb-3"
+            >
               <div className="flex h-full items-center justify-center">
                 <ImageOff className="h-16 w-16 text-[var(--text-secondary)]" />
               </div>
-            )}
-            {isOnSale && (
-              <div className="absolute top-3 left-3">
-                <Badge variant="sale">SALE</Badge>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {product.images.length > 1 && (
-            <div data-testid="product-thumbnails" className="flex gap-2 overflow-x-auto pb-1">
+            <div data-testid="product-thumbnails" className="flex gap-2 overflow-x-auto pb-1 mt-3">
               {product.images.map((img, i) => (
                 <button
                   key={i}
@@ -406,16 +436,6 @@ export function ProductPage() {
             </Button>
           </div>
 
-          {/* Share link */}
-          <div className="flex items-center gap-2 mb-4">
-            <Share2 className="h-4 w-4 text-[var(--text-secondary)]" />
-            <CopyButton
-              text={window.location.href}
-              label={t('common:copy.copyLink', { ns: 'common' })}
-              data-testid="copy-product-link"
-            />
-          </div>
-
           {/* Quick stats */}
           <div className="flex gap-4 py-4 border-y border-[var(--border)]">
             <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
@@ -490,7 +510,7 @@ export function ProductPage() {
         )}
 
         <div data-testid="reviews-list" className="space-y-4">
-          {reviews?.items.map(review => (
+          {allReviews.map(review => (
             <div
               key={review.id}
               data-testid="review-item"
@@ -498,10 +518,25 @@ export function ProductPage() {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center text-accent text-xs font-bold">
-                    {review.user.name[0].toUpperCase()}
-                  </div>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                  {review.user.avatar ? (
+                    <img
+                      data-testid="review-avatar"
+                      src={review.user.avatar}
+                      alt={review.user.name}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      data-testid="review-avatar-initial"
+                      className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center text-accent text-xs font-bold"
+                    >
+                      {review.user.name[0].toUpperCase()}
+                    </div>
+                  )}
+                  <span
+                    data-testid="review-user-name"
+                    className="text-sm font-medium text-[var(--text-primary)]"
+                  >
                     {review.user.name}
                   </span>
                 </div>
@@ -519,13 +554,27 @@ export function ProductPage() {
               )}
             </div>
           ))}
-          {reviews?.items.length === 0 && (
+          {allReviews.length === 0 && (
             <p
               data-testid="reviews-empty"
               className="text-center text-[var(--text-secondary)] py-8"
             >
               {t('product.noReviews')}
             </p>
+          )}
+          {/* Load More Reviews */}
+          {reviews && reviews.total > 5 && allReviews.length < reviews.total && (
+            <div className="flex justify-center pt-2">
+              <Button
+                data-testid="reviews-load-more"
+                variant="secondary"
+                size="sm"
+                onClick={handleLoadMoreReviews}
+                loading={loadingMoreReviews}
+              >
+                {t('common:reviews.loadMore', { ns: 'common' })}
+              </Button>
+            </div>
           )}
         </div>
       </section>

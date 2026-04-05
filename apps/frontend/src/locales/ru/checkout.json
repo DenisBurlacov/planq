@@ -15,34 +15,16 @@
     "removeConfirmBody": "Вы уверены, что хотите убрать этот товар из корзины?",
     "removeConfirmYes": "Удалить",
     "removeConfirmNo": "Оставить",
-    "checkout": "Оформить заказ",
-    "failedUpdate": "Не удалось обновить количество",
-    "failedRemove": "Не удалось удалить товар",
-    "itemRemoved": "Товар удалён",
-    "invalidPromo": "Неверный промокод",
-    "promoApplied": "Промокод применён: скидка {{percent}}%"
+    "checkout": "Оформить заказ"
   },
   "steps": {
-    "address": "Доставка",
+    "address": "Адрес",
     "payment": "Оплата",
-    "confirm": "Обзор"
-  },
-  "stepper": {
-    "next": "Далее",
-    "back": "Назад",
-    "step": "Шаг {{current}} из {{total}}"
+    "confirm": "Подтверждение"
   },
   "address": {
     "title": "Адрес доставки",
-    "placeholder": "Улица, город, почтовый индекс",
-    "selectSaved": "Выберите сохранённый адрес",
-    "enterNew": "Новый адрес",
-    "useSaved": "Сохранённый адрес",
-    "newAddress": "Новый адрес",
-    "city": "Город",
-    "zip": "Индекс",
-    "country": "Страна",
-    "searchCountry": "Поиск страны..."
+    "placeholder": "Улица, город, почтовый индекс"
   },
   "payment": {
     "title": "Способ оплаты",
@@ -77,25 +59,16 @@
     "tryAgain": "Попробовать снова",
     "reason": "Причина: {{reason}}"
   },
-  "review": {
-    "title": "Обзор заказа",
-    "editShipping": "Изменить доставку",
-    "editPayment": "Изменить оплату",
-    "shippingAddress": "Адрес доставки",
-    "paymentMethod": "Способ оплаты",
-    "orderItems": "Товары в заказе"
-  },
-  "testCards": {
-    "title": "Тестовые карты",
-    "success": "4242 4242 4242 4242 — Успех",
-    "declined": "4000 0000 0000 0002 — Отклонена",
-    "timeout": "4000 0000 0000 0069 — Таймаут"
-  },
   "checkoutTitle": "Оформление заказа",
   "placeOrder": "Подтвердить заказ",
   "terms": {
     "label": "Я согласен с",
     "and": "и",
     "required": "Вы должны принять условия для продолжения"
+  },
+  "autosave": {
+    "resume": "Восстановить предыдущий заказ?",
+    "accept": "Восстановить",
+    "dismiss": "Начать заново"
   }
 }

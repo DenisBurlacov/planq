@@ -63,39 +63,6 @@
   "inStock": "In stock",
   "items": "{{count}} item",
   "items_other": "{{count}} items",
-  "tooltips": {
-    "cart": "Shopping Cart",
-    "wishlist": "Wishlist",
-    "theme": "Toggle Theme",
-    "language": "Toggle Language",
-    "notifications": "Notifications"
-  },
-  "copy": {
-    "copy": "Copy",
-    "copied": "Copied!",
-    "copyLink": "Copy Link",
-    "copyId": "Copy ID",
-    "copyPromo": "Copy Code"
-  },
-  "notifications": {
-    "title": "Notifications",
-    "empty": "No notifications",
-    "markAllRead": "Mark all as read",
-    "markRead": "Mark as read",
-    "viewAll": "View All"
-  },
-  "upload": {
-    "dragDrop": "Drag & drop or click to upload",
-    "maxSize": "Max {{size}}",
-    "formats": "Accepted: {{formats}}",
-    "uploading": "Uploading...",
-    "remove": "Remove",
-    "error": {
-      "tooLarge": "File exceeds {{size}} limit",
-      "invalidType": "Invalid file type",
-      "failed": "Upload failed"
-    }
-  },
   "footer": {
     "tagline": "Scandinavian furniture for modern homes.",
     "shop": "Shop",
@@ -108,20 +75,106 @@
     "rights": "All rights reserved.",
     "builtFor": "Built for QA automation training",
     "logoutTitle": "Sign Out",
-    "logoutMessage": "Are you sure you want to sign out?"
+    "logoutMessage": "Are you sure you want to sign out?",
+    "keyboardShortcuts": "Keyboard Shortcuts"
   },
-  "orderDetail": {
-    "title": "Order",
-    "items": "Items",
-    "summary": "Summary",
-    "payment": "Payment",
-    "address": "Address",
-    "total": "Total",
-    "qty": "Qty"
+  "emailVerification": {
+    "checkEmail": "Check your email",
+    "checkEmailDesc": "We've sent a verification link to your email address. Click the link to verify your account.",
+    "mockSubject": "Verify your email for PLANQ",
+    "mockBody": "Click the button below to verify your email address and activate your account.",
+    "verifyButton": "Verify Email",
+    "verifying": "Verifying your email...",
+    "verified": "Email verified successfully!",
+    "verifiedDesc": "Your email has been verified. You can now use all features.",
+    "failed": "Verification failed",
+    "failedDesc": "The verification link is invalid or has expired.",
+    "resend": "Resend verification email",
+    "resent": "Verification email sent!",
+    "banner": "Please verify your email",
+    "bannerResend": "Resend"
   },
-  "ordersPage": {
-    "title": "Orders",
-    "empty": "No orders yet",
-    "browseCatalog": "Browse Catalog"
+  "sessionExpired": {
+    "title": "Session Expired",
+    "message": "Your session has expired. Please sign in again to continue.",
+    "signIn": "Sign In"
+  },
+  "oauth": {
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGithub": "Continue with GitHub",
+    "or": "or"
+  },
+  "cookieConsent": {
+    "message": "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
+    "accept": "Accept All",
+    "decline": "Decline",
+    "customize": "Customize",
+    "settingsTitle": "Cookie Settings",
+    "essential": "Essential",
+    "essentialDesc": "Required for the website to function. Cannot be disabled.",
+    "analytics": "Analytics",
+    "analyticsDesc": "Help us understand how visitors interact with our website.",
+    "marketing": "Marketing",
+    "marketingDesc": "Used to deliver personalized advertisements.",
+    "savePreferences": "Save Preferences"
+  },
+  "errorPages": {
+    "forbidden": "Access Denied",
+    "forbiddenMessage": "You don't have permission to access this page.",
+    "rateLimited": "Too Many Requests",
+    "rateLimitedMessage": "You've made too many requests. Please wait before trying again.",
+    "retryIn": "Retry in {{seconds}}s",
+    "goHome": "Go Home",
+    "goBack": "Go Back"
+  },
+  "carousel": {
+    "previous": "Previous image",
+    "next": "Next image",
+    "goToSlide": "Go to image {{index}}"
+  },
+  "orderCancel": {
+    "cancelOrder": "Cancel Order",
+    "cancelTitle": "Cancel Order",
+    "cancelMessage": "Are you sure you want to cancel this order?",
+    "reason": "Reason for cancellation",
+    "reasons": {
+      "changed_mind": "Changed my mind",
+      "found_cheaper": "Found a cheaper option",
+      "duplicate": "Duplicate order",
+      "other": "Other"
+    },
+    "confirm": "Cancel Order",
+    "cancelled": "Order cancelled",
+    "failed": "Failed to cancel order",
+    "refundInfo": "A refund of {{amount}} will be returned to your wallet."
+  },
+  "keyboardShortcuts": {
+    "title": "Keyboard Shortcuts",
+    "search": "Focus search",
+    "help": "Show this help",
+    "shortcut": {
+      "ctrlK": "Ctrl+K / Cmd+K",
+      "questionMark": "?"
+    }
+  },
+  "formAutosave": {
+    "resumeCheckout": "Resume previous checkout?",
+    "accept": "Resume",
+    "dismiss": "Start Fresh"
+  },
+  "orderConfirmation": {
+    "emailPreview": "Email confirmation",
+    "subject": "Order Confirmation",
+    "greeting": "Thank you for your order!",
+    "orderNumber": "Order #{{id}}",
+    "itemsOrdered": "Items Ordered",
+    "shippingTo": "Shipping to",
+    "total": "Total"
+  },
+  "catalog": {
+    "loadMore": "Load More"
+  },
+  "reviews": {
+    "loadMore": "Load More Reviews"
   }
 }

@@ -1,12 +1,21 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@components/ui/Button';
+import { OrderConfirmationEmail } from '@components/OrderConfirmationEmail';
+import { ordersApi } from '@api/orders';
 
 export function CheckoutSuccessPage() {
   const { t } = useTranslation('checkout');
   const [params] = useSearchParams();
   const orderId = params.get('orderId');
+
+  const { data: order } = useQuery({
+    queryKey: ['order', orderId],
+    queryFn: () => ordersApi.getById(orderId ?? ''),
+    enabled: !!orderId,
+  });
 
   return (
     <div
@@ -35,6 +44,13 @@ export function CheckoutSuccessPage() {
           <Button variant="secondary">{t('success.continueShopping')}</Button>
         </Link>
       </div>
+
+      {/* Order Confirmation Email Mock */}
+      {order && (
+        <div className="w-full max-w-lg mt-4">
+          <OrderConfirmationEmail order={order} />
+        </div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { useAuthStore } from '@store/auth.store';
 import { authApi } from '@api/auth';
 import { useState } from 'react';
 import { ApiException } from '@api/client';
+import { SocialLoginButtons } from '@components/SocialLoginButtons';
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -106,6 +107,8 @@ export function LoginPage() {
               {t('auth.login')}
             </Button>
           </form>
+
+          <SocialLoginButtons onError={setServerError} />
 
           <div className="mt-4 text-center">
             <Link to="/forgot-password" className="text-sm text-accent hover:underline">

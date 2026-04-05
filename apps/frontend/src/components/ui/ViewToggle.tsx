@@ -1,7 +1,7 @@
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, ChevronsDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-type ViewMode = 'grid' | 'list';
+export type ViewMode = 'grid' | 'list' | 'loadMore';
 
 interface ViewToggleProps {
   value: ViewMode;
@@ -41,6 +41,19 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
         }`}
       >
         <List className="h-4 w-4" />
+      </button>
+      <button
+        data-testid="view-toggle-load-more"
+        aria-label={t('viewToggle.loadMore', { defaultValue: 'Load More' })}
+        aria-pressed={value === 'loadMore'}
+        onClick={() => onChange('loadMore')}
+        className={`p-2 transition-colors ${
+          value === 'loadMore'
+            ? 'bg-accent text-white'
+            : 'bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+        }`}
+      >
+        <ChevronsDown className="h-4 w-4" />
       </button>
     </div>
   );

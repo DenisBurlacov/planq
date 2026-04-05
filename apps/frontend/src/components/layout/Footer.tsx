@@ -1,14 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Keyboard } from 'lucide-react';
 import { useAuthStore } from '@store/auth.store';
 import { authApi } from '@api/auth';
 import { Modal } from '@components/ui/Modal';
+import { KeyboardShortcutsModal } from '@components/KeyboardShortcutsModal';
 
 export function Footer() {
   const { t } = useTranslation('common');
   const { accessToken, refreshToken, logout } = useAuthStore();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -160,11 +163,24 @@ export function Footer() {
 
         <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-[var(--text-secondary)]">
-            © {new Date().getFullYear()} PLANQ. {t('footer.rights')}
+            &copy; {new Date().getFullYear()} PLANQ. {t('footer.rights')}
           </p>
-          <p className="text-xs text-[var(--text-secondary)]">{t('footer.builtFor')}</p>
+          <div className="flex items-center gap-3">
+            <button
+              data-testid="footer-keyboard-shortcuts"
+              onClick={() => setShowShortcuts(true)}
+              className="flex items-center gap-1 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              aria-label={t('footer.keyboardShortcuts')}
+            >
+              <Keyboard className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t('footer.keyboardShortcuts')}</span>
+            </button>
+            <p className="text-xs text-[var(--text-secondary)]">{t('footer.builtFor')}</p>
+          </div>
         </div>
       </div>
+
+      <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
 
       {/* Logout confirmation modal */}
       <Modal

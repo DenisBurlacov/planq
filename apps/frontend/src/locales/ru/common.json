@@ -63,39 +63,6 @@
   "inStock": "В наличии",
   "items": "{{count}} товар",
   "items_other": "{{count}} товаров",
-  "tooltips": {
-    "cart": "Корзина",
-    "wishlist": "Избранное",
-    "theme": "Сменить тему",
-    "language": "Сменить язык",
-    "notifications": "Уведомления"
-  },
-  "copy": {
-    "copy": "Копировать",
-    "copied": "Скопировано!",
-    "copyLink": "Копировать ссылку",
-    "copyId": "Копировать ID",
-    "copyPromo": "Копировать код"
-  },
-  "notifications": {
-    "title": "Уведомления",
-    "empty": "Нет уведомлений",
-    "markAllRead": "Прочитать все",
-    "markRead": "Отметить прочитанным",
-    "viewAll": "Все уведомления"
-  },
-  "upload": {
-    "dragDrop": "Перетащите или нажмите для загрузки",
-    "maxSize": "Максимум {{size}}",
-    "formats": "Формат: {{formats}}",
-    "uploading": "Загрузка...",
-    "remove": "Удалить",
-    "error": {
-      "tooLarge": "Файл превышает лимит {{size}}",
-      "invalidType": "Неподдерживаемый формат файла",
-      "failed": "Ошибка загрузки"
-    }
-  },
   "footer": {
     "tagline": "Скандинавская мебель для современных домов.",
     "shop": "Магазин",
@@ -108,20 +75,106 @@
     "rights": "Все права защищены.",
     "builtFor": "Создано для тренировки QA автоматизации",
     "logoutTitle": "Выход",
-    "logoutMessage": "Вы уверены, что хотите выйти?"
+    "logoutMessage": "Вы уверены, что хотите выйти?",
+    "keyboardShortcuts": "Горячие клавиши"
   },
-  "orderDetail": {
-    "title": "Заказ",
-    "items": "Товары",
-    "summary": "Итого",
-    "payment": "Оплата",
-    "address": "Адрес",
-    "total": "Итого",
-    "qty": "Кол-во"
+  "emailVerification": {
+    "checkEmail": "Проверьте почту",
+    "checkEmailDesc": "Мы отправили ссылку для подтверждения на ваш email. Перейдите по ней, чтобы подтвердить аккаунт.",
+    "mockSubject": "Подтвердите email для PLANQ",
+    "mockBody": "Нажмите кнопку ниже, чтобы подтвердить ваш email и активировать аккаунт.",
+    "verifyButton": "Подтвердить email",
+    "verifying": "Подтверждаем ваш email...",
+    "verified": "Email успешно подтверждён!",
+    "verifiedDesc": "Ваш email подтверждён. Теперь вам доступны все функции.",
+    "failed": "Ошибка подтверждения",
+    "failedDesc": "Ссылка для подтверждения недействительна или истекла.",
+    "resend": "Отправить повторно",
+    "resent": "Письмо отправлено!",
+    "banner": "Подтвердите ваш email",
+    "bannerResend": "Отправить"
   },
-  "ordersPage": {
-    "title": "Заказы",
-    "empty": "Заказов пока нет",
-    "browseCatalog": "Перейти в каталог"
+  "sessionExpired": {
+    "title": "Сессия истекла",
+    "message": "Ваша сессия истекла. Войдите снова, чтобы продолжить.",
+    "signIn": "Войти"
+  },
+  "oauth": {
+    "continueWithGoogle": "Продолжить с Google",
+    "continueWithGithub": "Продолжить с GitHub",
+    "or": "или"
+  },
+  "cookieConsent": {
+    "message": "Мы используем файлы cookie для улучшения вашего опыта. Продолжая посещать сайт, вы соглашаетесь с использованием cookie.",
+    "accept": "Принять все",
+    "decline": "Отклонить",
+    "customize": "Настроить",
+    "settingsTitle": "Настройки cookie",
+    "essential": "Необходимые",
+    "essentialDesc": "Требуются для работы сайта. Нельзя отключить.",
+    "analytics": "Аналитика",
+    "analyticsDesc": "Помогают понять, как посетители взаимодействуют с сайтом.",
+    "marketing": "Маркетинг",
+    "marketingDesc": "Используются для показа персонализированной рекламы.",
+    "savePreferences": "Сохранить настройки"
+  },
+  "errorPages": {
+    "forbidden": "Доступ запрещён",
+    "forbiddenMessage": "У вас нет прав для доступа к этой странице.",
+    "rateLimited": "Слишком много запросов",
+    "rateLimitedMessage": "Вы сделали слишком много запросов. Подождите перед повторной попыткой.",
+    "retryIn": "Повтор через {{seconds}}с",
+    "goHome": "На главную",
+    "goBack": "Назад"
+  },
+  "carousel": {
+    "previous": "Предыдущее изображение",
+    "next": "Следующее изображение",
+    "goToSlide": "Перейти к изображению {{index}}"
+  },
+  "orderCancel": {
+    "cancelOrder": "Отменить заказ",
+    "cancelTitle": "Отмена заказа",
+    "cancelMessage": "Вы уверены, что хотите отменить этот заказ?",
+    "reason": "Причина отмены",
+    "reasons": {
+      "changed_mind": "Передумал(а)",
+      "found_cheaper": "Нашёл(а) дешевле",
+      "duplicate": "Дублирующий заказ",
+      "other": "Другое"
+    },
+    "confirm": "Отменить заказ",
+    "cancelled": "Заказ отменён",
+    "failed": "Не удалось отменить заказ",
+    "refundInfo": "Возврат {{amount}} будет зачислен на ваш кошелёк."
+  },
+  "keyboardShortcuts": {
+    "title": "Горячие клавиши",
+    "search": "Фокус на поиск",
+    "help": "Показать эту справку",
+    "shortcut": {
+      "ctrlK": "Ctrl+K / Cmd+K",
+      "questionMark": "?"
+    }
+  },
+  "formAutosave": {
+    "resumeCheckout": "Восстановить предыдущий заказ?",
+    "accept": "Восстановить",
+    "dismiss": "Начать заново"
+  },
+  "orderConfirmation": {
+    "emailPreview": "Подтверждение по email",
+    "subject": "Подтверждение заказа",
+    "greeting": "Спасибо за ваш заказ!",
+    "orderNumber": "Заказ #{{id}}",
+    "itemsOrdered": "Заказанные товары",
+    "shippingTo": "Доставка по адресу",
+    "total": "Итого"
+  },
+  "catalog": {
+    "loadMore": "Показать ещё"
+  },
+  "reviews": {
+    "loadMore": "Показать ещё отзывы"
   }
 }

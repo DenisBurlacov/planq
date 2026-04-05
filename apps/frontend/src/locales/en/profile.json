@@ -56,10 +56,7 @@
   "orders": {
     "title": "My Orders",
     "empty": "No orders yet",
-    "viewAll": "View All Orders",
-    "dateFrom": "From",
-    "dateTo": "To",
-    "filterByDate": "Filter by date"
+    "viewAll": "View All Orders"
   },
   "form": {
     "name": "Full Name",
@@ -70,10 +67,6 @@
     "saveChanges": "Save Changes",
     "changePassword": "Change Password"
   },
-  "avatar": {
-    "upload": "Upload Avatar",
-    "change": "Change Avatar"
-  },
   "toast": {
     "profileUpdated": "Profile updated",
     "passwordChanged": "Password changed",
@@ -81,9 +74,7 @@
     "addressAdded": "Address added",
     "addressUpdated": "Address updated",
     "addressDeleted": "Address deleted",
-    "defaultAddressUpdated": "Default address updated",
-    "avatarUpdated": "Avatar updated",
-    "avatarFailed": "Failed to upload avatar"
+    "defaultAddressUpdated": "Default address updated"
   },
   "auth": {
     "login": "Sign In",
@@ -100,6 +91,7 @@
     "hasAccount": "Already have an account?",
     "demoAccounts": "Demo Accounts",
     "resetPassword": "Reset Password",
-    "resetSent": "Check your email for reset instructions"
+    "resetSent": "Check your email for reset instructions",
+    "orContinueWith": "or continue with"
   }
 }

@@ -8,20 +8,8 @@ export interface CheckoutInput {
   cardNumber?: string;
 }
 
-export interface OrdersQuery {
-  page?: number;
-  dateFrom?: string;
-  dateTo?: string;
-}
-
 export const ordersApi = {
-  list: (query: OrdersQuery = {}) => {
-    const params = new URLSearchParams();
-    if (query.page) params.set('page', String(query.page));
-    if (query.dateFrom) params.set('dateFrom', query.dateFrom);
-    if (query.dateTo) params.set('dateTo', query.dateTo);
-    return apiFetch<PaginatedResponse<Order>>(`/api/v1/orders?${params}`);
-  },
+  list: (page = 1) => apiFetch<PaginatedResponse<Order>>(`/api/v1/orders?page=${page}`),
 
   getById: (id: string) => apiFetch<Order>(`/api/v1/orders/${id}`),
 
@@ -29,5 +17,11 @@ export const ordersApi = {
     apiFetch<Order>('/api/v1/orders/checkout', {
       method: 'POST',
       body: JSON.stringify(input),
+    }),
+
+  cancel: (id: string, reason: string) =>
+    apiFetch<Order>(`/api/v1/orders/${id}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
     }),
 };
