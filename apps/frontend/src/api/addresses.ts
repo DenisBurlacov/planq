@@ -20,23 +20,22 @@ export interface AddressInput {
 }
 
 export const addressesApi = {
-  list: () => apiFetch<Address[]>('/api/v1/profile/addresses'),
+  list: () => apiFetch<Address[]>('/api/v1/addresses'),
 
   create: (data: AddressInput) =>
-    apiFetch<Address>('/api/v1/profile/addresses', {
+    apiFetch<Address>('/api/v1/addresses', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
   update: (id: string, data: AddressInput) =>
-    apiFetch<Address>(`/api/v1/profile/addresses/${id}`, {
-      method: 'PATCH',
+    apiFetch<Address>(`/api/v1/addresses/${id}`, {
+      method: 'PUT',
       body: JSON.stringify(data),
     }),
 
-  remove: (id: string) =>
-    apiFetch<undefined>(`/api/v1/profile/addresses/${id}`, { method: 'DELETE' }),
+  remove: (id: string) => apiFetch<undefined>(`/api/v1/addresses/${id}`, { method: 'DELETE' }),
 
   setDefault: (id: string) =>
-    apiFetch<Address>(`/api/v1/profile/addresses/${id}/default`, { method: 'PATCH' }),
+    apiFetch<Address>(`/api/v1/addresses/${id}/default`, { method: 'PUT' }),
 };
