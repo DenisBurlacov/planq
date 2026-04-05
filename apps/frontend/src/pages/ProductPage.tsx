@@ -460,6 +460,23 @@ export function ProductPage() {
         <Accordion items={accordionItems} defaultOpen={0} />
       </div>
 
+      {/* Video Review */}
+      <div data-testid="product-video" className="mb-12">
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+          {t('product.videoReview')}
+        </h2>
+        <div className="rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--bg-card)]">
+          <iframe
+            data-testid="product-video-iframe"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            title={t('product.videoReview')}
+            className="w-full aspect-video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      </div>
+
       {/* Reviews */}
       <section data-testid="reviews-section">
         <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">

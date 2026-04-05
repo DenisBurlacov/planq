@@ -85,7 +85,8 @@
     "availability": "Availability",
     "inStockUnits": "In stock ({{count}} unit)",
     "inStockUnits_other": "In stock ({{count}} units)",
-    "ratingLabel": "Rating"
+    "ratingLabel": "Rating",
+    "videoReview": "Video Review"
   },
   "compare": {
     "title": "Compare Products",

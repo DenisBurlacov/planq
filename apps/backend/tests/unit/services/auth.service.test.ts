@@ -95,7 +95,7 @@ describe('auth.service', () => {
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
-      expect(result.user.email).toBe('user@example.com');
+      expect('user' in result && result.user?.email).toBe('user@example.com');
     });
 
     it('throws INVALID_CREDENTIALS when user not found', async () => {

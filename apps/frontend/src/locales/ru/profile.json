@@ -5,7 +5,8 @@
     "settings": "Настройки",
     "security": "Безопасность",
     "notifications": "Уведомления",
-    "addresses": "Адреса"
+    "addresses": "Адреса",
+    "webhooks": "Вебхуки"
   },
   "notifications": {
     "title": "Настройки уведомлений",
@@ -66,6 +67,58 @@
     "confirmPassword": "Подтвердите пароль",
     "saveChanges": "Сохранить",
     "changePassword": "Изменить пароль"
+  },
+  "webhooks": {
+    "title": "Вебхуки",
+    "addWebhook": "Добавить вебхук",
+    "url": "URL",
+    "urlPlaceholder": "https://example.com/webhook",
+    "events": "События",
+    "eventOrderCreated": "order.created",
+    "eventOrderStatusUpdated": "order.status.updated",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "delete": "Удалить",
+    "viewDeliveries": "Показать доставки",
+    "hideDeliveries": "Скрыть доставки",
+    "deliveries": "Доставки",
+    "noDeliveries": "Доставок пока нет",
+    "empty": "Вебхуки не настроены",
+    "emptyHint": "Добавьте вебхук для получения уведомлений о событиях заказов",
+    "created": "Вебхук создан",
+    "deleted": "Вебхук удалён",
+    "toggled": "Вебхук обновлён",
+    "deleteConfirm": "Вы уверены, что хотите удалить этот вебхук?"
+  },
+  "twoFactor": {
+    "title": "Двухфакторная аутентификация",
+    "description": "Добавьте дополнительный уровень безопасности",
+    "enabled": "2FA включена",
+    "disabled": "2FA не включена",
+    "enable": "Включить 2FA",
+    "disable": "Отключить 2FA",
+    "qrTitle": "Сканировать QR-код",
+    "qrDescription": "Отсканируйте QR-код в приложении-аутентификаторе",
+    "manualEntry": "Ввод вручную",
+    "secretCode": "Секретный код",
+    "enterCode": "Введите 6-значный код",
+    "codePlaceholder": "000000",
+    "verifySetup": "Подтвердить и включить",
+    "disableConfirm": "Вы уверены, что хотите отключить 2FA?",
+    "disableWarning": "Ваш аккаунт будет менее защищён без двухфакторной аутентификации.",
+    "setupSuccess": "2FA успешно включена",
+    "disableSuccess": "2FA отключена",
+    "enterCodeLogin": "Введите код 2FA",
+    "enterCodeLoginDesc": "Откройте приложение-аутентификатор и введите 6-значный код",
+    "verify": "Подтвердить"
+  },
+  "captcha": {
+    "notARobot": "Я не робот",
+    "selectTrafficLights": "Выберите все светофоры",
+    "verify": "Подтвердить",
+    "verifying": "Проверка...",
+    "verified": "Подтверждено",
+    "required": "Пожалуйста, пройдите проверку"
   },
   "toast": {
     "profileUpdated": "Профиль обновлён",

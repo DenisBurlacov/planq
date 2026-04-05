@@ -1,11 +1,16 @@
 import { apiFetch } from './client';
 import type { AuthResponse, User } from '@appTypes/api';
 
+export interface LoginResponse2FA {
+  requires2FA: true;
+  tempToken: string;
+}
+
 export const authApi = {
-  login: (email: string, password: string) =>
-    apiFetch<AuthResponse>('/api/v1/auth/login', {
+  login: (email: string, password: string, captchaToken?: string) =>
+    apiFetch<AuthResponse | LoginResponse2FA>('/api/v1/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, captchaToken }),
     }),
 
   register: (name: string, email: string, password: string) =>

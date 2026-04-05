@@ -6,7 +6,8 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'PLANQ API',
       version: '1.0.0',
-      description: 'PLANQ furniture store REST API',
+      description:
+        'PLANQ furniture store REST API. All GET endpoints support content negotiation: send `Accept: application/xml` to receive XML responses instead of JSON.',
     },
     servers: [{ url: '/api/v1', description: 'API v1' }],
     components: {

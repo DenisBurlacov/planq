@@ -85,7 +85,8 @@
     "availability": "Наличие",
     "inStockUnits": "В наличии ({{count}} шт.)",
     "inStockUnits_other": "В наличии ({{count}} шт.)",
-    "ratingLabel": "Рейтинг"
+    "ratingLabel": "Рейтинг",
+    "videoReview": "Видеообзор"
   },
   "compare": {
     "title": "Сравнение товаров",

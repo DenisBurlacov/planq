@@ -15,6 +15,7 @@ export const RegisterSchema = z.object({
 export const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
+  captchaToken: z.string().optional(),
 });
 
 export const RefreshSchema = z.object({
@@ -90,6 +91,15 @@ export async function login(input: LoginInput) {
   const valid = await comparePassword(input.password, user.password);
   if (!valid) {
     throw new AppError('INVALID_CREDENTIALS', 'Invalid email or password', 401);
+  }
+
+  // If 2FA is enabled, return tempToken instead of real tokens
+  if (user.twoFactorEnabled) {
+    logger.info({ message: 'User login requires 2FA', userId: user.id });
+    return {
+      requires2FA: true,
+      tempToken: user.id,
+    };
   }
 
   const payload = { userId: user.id, email: user.email, role: user.role };

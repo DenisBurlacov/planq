@@ -26,7 +26,8 @@
     "title": "Shipping Address",
     "placeholder": "Street, city, postal code",
     "selectSaved": "Select a saved address",
-    "enterNew": "Enter new address"
+    "enterNew": "Enter new address",
+    "deliveryArea": "Delivery Area"
   },
   "payment": {
     "title": "Payment Method",

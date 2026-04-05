@@ -3,6 +3,7 @@ import { OrderStatus } from '@prisma/client';
 import prisma from '@utils/prisma.js';
 import { AppError } from '@utils/AppError.js';
 import logger from '@utils/logger.js';
+import { fireWebhookEvent } from '@services/webhooks.service.js';
 
 // ─── Validation Schemas ──────────────────────────────────────────────────────
 
@@ -239,6 +240,15 @@ export async function updateOrderStatus(id: string, newStatus: OrderStatus) {
     from: order.status,
     to: newStatus,
   });
+
+  // Fire webhook event for order status update
+  void fireWebhookEvent('order.status.updated', {
+    event: 'order.status.updated',
+    orderId: id,
+    previousStatus: order.status,
+    status: newStatus,
+  });
+
   return updated;
 }
 

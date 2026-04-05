@@ -23,6 +23,9 @@ import addressesRouter from '@routes/addresses.js';
 import notificationsRouter from '@routes/notifications.js';
 import realtimeNotificationsRouter from '@routes/realtime-notifications.js';
 import adminRouter from '@routes/admin.js';
+import webhooksRouter from '@routes/webhooks.js';
+import twoFactorRouter from '@routes/twoFactor.js';
+import { contentNegotiation } from '@middleware/contentNegotiation.js';
 
 const app: Express = express();
 
@@ -57,6 +60,9 @@ app.use('/api/', globalLimiter);
 // Swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Content negotiation — XML support on all GET endpoints
+app.use('/api/', contentNegotiation);
+
 // Routes
 app.use('/health', healthRouter);
 app.use('/api/v1/auth', authRouter);
@@ -72,6 +78,8 @@ app.use('/api/v1/profile/notifications', notificationsRouter);
 app.use('/api/v1/addresses', addressesRouter);
 app.use('/api/v1/notifications', realtimeNotificationsRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/webhooks', webhooksRouter);
+app.use('/api/v1/auth/2fa', twoFactorRouter);
 app.use('/api/test', resetRouter);
 
 // Global error handler (must be last)

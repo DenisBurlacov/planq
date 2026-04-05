@@ -4,6 +4,7 @@ import prisma from '@utils/prisma.js';
 import { AppError } from '@utils/AppError.js';
 import logger from '@utils/logger.js';
 import { schedulePaymentResult } from '@ws/handlers/payment.js';
+import { fireWebhookEvent } from '@services/webhooks.service.js';
 
 export const CancelOrderSchema = z.object({
   reason: z.string().min(1).max(500),
@@ -164,6 +165,14 @@ export async function checkout(userId: string, input: CheckoutInput) {
 
   // Async WS notification — does not block the response
   schedulePaymentResult(userId, order.id);
+
+  // Fire webhook event for order creation
+  void fireWebhookEvent('order.created', {
+    event: 'order.created',
+    orderId: order.id,
+    status: order.status,
+    totalAmount: order.totalAmount,
+  });
 
   return order;
 }

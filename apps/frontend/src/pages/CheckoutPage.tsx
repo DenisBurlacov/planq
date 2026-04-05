@@ -233,6 +233,21 @@ export function CheckoutPage() {
             error={errors.shippingAddress?.message}
             {...register('shippingAddress')}
           />
+
+          {/* Delivery area map */}
+          <div data-testid="checkout-map" className="mt-4">
+            <p className="text-xs font-medium text-[var(--text-secondary)] mb-2">
+              {t('address.deliveryArea')}
+            </p>
+            <div className="rounded-lg overflow-hidden border border-[var(--border)]">
+              <iframe
+                data-testid="checkout-map-iframe"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=17.9,59.2,18.2,59.4"
+                title={t('address.deliveryArea')}
+                className="w-full h-48"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Payment */}

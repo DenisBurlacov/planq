@@ -7,9 +7,11 @@ import { Input } from '@components/ui/Input';
 import { Button } from '@components/ui/Button';
 import { useAuthStore } from '@store/auth.store';
 import { authApi } from '@api/auth';
-import { useState } from 'react';
+import { twoFactorApi } from '@api/twoFactor';
+import { useState, useCallback } from 'react';
 import { ApiException } from '@api/client';
 import { SocialLoginButtons } from '@components/SocialLoginButtons';
+import { CaptchaMock } from '@components/CaptchaMock';
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -20,7 +22,7 @@ type FormData = z.infer<typeof schema>;
 const DEMO_ACCOUNTS = [
   { email: 'user@planq.dev', password: 'Test1234!', label: 'user (3 orders, wallet)' },
   { email: 'new@planq.dev', password: 'Test1234!', label: 'new user (clean)' },
-  { email: 'rich@planq.dev', password: 'Test1234!', label: 'rich (wallet €999)' },
+  { email: 'rich@planq.dev', password: 'Test1234!', label: 'rich (wallet \u20AC999)' },
 ];
 
 export function LoginPage() {
@@ -29,7 +31,14 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const showDemo = import.meta.env.VITE_SHOW_TEST_CREDENTIALS === 'true';
+
+  // 2FA state
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [tempToken, setTempToken] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [verifying2FA, setVerifying2FA] = useState(false);
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/';
 
@@ -44,10 +53,21 @@ export function LoginPage() {
 
   const onSubmit = async (data: FormData) => {
     setServerError('');
+    if (!captchaToken) {
+      setServerError(t('captcha.required'));
+      return;
+    }
     try {
-      const res = await authApi.login(data.email, data.password);
-      setAuth(res.accessToken, res.refreshToken, res.user);
-      navigate(from, { replace: true });
+      const res = await authApi.login(data.email, data.password, captchaToken);
+      if ('requires2FA' in res && res.requires2FA) {
+        setRequires2FA(true);
+        setTempToken((res as { tempToken: string }).tempToken);
+        return;
+      }
+      if ('accessToken' in res) {
+        setAuth(res.accessToken, res.refreshToken, res.user);
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       if (err instanceof ApiException) {
         setServerError(err.message);
@@ -55,10 +75,86 @@ export function LoginPage() {
     }
   };
 
+  const handle2FAVerify = useCallback(async () => {
+    setServerError('');
+    setVerifying2FA(true);
+    try {
+      const res = await twoFactorApi.verifyLogin(tempToken, twoFactorCode);
+      setAuth(res.accessToken, res.refreshToken, res.user);
+      navigate(from, { replace: true });
+    } catch (err) {
+      if (err instanceof ApiException) {
+        setServerError(err.message);
+      }
+    } finally {
+      setVerifying2FA(false);
+    }
+  }, [tempToken, twoFactorCode, from, navigate, setAuth]);
+
   const fillDemo = (email: string, password: string) => {
     setValue('email', email);
     setValue('password', password);
   };
+
+  // 2FA verification screen
+  if (requires2FA) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border)] p-8 shadow-sm">
+            <h1
+              data-testid="2fa-title"
+              className="text-2xl font-bold text-[var(--text-primary)] mb-1"
+            >
+              {t('twoFactor.enterCodeLogin')}
+            </h1>
+            <p className="text-sm text-[var(--text-secondary)] mb-6">
+              {t('twoFactor.enterCodeLoginDesc')}
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="2fa-code"
+                  className="block text-sm font-medium text-[var(--text-primary)] mb-1"
+                >
+                  {t('twoFactor.enterCode')}
+                </label>
+                <input
+                  id="2fa-code"
+                  data-testid="2fa-code-input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={twoFactorCode}
+                  onChange={e => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder={t('twoFactor.codePlaceholder')}
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 text-center text-2xl font-mono tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-accent"
+                  autoFocus
+                />
+              </div>
+
+              {serverError && (
+                <p data-testid="2fa-error" className="text-sm text-red-500">
+                  {serverError}
+                </p>
+              )}
+
+              <Button
+                data-testid="2fa-submit"
+                onClick={handle2FAVerify}
+                loading={verifying2FA}
+                disabled={twoFactorCode.length !== 6}
+                className="w-full"
+              >
+                {t('twoFactor.verify')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
@@ -91,6 +187,9 @@ export function LoginPage() {
               error={errors.password?.message}
               {...register('password')}
             />
+
+            {/* Captcha */}
+            <CaptchaMock onVerified={setCaptchaToken} />
 
             {serverError && (
               <p data-testid="login-error" className="text-sm text-red-500">
