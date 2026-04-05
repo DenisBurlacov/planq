@@ -67,9 +67,56 @@ export async function meHandler(req: Request, res: Response, next: NextFunction)
     const { default: prisma } = await import('@utils/prisma.js');
     const user = await prisma.user.findFirst({
       where: { id: userId },
-      select: { id: true, email: true, name: true, avatar: true, walletBalance: true, role: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatar: true,
+        walletBalance: true,
+        role: true,
+        emailVerified: true,
+        provider: true,
+      },
     });
     ok(res, user);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function verifyEmailHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const token = req.query.token as string;
+    if (!token) {
+      return next(
+        new (await import('@utils/AppError.js')).AppError(
+          'VALIDATION_ERROR',
+          'Token query parameter is required',
+          400
+        )
+      );
+    }
+    const result = await authService.verifyEmail(token);
+    ok(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resendVerificationHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email } = req.body as { email: string };
+    const result = await authService.resendVerification(email);
+    ok(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function oauthCallbackHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await authService.oauthCallback(req.body as authService.OAuthCallbackInput);
+    ok(res, result);
   } catch (err) {
     next(err);
   }

@@ -33,6 +33,17 @@ export const ResetPasswordSchema = z.object({
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 
+export const OAuthCallbackSchema = z.object({
+  provider: z.enum(['google', 'github']),
+  code: z.string().min(1),
+});
+
+export const ResendVerificationSchema = z.object({
+  email: z.string().email(),
+});
+
+export type OAuthCallbackInput = z.infer<typeof OAuthCallbackSchema>;
+
 export async function register(input: RegisterInput) {
   const existing = await prisma.user.findFirst({ where: { email: input.email } });
   if (existing) {
@@ -42,11 +53,27 @@ export async function register(input: RegisterInput) {
   const hashed = await hashPassword(input.password);
   const user = await prisma.user.create({
     data: { email: input.email, password: hashed, name: input.name },
-    select: { id: true, email: true, name: true, avatar: true, walletBalance: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      avatar: true,
+      walletBalance: true,
+      emailVerified: true,
+    },
+  });
+
+  // Create email verification token (valid 24h)
+  const verificationToken = randomUUID();
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await prisma.emailVerificationToken.create({
+    data: { userId: user.id, token: verificationToken, expiresAt },
   });
 
   logger.info({ message: 'User registered', userId: user.id });
-  return user;
+
+  const isDev = process.env.NODE_ENV !== 'production';
+  return isDev ? { ...user, verificationToken } : user;
 }
 
 export async function login(input: LoginInput) {
@@ -84,6 +111,7 @@ export async function login(input: LoginInput) {
       avatar: user.avatar,
       walletBalance: user.walletBalance,
       role: user.role,
+      emailVerified: user.emailVerified,
     },
   };
 }
@@ -181,4 +209,94 @@ export async function resetPassword(token: string, newPassword: string) {
   logger.info({ message: 'Password reset completed', userId: resetToken.userId });
 
   return { message: 'Password updated' };
+}
+
+export async function verifyEmail(token: string) {
+  const record = await prisma.emailVerificationToken.findUnique({ where: { token } });
+
+  if (!record || record.expiresAt < new Date()) {
+    throw new AppError('INVALID_TOKEN', 'Verification token is invalid or expired', 400);
+  }
+
+  await prisma.$transaction(async tx => {
+    await tx.user.update({
+      where: { id: record.userId },
+      data: { emailVerified: true },
+    });
+    await tx.emailVerificationToken.delete({ where: { id: record.id } });
+  });
+
+  logger.info({ message: 'Email verified', userId: record.userId });
+
+  return { message: 'Email verified successfully' };
+}
+
+export async function resendVerification(email: string) {
+  const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
+
+  // Always return same message to prevent email enumeration
+  const message = 'If the email exists and is unverified, a new verification link has been sent';
+
+  if (!user || user.emailVerified) {
+    return { message };
+  }
+
+  // Delete existing tokens for this user
+  await prisma.emailVerificationToken.deleteMany({ where: { userId: user.id } });
+
+  const token = randomUUID();
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  await prisma.emailVerificationToken.create({
+    data: { userId: user.id, token, expiresAt },
+  });
+
+  logger.info({ message: 'Verification token resent', userId: user.id });
+
+  const isDev = process.env.NODE_ENV !== 'production';
+  return isDev ? { message, token } : { message };
+}
+
+export async function oauthCallback(input: OAuthCallbackInput) {
+  const email = `oauth-${input.code}@${input.provider}.mock`;
+
+  let user = await prisma.user.findFirst({
+    where: { email },
+  });
+
+  if (!user) {
+    // Mock OAuth: always succeed, create user with random password
+    const hashed = await hashPassword(randomUUID());
+    user = await prisma.user.create({
+      data: {
+        email,
+        password: hashed,
+        name: `${input.provider}-user-${input.code}`,
+        provider: input.provider,
+        providerId: input.code,
+        emailVerified: true,
+      },
+    });
+    logger.info({ message: 'OAuth user created', userId: user.id, provider: input.provider });
+  }
+
+  const payload = { userId: user.id, email: user.email, role: user.role };
+  const accessToken = signAccessToken(payload);
+  const refreshToken = signRefreshToken(payload);
+
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
+
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar,
+      walletBalance: user.walletBalance,
+      role: user.role,
+    },
+  };
 }

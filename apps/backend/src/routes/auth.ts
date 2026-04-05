@@ -10,6 +10,9 @@ import {
   forgotPasswordHandler,
   resetPasswordHandler,
   meHandler,
+  verifyEmailHandler,
+  resendVerificationHandler,
+  oauthCallbackHandler,
 } from '@controllers/auth.controller.js';
 import {
   RegisterSchema,
@@ -17,6 +20,8 @@ import {
   RefreshSchema,
   ForgotPasswordSchema,
   ResetPasswordSchema,
+  OAuthCallbackSchema,
+  ResendVerificationSchema,
 } from '@services/auth.service.js';
 
 const router: ExpressRouter = Router();
@@ -192,5 +197,72 @@ router.post('/reset-password', loginLimiter, validate(ResetPasswordSchema), rese
  *         description: Not authenticated
  */
 router.get('/me', authenticate, meHandler);
+
+/**
+ * @openapi
+ * /auth/verify-email:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Verify user email with token
+ *     security: []
+ *     parameters:
+ *       - { in: query, name: token, required: true, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
+router.get('/verify-email', verifyEmailHandler);
+
+/**
+ * @openapi
+ * /auth/resend-verification:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Resend email verification token
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string, format: email }
+ *     responses:
+ *       200:
+ *         description: Verification email resent (token included in dev/test env)
+ */
+router.post(
+  '/resend-verification',
+  loginLimiter,
+  validate(ResendVerificationSchema),
+  resendVerificationHandler
+);
+
+/**
+ * @openapi
+ * /auth/oauth/callback:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Mock OAuth callback (Google/GitHub)
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [provider, code]
+ *             properties:
+ *               provider: { type: string, enum: [google, github] }
+ *               code: { type: string }
+ *     responses:
+ *       200:
+ *         description: OAuth login successful, returns tokens
+ */
+router.post('/oauth/callback', validate(OAuthCallbackSchema), oauthCallbackHandler);
 
 export default router;

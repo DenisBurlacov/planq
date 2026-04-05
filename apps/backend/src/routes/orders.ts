@@ -10,11 +10,9 @@ import { z } from 'zod';
 const router: ExpressRouter = Router();
 router.use(authenticate);
 
-const OrdersQuerySchema = z.object({
+const PaginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(50).default(10),
-  dateFrom: z.string().optional(),
-  dateTo: z.string().optional(),
 });
 
 /**
@@ -23,19 +21,14 @@ const OrdersQuerySchema = z.object({
  *   get:
  *     tags: [Orders]
  *     summary: Get user's orders
- *     parameters:
- *       - { in: query, name: page, schema: { type: integer, default: 1 } }
- *       - { in: query, name: limit, schema: { type: integer, default: 10 } }
- *       - { in: query, name: dateFrom, schema: { type: string, format: date-time } }
- *       - { in: query, name: dateTo, schema: { type: string, format: date-time } }
  *     responses:
  *       200:
  *         description: Paginated list of orders
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, dateFrom, dateTo } = OrdersQuerySchema.parse(req.query);
-    ok(res, await ordersService.getOrders(getAuthUser(req).userId, page, limit, dateFrom, dateTo));
+    const { page, limit } = PaginationSchema.parse(req.query);
+    ok(res, await ordersService.getOrders(getAuthUser(req).userId, page, limit));
   } catch (err) {
     next(err);
   }
@@ -95,6 +88,48 @@ router.post(
         req.body as ordersService.CheckoutInput
       );
       created(res, order);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * @openapi
+ * /orders/{id}/cancel:
+ *   put:
+ *     tags: [Orders]
+ *     summary: Cancel an order (PENDING/PROCESSING only)
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [reason]
+ *             properties:
+ *               reason: { type: string, minLength: 1 }
+ *     responses:
+ *       200:
+ *         description: Order cancelled (wallet refunded if applicable)
+ *       400:
+ *         description: Order cannot be cancelled
+ *       404:
+ *         description: Order not found
+ */
+router.put(
+  '/:id/cancel',
+  validate(ordersService.CancelOrderSchema),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await ordersService.cancelOrder(
+        getAuthUser(req).userId,
+        req.params.id as string,
+        req.body as ordersService.CancelOrderInput
+      );
+      ok(res, result);
     } catch (err) {
       next(err);
     }

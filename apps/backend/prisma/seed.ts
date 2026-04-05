@@ -113,31 +113,33 @@ async function main() {
 
   const userRegular = await prisma.user.upsert({
     where: { email: 'alice@example.com' },
-    update: {},
+    update: { emailVerified: true },
     create: {
       email: 'alice@example.com',
       password: passwordHash,
       name: 'Alice',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alice',
       walletBalance: 150,
+      emailVerified: true,
     },
   });
 
   const userNew = await prisma.user.upsert({
     where: { email: 'bob@example.com' },
-    update: {},
+    update: { emailVerified: true },
     create: {
       email: 'bob@example.com',
       password: passwordHash,
       name: 'Bob',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=bob',
       walletBalance: 0,
+      emailVerified: true,
     },
   });
 
   const userRich = await prisma.user.upsert({
     where: { email: 'admin@planq.com' },
-    update: { role: Role.ADMIN },
+    update: { role: Role.ADMIN, emailVerified: true },
     create: {
       email: 'admin@planq.com',
       password: passwordHash,
@@ -145,18 +147,33 @@ async function main() {
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
       walletBalance: 999,
       role: Role.ADMIN,
+      emailVerified: true,
     },
   });
 
   await prisma.user.upsert({
     where: { email: 'blocked@example.com' },
-    update: {},
+    update: { emailVerified: true },
     create: {
       email: 'blocked@example.com',
       password: passwordHash,
       name: 'Blocked User',
       isBlocked: true,
       walletBalance: 0,
+      emailVerified: true,
+    },
+  });
+
+  // Unverified test user
+  await prisma.user.upsert({
+    where: { email: 'unverified@example.com' },
+    update: { emailVerified: false },
+    create: {
+      email: 'unverified@example.com',
+      password: passwordHash,
+      name: 'Unverified User',
+      walletBalance: 0,
+      emailVerified: false,
     },
   });
 
@@ -1735,74 +1752,16 @@ async function main() {
     });
   }
 
-  // ─── Manager User ──────────────────────────────────────────────────────
-
-  await prisma.user.upsert({
-    where: { email: 'manager@planq.com' },
-    update: { role: Role.MANAGER },
-    create: {
-      email: 'manager@planq.com',
-      password: passwordHash,
-      name: 'Manager',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=manager',
-      walletBalance: 50,
-      role: Role.MANAGER,
-    },
-  });
-
-  // ─── Sample Notifications for Alice ───────────────────────────────────
-
-  const existingNotifs = await prisma.notification.count({ where: { userId: userRegular.id } });
-  if (existingNotifs === 0) {
-    await prisma.notification.createMany({
-      data: [
-        {
-          userId: userRegular.id,
-          type: 'welcome',
-          title: 'Welcome to PLANQ!',
-          message: 'Thanks for joining. Explore our curated furniture collection.',
-        },
-        {
-          userId: userRegular.id,
-          type: 'promo',
-          title: 'Spring Sale - 20% Off',
-          message: 'Use code SPRING20 for 20% off your next order. Valid until end of month.',
-        },
-        {
-          userId: userRegular.id,
-          type: 'order_update',
-          title: 'Order Shipped',
-          message: 'Your order has been shipped and is on its way.',
-        },
-        {
-          userId: userRegular.id,
-          type: 'system',
-          title: 'Profile Incomplete',
-          message: 'Add a shipping address to speed up your next checkout.',
-        },
-        {
-          userId: userRegular.id,
-          type: 'promo',
-          title: 'New Arrivals',
-          message: 'Check out our latest bedroom and living room collections.',
-          read: true,
-        },
-      ],
-    });
-  }
-
   // eslint-disable-next-line no-console
   console.log('Seed completed successfully');
   // eslint-disable-next-line no-console
-  console.log(`  Users: 5`);
+  console.log(`  Users: 5 (4 verified + 1 unverified)`);
   // eslint-disable-next-line no-console
   console.log(`  Categories: ${categories.length}`);
   // eslint-disable-next-line no-console
   console.log(`  Products: ${products.length}`);
   // eslint-disable-next-line no-console
   console.log(`  Promo codes: 3`);
-  // eslint-disable-next-line no-console
-  console.log(`  Notifications: 5 (for alice)`);
 }
 
 // Export for use in /api/test/reset endpoint

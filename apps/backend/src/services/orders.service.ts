@@ -5,6 +5,12 @@ import { AppError } from '@utils/AppError.js';
 import logger from '@utils/logger.js';
 import { schedulePaymentResult } from '@ws/handlers/payment.js';
 
+export const CancelOrderSchema = z.object({
+  reason: z.string().min(1).max(500),
+});
+
+export type CancelOrderInput = z.infer<typeof CancelOrderSchema>;
+
 export const CheckoutSchema = z.object({
   shippingAddress: z.string().min(5),
   paymentMethod: z.nativeEnum(PaymentMethod),
@@ -20,35 +26,17 @@ const CARD_SCENARIOS: Record<string, 'success' | 'declined' | 'insufficient'> = 
   '4000000000009995': 'insufficient',
 };
 
-export async function getOrders(
-  userId: string,
-  page = 1,
-  limit = 10,
-  dateFrom?: string,
-  dateTo?: string
-) {
+export async function getOrders(userId: string, page = 1, limit = 10) {
   const skip = (page - 1) * limit;
-
-  const where = {
-    userId,
-    deletedAt: null,
-    ...((dateFrom || dateTo) && {
-      createdAt: {
-        ...(dateFrom && { gte: new Date(dateFrom) }),
-        ...(dateTo && { lte: new Date(dateTo) }),
-      },
-    }),
-  };
-
   const [orders, total] = await Promise.all([
     prisma.order.findMany({
-      where,
+      where: { userId, deletedAt: null },
       include: { items: { include: { product: true } } },
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),
-    prisma.order.count({ where }),
+    prisma.order.count({ where: { userId, deletedAt: null } }),
   ]);
   return { items: orders, total, page, limit, pages: Math.ceil(total / limit) };
 }
@@ -175,7 +163,57 @@ export async function checkout(userId: string, input: CheckoutInput) {
   logger.info({ message: 'Order created', orderId: order.id, userId });
 
   // Async WS notification — does not block the response
-  schedulePaymentResult(userId, order.id, input.cardNumber);
+  schedulePaymentResult(userId, order.id);
 
   return order;
+}
+
+export async function cancelOrder(userId: string, orderId: string, input: CancelOrderInput) {
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, userId, deletedAt: null },
+  });
+
+  if (!order) {
+    throw new AppError('ORDER_NOT_FOUND', 'Order not found', 404);
+  }
+
+  if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.PROCESSING) {
+    throw new AppError(
+      'ORDER_CANNOT_CANCEL',
+      'Only orders with PENDING or PROCESSING status can be cancelled',
+      400
+    );
+  }
+
+  const updatedOrder = await prisma.$transaction(async tx => {
+    // If payment was via wallet, issue refund
+    if (order.paymentMethod === PaymentMethod.WALLET) {
+      await tx.user.update({
+        where: { id: userId },
+        data: { walletBalance: { increment: order.totalAmount } },
+      });
+      await tx.transaction.create({
+        data: {
+          userId,
+          amount: order.totalAmount,
+          type: TransactionType.REFUND,
+          description: `Refund for cancelled order #${order.id}`,
+          orderId: order.id,
+        },
+      });
+    }
+
+    return tx.order.update({
+      where: { id: orderId },
+      data: {
+        status: OrderStatus.CANCELLED,
+        cancellationReason: input.reason,
+      },
+      include: { items: { include: { product: true } } },
+    });
+  });
+
+  logger.info({ message: 'Order cancelled', orderId, userId });
+
+  return updatedOrder;
 }

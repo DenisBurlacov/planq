@@ -11,15 +11,16 @@ export type CreateReviewInput = z.infer<typeof CreateReviewSchema>;
 
 export async function getProductReviews(productId: string, page = 1, limit = 10) {
   const skip = (page - 1) * limit;
+  const where = { productId, deletedAt: null };
   const [items, total] = await Promise.all([
     prisma.review.findMany({
-      where: { productId },
+      where,
       include: { user: { select: { id: true, name: true, avatar: true } } },
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),
-    prisma.review.count({ where: { productId } }),
+    prisma.review.count({ where }),
   ]);
   return { items, total, page, limit, pages: Math.ceil(total / limit) };
 }
