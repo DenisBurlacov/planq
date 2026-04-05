@@ -6,6 +6,180 @@ import { useAuthStore } from '@store/auth.store';
 import { authApi } from '@api/auth';
 import { Modal } from '@components/ui/Modal';
 import { KeyboardShortcutsModal } from '@components/KeyboardShortcutsModal';
+import { SocialModal } from '@components/SocialModal';
+
+const SOCIAL_PLATFORMS = [
+  {
+    key: 'instagram',
+    color: '#E4405F',
+    followers: '124K',
+    url: 'https://instagram.com/planq.furniture',
+    svg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+      </svg>
+    ),
+    footerSvg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-5 w-5"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+      </svg>
+    ),
+  },
+  {
+    key: 'facebook',
+    color: '#1877F2',
+    followers: '89K',
+    url: 'https://facebook.com/planq.furniture',
+    svg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+      >
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+      </svg>
+    ),
+    footerSvg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-5 w-5"
+      >
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'pinterest',
+    color: '#BD081C',
+    followers: '67K',
+    url: 'https://pinterest.com/planqfurniture',
+    svg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+      >
+        <path d="M8 12a4 4 0 1 1 8 0c0 2.5-1.5 4-3 5l-1 3" />
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+      </svg>
+    ),
+    footerSvg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-5 w-5"
+      >
+        <path d="M8 12a4 4 0 1 1 8 0c0 2.5-1.5 4-3 5l-1 3" />
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+      </svg>
+    ),
+  },
+  {
+    key: 'youtube',
+    color: '#FF0000',
+    followers: '45K',
+    url: 'https://youtube.com/@planqfurniture',
+    svg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+      >
+        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.46z" />
+        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+      </svg>
+    ),
+    footerSvg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-5 w-5"
+      >
+        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.46z" />
+        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+      </svg>
+    ),
+  },
+  {
+    key: 'twitter',
+    color: '#000000',
+    followers: '31K',
+    url: 'https://x.com/planqfurniture',
+    svg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+      >
+        <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+        <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+      </svg>
+    ),
+    footerSvg: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-5 w-5"
+      >
+        <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+        <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+      </svg>
+    ),
+  },
+];
 import { useToast } from '@components/ui/Toast';
 
 export function Footer() {
@@ -14,6 +188,7 @@ export function Footer() {
   const { toast } = useToast();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [activeSocial, setActiveSocial] = useState<(typeof SOCIAL_PLATFORMS)[number] | null>(null);
 
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState('');
@@ -303,111 +478,17 @@ export function Footer() {
           </p>
 
           <div data-testid="footer-social" className="flex items-center gap-3">
-            <a
-              data-testid="footer-social-instagram"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('footer.socialLabel.instagram')}
-              className="h-5 w-5 text-[var(--text-secondary)] hover:text-accent transition-colors"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
+            {SOCIAL_PLATFORMS.map(platform => (
+              <button
+                key={platform.key}
+                data-testid={`footer-social-${platform.key}`}
+                aria-label={t(`footer.socialLabel.${platform.key}`)}
+                className="h-5 w-5 text-[var(--text-secondary)] hover:text-accent transition-colors"
+                onClick={() => setActiveSocial(platform)}
               >
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-              </svg>
-            </a>
-            <a
-              data-testid="footer-social-facebook"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('footer.socialLabel.facebook')}
-              className="h-5 w-5 text-[var(--text-secondary)] hover:text-accent transition-colors"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </a>
-            <a
-              data-testid="footer-social-pinterest"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('footer.socialLabel.pinterest')}
-              className="h-5 w-5 text-[var(--text-secondary)] hover:text-accent transition-colors"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M8 12a4 4 0 1 1 8 0c0 2.5-1.5 4-3 5l-1 3" />
-                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
-              </svg>
-            </a>
-            <a
-              data-testid="footer-social-youtube"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('footer.socialLabel.youtube')}
-              className="h-5 w-5 text-[var(--text-secondary)] hover:text-accent transition-colors"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.13c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.46z" />
-                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-              </svg>
-            </a>
-            <a
-              data-testid="footer-social-twitter"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('footer.socialLabel.twitter')}
-              className="h-5 w-5 text-[var(--text-secondary)] hover:text-accent transition-colors"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-              >
-                <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
-                <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
-              </svg>
-            </a>
+                {platform.footerSvg}
+              </button>
+            ))}
           </div>
 
           <div className="flex items-center gap-3">
@@ -426,6 +507,11 @@ export function Footer() {
       </div>
 
       <KeyboardShortcutsModal open={showShortcuts} onClose={() => setShowShortcuts(false)} />
+
+      <SocialModal
+        platform={activeSocial ? { ...activeSocial, icon: activeSocial.svg } : null}
+        onClose={() => setActiveSocial(null)}
+      />
 
       <Modal
         open={showLogoutModal}

@@ -90,6 +90,51 @@
       "youtube": "YouTube",
       "twitter": "X (Twitter)"
     },
+    "social": {
+      "followers": "followers",
+      "whatWePost": "What we share",
+      "follow": "Follow on",
+      "instagram": {
+        "title": "Instagram",
+        "handle": "@planq.furniture",
+        "description": "Follow us for daily interior inspiration, new arrivals, and behind-the-scenes looks at our design process.",
+        "post1": "New product launches and seasonal collections",
+        "post2": "Interior styling tips and room makeovers",
+        "post3": "Customer home transformations and reviews"
+      },
+      "facebook": {
+        "title": "Facebook",
+        "handle": "PLANQ Furniture",
+        "description": "Join our community for the latest trends in furniture technology, sustainable materials, and industry innovations.",
+        "post1": "Articles about furniture technology and innovations",
+        "post2": "Sustainable living and eco-friendly materials",
+        "post3": "Community events and exclusive member discounts"
+      },
+      "pinterest": {
+        "title": "Pinterest",
+        "handle": "planqfurniture",
+        "description": "Save your favorite looks! We curate boards for every room, style, and budget to help you plan your dream home.",
+        "post1": "Room-by-room inspiration boards (200+ pins)",
+        "post2": "Color palette ideas and mood boards",
+        "post3": "DIY furniture upcycling and styling hacks"
+      },
+      "youtube": {
+        "title": "YouTube",
+        "handle": "PLANQ Furniture",
+        "description": "Watch product reviews, assembly guides, and interior design tutorials from our team of experts.",
+        "post1": "Product unboxing and honest reviews",
+        "post2": "Step-by-step assembly and care guides",
+        "post3": "Room transformation time-lapses"
+      },
+      "twitter": {
+        "title": "X (Twitter)",
+        "handle": "@planqfurniture",
+        "description": "Stay updated with flash sales, restocks, and quick design tips. We also share industry news and trends.",
+        "post1": "Flash sale announcements and restock alerts",
+        "post2": "Quick design tips and furniture care advice",
+        "post3": "Industry news and design trend commentary"
+      }
+    },
     "newsletter": {
       "title": "Stay in the loop",
       "description": "Subscribe to our newsletter for new arrivals, exclusive deals, and design inspiration.",
