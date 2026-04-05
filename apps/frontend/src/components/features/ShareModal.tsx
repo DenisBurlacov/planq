@@ -39,7 +39,7 @@ export function ShareModal({ channel, productName, productUrl, onClose }: ShareM
       }}
       onCancel={onClose}
       confirmLabel={t('product.shareModal.send')}
-      cancelLabel={t('actions.cancel')}
+      cancelLabel={t('common:actions.cancel')}
     >
       <div data-testid={`share-modal-${channel.key}`} className="space-y-4">
         {/* Channel header */}
