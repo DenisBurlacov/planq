@@ -10,13 +10,32 @@ async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
 }
 
-// ── Local image helper ──────────────────────────────────────────────────────
-// All images served from /images/* via express.static('public/images')
-const img = {
-  product: (slug: string) => `/images/products/${slug}.svg`,
-  category: (slug: string) => `/images/categories/${slug}.svg`,
-  hero: (name: string) => `/images/hero/${name}.svg`,
-  blog: (slug: string) => `/images/blog/${slug}.svg`,
+// ── Unsplash image helper ───────────────────────────────────────────────────
+const unsplash = (id: string, w = 600, h = 400, extra = '') =>
+  `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&q=80${extra}`;
+
+// Category images (800x600)
+const categoryImages: Record<string, string> = {
+  'living-room': unsplash('photo-1567016432779-094069958ea5', 800, 600),
+  bedroom: unsplash('photo-1522771739844-6a9f6d5f14af', 800, 600),
+  kitchen: unsplash('photo-1556909114-f6e7ad7d3136', 800, 600),
+  bathroom: unsplash('photo-1552321554-5fefe8c9ef14', 800, 600),
+  office: unsplash('photo-1497366216548-37526070297c', 800, 600),
+  outdoor: unsplash('photo-1595231776515-ddffb1f4eb73', 800, 600),
+  decor: unsplash('photo-1481277542470-605612bd2d61', 800, 600),
+  textiles: unsplash('photo-1616486338812-3dadae4b4ace', 800, 600),
+  lighting: unsplash('photo-1507473885765-e6ed057ab3fe', 800, 600),
+  storage: unsplash('photo-1595428774223-ef52624120d2', 800, 600),
+};
+
+// Blog cover images (1200x630)
+const blogImages: Record<string, string> = {
+  'scandinavian-design-trends-2026': unsplash('photo-1493809842364-78817add7ffb', 1200, 630),
+  'small-space-furniture-guide': unsplash('photo-1524758631624-e2822e304c36', 1200, 630),
+  'living-room-color-palettes': unsplash('photo-1567016432779-094069958ea5', 1200, 630),
+  'sustainable-materials-furniture': unsplash('photo-1600585154340-be6161a56a0c', 1200, 630),
+  'perfect-home-office-setup': unsplash('photo-1518455027359-f3f8164ba6bd', 1200, 630),
+  'bedroom-makeover-inspiration': unsplash('photo-1540518614846-7eded433c457', 1200, 630),
 };
 
 async function main() {
@@ -111,17 +130,27 @@ async function main() {
         name: 'Living Room',
         nameRu: 'Гостиная',
         slug: 'living-room',
-        image: img.category('living-room'),
+        image: categoryImages['living-room'],
       },
-      { name: 'Bedroom', nameRu: 'Спальня', slug: 'bedroom', image: img.category('bedroom') },
-      { name: 'Kitchen', nameRu: 'Кухня', slug: 'kitchen', image: img.category('kitchen') },
-      { name: 'Bathroom', nameRu: 'Ванная', slug: 'bathroom', image: img.category('bathroom') },
-      { name: 'Office', nameRu: 'Кабинет', slug: 'office', image: img.category('office') },
-      { name: 'Outdoor', nameRu: 'Сад и терраса', slug: 'outdoor', image: img.category('outdoor') },
-      { name: 'Decor', nameRu: 'Декор', slug: 'decor', image: img.category('decor') },
-      { name: 'Textiles', nameRu: 'Текстиль', slug: 'textiles', image: img.category('textiles') },
-      { name: 'Lighting', nameRu: 'Освещение', slug: 'lighting', image: img.category('lighting') },
-      { name: 'Storage', nameRu: 'Хранение', slug: 'storage', image: img.category('storage') },
+      { name: 'Bedroom', nameRu: 'Спальня', slug: 'bedroom', image: categoryImages['bedroom'] },
+      { name: 'Kitchen', nameRu: 'Кухня', slug: 'kitchen', image: categoryImages['kitchen'] },
+      { name: 'Bathroom', nameRu: 'Ванная', slug: 'bathroom', image: categoryImages['bathroom'] },
+      { name: 'Office', nameRu: 'Кабинет', slug: 'office', image: categoryImages['office'] },
+      {
+        name: 'Outdoor',
+        nameRu: 'Сад и терраса',
+        slug: 'outdoor',
+        image: categoryImages['outdoor'],
+      },
+      { name: 'Decor', nameRu: 'Декор', slug: 'decor', image: categoryImages['decor'] },
+      { name: 'Textiles', nameRu: 'Текстиль', slug: 'textiles', image: categoryImages['textiles'] },
+      {
+        name: 'Lighting',
+        nameRu: 'Освещение',
+        slug: 'lighting',
+        image: categoryImages['lighting'],
+      },
+      { name: 'Storage', nameRu: 'Хранение', slug: 'storage', image: categoryImages['storage'] },
     ].map(cat =>
       prisma.category.upsert({
         where: { slug: cat.slug },
@@ -160,7 +189,11 @@ async function main() {
       salePrice: 749.99,
       stock: 12,
       categoryId: livingRoom.id,
-      images: [img.product('nordic-sofa')],
+      images: [
+        unsplash('photo-1555041469-a586c1ea9b54'),
+        unsplash('photo-1555041469-a586c1ea9b54', 600, 400, '&crop=top'),
+        unsplash('photo-1493663284031-b7e3aefcae8e'),
+      ],
       rating: 4.5,
       reviewCount: 23,
       specs: {
@@ -184,7 +217,10 @@ async function main() {
       price: 249.99,
       stock: 30,
       categoryId: livingRoom.id,
-      images: [img.product('minimalist-coffee-table')],
+      images: [
+        unsplash('photo-1586023492125-27b2c045efd7'),
+        unsplash('photo-1586023492125-27b2c045efd7', 600, 400, '&crop=center'),
+      ],
       rating: 4.2,
       reviewCount: 15,
       specs: {
@@ -208,7 +244,10 @@ async function main() {
       price: 189.99,
       stock: 45,
       categoryId: livingRoom.id,
-      images: [img.product('floor-lamp-arco')],
+      images: [
+        unsplash('photo-1513506003901-1e6a229e2d15'),
+        unsplash('photo-1507473885765-e6ed057ab3fe'),
+      ],
       rating: 4.8,
       reviewCount: 42,
       specs: {
@@ -232,7 +271,10 @@ async function main() {
       price: 449.99,
       stock: 8,
       categoryId: livingRoom.id,
-      images: [img.product('bookshelf-tall-oak')],
+      images: [
+        unsplash('photo-1595428774223-ef52624120d2'),
+        unsplash('photo-1588854337236-6889d631faa8'),
+      ],
       rating: 4.0,
       reviewCount: 7,
       specs: {
@@ -257,7 +299,10 @@ async function main() {
       salePrice: 279.99,
       stock: 15,
       categoryId: livingRoom.id,
-      images: [img.product('wool-area-rug')],
+      images: [
+        unsplash('photo-1584100936595-c0654b55a2e2'),
+        unsplash('photo-1555396273-367ea4eb4db5'),
+      ],
       rating: 4.6,
       reviewCount: 19,
       specs: {
@@ -282,7 +327,11 @@ async function main() {
       salePrice: 349.99,
       stock: 10,
       categoryId: livingRoom.id,
-      images: [img.product('boucle-armchair')],
+      images: [
+        unsplash('photo-1506439773649-6e0eb8cfb237'),
+        unsplash('photo-1506439773649-6e0eb8cfb237', 600, 400, '&crop=center'),
+        unsplash('photo-1567016432779-094069958ea5'),
+      ],
       rating: 4.7,
       reviewCount: 31,
       specs: {
@@ -306,7 +355,10 @@ async function main() {
       price: 299.99,
       stock: 18,
       categoryId: livingRoom.id,
-      images: [img.product('tv-stand-storage')],
+      images: [
+        unsplash('photo-1567016432779-094069958ea5', 600, 400, '&crop=bottom'),
+        unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=center'),
+      ],
       rating: 4.3,
       reviewCount: 14,
       specs: {
@@ -330,7 +382,11 @@ async function main() {
       price: 2499.99,
       stock: 3,
       categoryId: livingRoom.id,
-      images: [img.product('premium-sectional-sofa-xl')],
+      images: [
+        unsplash('photo-1493663284031-b7e3aefcae8e'),
+        unsplash('photo-1555041469-a586c1ea9b54', 600, 400, '&crop=bottom'),
+        unsplash('photo-1493663284031-b7e3aefcae8e', 600, 400, '&crop=left'),
+      ],
       rating: 5.0,
       reviewCount: 2,
       specs: {
@@ -356,7 +412,10 @@ async function main() {
       price: 2499.0,
       stock: 2,
       categoryId: livingRoom.id,
-      images: [img.product('designer-sofa-set')],
+      images: [
+        unsplash('photo-1493663284031-b7e3aefcae8e', 600, 400, '&crop=right'),
+        unsplash('photo-1555041469-a586c1ea9b54', 600, 400, '&crop=center'),
+      ],
       rating: 4.9,
       reviewCount: 4,
       specs: {
@@ -379,7 +438,10 @@ async function main() {
       price: 699.99,
       stock: 7,
       categoryId: livingRoom.id,
-      images: [img.product('leather-recliner')],
+      images: [
+        unsplash('photo-1506439773649-6e0eb8cfb237', 600, 400, '&crop=right'),
+        unsplash('photo-1567016432779-094069958ea5', 600, 400, '&crop=left'),
+      ],
       rating: 4.4,
       reviewCount: 11,
       specs: {
@@ -402,7 +464,7 @@ async function main() {
       price: 79.99,
       stock: 35,
       categoryId: livingRoom.id,
-      images: [img.product('glass-side-table')],
+      images: [unsplash('photo-1586023492125-27b2c045efd7', 600, 400, '&crop=right')],
       rating: 4.1,
       reviewCount: 9,
       specs: {
@@ -425,7 +487,10 @@ async function main() {
       price: 349.99,
       stock: 10,
       categoryId: livingRoom.id,
-      images: [img.product('console-table-marble')],
+      images: [
+        unsplash('photo-1586023492125-27b2c045efd7', 600, 400, '&crop=left'),
+        unsplash('photo-1567016432779-094069958ea5', 600, 400, '&crop=right'),
+      ],
       rating: 4.6,
       reviewCount: 8,
       specs: {
@@ -448,7 +513,7 @@ async function main() {
       price: 59.99,
       stock: 40,
       categoryId: livingRoom.id,
-      images: [img.product('pouf-ottoman')],
+      images: [unsplash('photo-1616486338812-3dadae4b4ace', 600, 400, '&crop=center')],
       rating: 4.3,
       reviewCount: 17,
       specs: {
@@ -473,7 +538,11 @@ async function main() {
       price: 599.99,
       stock: 20,
       categoryId: bedroom.id,
-      images: [img.product('platform-bed-queen')],
+      images: [
+        unsplash('photo-1505693416388-ac5ce068fe85'),
+        unsplash('photo-1522771739844-6a9f6d5f14af'),
+        unsplash('photo-1540518614846-7eded433c457'),
+      ],
       rating: 4.7,
       reviewCount: 31,
       specs: {
@@ -498,7 +567,10 @@ async function main() {
       salePrice: 149.99,
       stock: 25,
       categoryId: bedroom.id,
-      images: [img.product('bedside-table-duo')],
+      images: [
+        unsplash('photo-1616594039964-ae9021a400a0'),
+        unsplash('photo-1616594039964-ae9021a400a0', 600, 400, '&crop=center'),
+      ],
       rating: 4.3,
       reviewCount: 12,
       specs: {
@@ -521,7 +593,10 @@ async function main() {
       price: 799.99,
       stock: 6,
       categoryId: bedroom.id,
-      images: [img.product('wardrobe-sliding')],
+      images: [
+        unsplash('photo-1540518614846-7eded433c457', 600, 400, '&crop=left'),
+        unsplash('photo-1522771739844-6a9f6d5f14af', 600, 400, '&crop=right'),
+      ],
       rating: 4.1,
       reviewCount: 9,
       specs: {
@@ -543,7 +618,10 @@ async function main() {
       price: 449.99,
       stock: 14,
       categoryId: bedroom.id,
-      images: [img.product('dresser-6-drawer')],
+      images: [
+        unsplash('photo-1522771739844-6a9f6d5f14af', 600, 400, '&crop=center'),
+        unsplash('photo-1540518614846-7eded433c457', 600, 400, '&crop=right'),
+      ],
       rating: 4.4,
       reviewCount: 18,
       specs: {
@@ -567,7 +645,10 @@ async function main() {
       salePrice: 179.99,
       stock: 22,
       categoryId: bedroom.id,
-      images: [img.product('upholstered-headboard-king')],
+      images: [
+        unsplash('photo-1505693416388-ac5ce068fe85', 600, 400, '&crop=top'),
+        unsplash('photo-1540518614846-7eded433c457', 600, 400, '&crop=center'),
+      ],
       rating: 4.6,
       reviewCount: 28,
       specs: {
@@ -590,7 +671,7 @@ async function main() {
       price: 69.99,
       stock: 100,
       categoryId: bedroom.id,
-      images: [],
+      images: [unsplash('photo-1522771739844-6a9f6d5f14af', 600, 400, '&crop=bottom')],
       rating: 3.8,
       reviewCount: 56,
       specs: {
@@ -614,7 +695,11 @@ async function main() {
       price: 1599.0,
       stock: 4,
       categoryId: bedroom.id,
-      images: [img.product('king-bed-frame-oak')],
+      images: [
+        unsplash('photo-1505693416388-ac5ce068fe85', 600, 400, '&crop=center'),
+        unsplash('photo-1505693416388-ac5ce068fe85', 600, 400, '&crop=bottom'),
+        unsplash('photo-1522771739844-6a9f6d5f14af', 600, 400, '&crop=left'),
+      ],
       rating: 4.8,
       reviewCount: 6,
       specs: {
@@ -637,7 +722,10 @@ async function main() {
       price: 2799.0,
       stock: 2,
       categoryId: bedroom.id,
-      images: [img.product('walk-in-closet-system')],
+      images: [
+        unsplash('photo-1540518614846-7eded433c457', 600, 400, '&crop=bottom'),
+        unsplash('photo-1522771739844-6a9f6d5f14af', 600, 400, '&crop=top'),
+      ],
       rating: 4.7,
       reviewCount: 3,
       specs: {
@@ -660,7 +748,10 @@ async function main() {
       price: 289.99,
       stock: 12,
       categoryId: bedroom.id,
-      images: [img.product('vanity-desk-bedroom')],
+      images: [
+        unsplash('photo-1616594039964-ae9021a400a0', 600, 400, '&crop=right'),
+        unsplash('photo-1502005229762-cf1b738bef69'),
+      ],
       rating: 4.5,
       reviewCount: 15,
       specs: {
@@ -683,7 +774,10 @@ async function main() {
       price: 199.99,
       stock: 16,
       categoryId: bedroom.id,
-      images: [img.product('bedroom-bench')],
+      images: [
+        unsplash('photo-1540518614846-7eded433c457', 600, 400, '&crop=top'),
+        unsplash('photo-1505693416388-ac5ce068fe85', 600, 400, '&crop=right'),
+      ],
       rating: 4.4,
       reviewCount: 10,
       specs: {
@@ -708,7 +802,11 @@ async function main() {
       price: 549.99,
       stock: 10,
       categoryId: kitchen.id,
-      images: [img.product('dining-table-extendable')],
+      images: [
+        unsplash('photo-1533090481720-856c6e3c1fdc'),
+        unsplash('photo-1556909172-54557c7e4fb7'),
+        unsplash('photo-1550226891-ef816aed4a98'),
+      ],
       rating: 4.6,
       reviewCount: 27,
       specs: {
@@ -732,7 +830,10 @@ async function main() {
       salePrice: 249.99,
       stock: 18,
       categoryId: kitchen.id,
-      images: [img.product('dining-chairs-set')],
+      images: [
+        unsplash('photo-1550226891-ef816aed4a98', 600, 400, '&crop=center'),
+        unsplash('photo-1556909172-54557c7e4fb7', 600, 400, '&crop=left'),
+      ],
       rating: 4.3,
       reviewCount: 34,
       specs: {
@@ -755,7 +856,10 @@ async function main() {
       price: 379.99,
       stock: 7,
       categoryId: kitchen.id,
-      images: [img.product('kitchen-island-cart')],
+      images: [
+        unsplash('photo-1556909114-f6e7ad7d3136'),
+        unsplash('photo-1556909114-f6e7ad7d3136', 600, 400, '&crop=center'),
+      ],
       rating: 4.5,
       reviewCount: 11,
       specs: {
@@ -778,7 +882,7 @@ async function main() {
       price: 59.99,
       stock: 50,
       categoryId: kitchen.id,
-      images: [img.product('wall-shelf-kitchen')],
+      images: [unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=top')],
       rating: 4.1,
       reviewCount: 22,
       specs: {
@@ -801,7 +905,7 @@ async function main() {
       price: 129.99,
       stock: 0,
       categoryId: kitchen.id,
-      images: [img.product('bar-stool-adjustable')],
+      images: [unsplash('photo-1556909172-54557c7e4fb7', 600, 400, '&crop=right')],
       rating: 3.9,
       reviewCount: 8,
       specs: {
@@ -824,7 +928,7 @@ async function main() {
       price: 44.99,
       stock: 35,
       categoryId: kitchen.id,
-      images: [img.product('marble-lazy-susan')],
+      images: [unsplash('photo-1556909114-f6e7ad7d3136', 600, 400, '&crop=bottom')],
       rating: 4.8,
       reviewCount: 43,
       specs: {
@@ -848,7 +952,11 @@ async function main() {
       price: 1899.0,
       stock: 3,
       categoryId: kitchen.id,
-      images: [img.product('solid-oak-dining-table')],
+      images: [
+        unsplash('photo-1533090481720-856c6e3c1fdc', 600, 400, '&crop=center'),
+        unsplash('photo-1533090481720-856c6e3c1fdc', 600, 400, '&crop=top'),
+        unsplash('photo-1550226891-ef816aed4a98', 600, 400, '&crop=right'),
+      ],
       rating: 4.9,
       reviewCount: 5,
       specs: {
@@ -871,7 +979,11 @@ async function main() {
       price: 3299.0,
       stock: 1,
       categoryId: kitchen.id,
-      images: [img.product('custom-kitchen-island')],
+      images: [
+        unsplash('photo-1556909114-f6e7ad7d3136', 600, 400, '&crop=top'),
+        unsplash('photo-1556909114-f6e7ad7d3136', 600, 400, '&crop=right'),
+        unsplash('photo-1556909172-54557c7e4fb7', 600, 400, '&crop=center'),
+      ],
       rating: 5.0,
       reviewCount: 2,
       specs: {
@@ -894,7 +1006,7 @@ async function main() {
       price: 69.99,
       stock: 28,
       categoryId: kitchen.id,
-      images: [img.product('wine-rack-wall')],
+      images: [unsplash('photo-1556909114-f6e7ad7d3136', 600, 400, '&crop=left')],
       rating: 4.2,
       reviewCount: 14,
       specs: {
@@ -917,7 +1029,7 @@ async function main() {
       price: 29.99,
       stock: 55,
       categoryId: kitchen.id,
-      images: [img.product('spice-rack-bamboo')],
+      images: [unsplash('photo-1556909172-54557c7e4fb7', 600, 400, '&crop=bottom')],
       rating: 4.4,
       reviewCount: 31,
       specs: {
@@ -942,7 +1054,10 @@ async function main() {
       price: 159.99,
       stock: 22,
       categoryId: bathroom.id,
-      images: [img.product('bathroom-cabinet-mirror')],
+      images: [
+        unsplash('photo-1552321554-5fefe8c9ef14'),
+        unsplash('photo-1507652313519-d4e9174996dd'),
+      ],
       rating: 4.2,
       reviewCount: 16,
       specs: {
@@ -965,7 +1080,7 @@ async function main() {
       price: 49.99,
       stock: 40,
       categoryId: bathroom.id,
-      images: [img.product('towel-rack-freestanding')],
+      images: [unsplash('photo-1507652313519-d4e9174996dd', 600, 400, '&crop=center')],
       rating: 4.0,
       reviewCount: 29,
       specs: {
@@ -988,7 +1103,7 @@ async function main() {
       price: 39.99,
       stock: 35,
       categoryId: bathroom.id,
-      images: [img.product('laundry-basket-woven')],
+      images: [unsplash('photo-1552321554-5fefe8c9ef14', 600, 400, '&crop=center')],
       rating: 4.4,
       reviewCount: 21,
       specs: {
@@ -1011,7 +1126,7 @@ async function main() {
       price: 24.99,
       stock: 60,
       categoryId: bathroom.id,
-      images: [img.product('shower-shelf-corner')],
+      images: [unsplash('photo-1552321554-5fefe8c9ef14', 600, 400, '&crop=right')],
       rating: 4.7,
       reviewCount: 45,
       specs: {
@@ -1035,7 +1150,10 @@ async function main() {
       salePrice: 69.99,
       stock: 16,
       categoryId: bathroom.id,
-      images: [img.product('vanity-stool-velvet')],
+      images: [
+        unsplash('photo-1507652313519-d4e9174996dd', 600, 400, '&crop=left'),
+        unsplash('photo-1552321554-5fefe8c9ef14', 600, 400, '&crop=top'),
+      ],
       rating: 4.6,
       reviewCount: 13,
       specs: {
@@ -1058,7 +1176,7 @@ async function main() {
       price: 79.99,
       stock: 20,
       categoryId: bathroom.id,
-      images: [img.product('bathroom-shelf-ladder')],
+      images: [unsplash('photo-1507652313519-d4e9174996dd', 600, 400, '&crop=right')],
       rating: 4.3,
       reviewCount: 18,
       specs: {
@@ -1081,7 +1199,10 @@ async function main() {
       price: 34.99,
       stock: 45,
       categoryId: bathroom.id,
-      images: [img.product('soap-dispenser-set')],
+      images: [
+        unsplash('photo-1552321554-5fefe8c9ef14', 600, 400, '&crop=bottom'),
+        unsplash('photo-1507652313519-d4e9174996dd', 600, 400, '&crop=top'),
+      ],
       rating: 4.5,
       reviewCount: 22,
       specs: {
@@ -1106,7 +1227,11 @@ async function main() {
       price: 699.99,
       stock: 9,
       categoryId: office.id,
-      images: [img.product('standing-desk-electric')],
+      images: [
+        unsplash('photo-1518455027359-f3f8164ba6bd'),
+        unsplash('photo-1524758631624-e2822e304c36'),
+        unsplash('photo-1497366216548-37526070297c'),
+      ],
       rating: 4.8,
       reviewCount: 38,
       specs: {
@@ -1131,7 +1256,10 @@ async function main() {
       salePrice: 399.99,
       stock: 15,
       categoryId: office.id,
-      images: [img.product('ergonomic-office-chair')],
+      images: [
+        unsplash('photo-1497366216548-37526070297c', 600, 400, '&crop=center'),
+        unsplash('photo-1524758631624-e2822e304c36', 600, 400, '&crop=left'),
+      ],
       rating: 4.9,
       reviewCount: 67,
       specs: {
@@ -1155,7 +1283,7 @@ async function main() {
       price: 44.99,
       stock: 55,
       categoryId: office.id,
-      images: [img.product('monitor-stand-bamboo')],
+      images: [unsplash('photo-1518455027359-f3f8164ba6bd', 600, 400, '&crop=center')],
       rating: 4.3,
       reviewCount: 24,
       specs: {
@@ -1178,7 +1306,7 @@ async function main() {
       price: 149.99,
       stock: 20,
       categoryId: office.id,
-      images: [img.product('filing-cabinet-3')],
+      images: [unsplash('photo-1497366216548-37526070297c', 600, 400, '&crop=right')],
       rating: 3.7,
       reviewCount: 5,
       specs: {
@@ -1201,7 +1329,7 @@ async function main() {
       price: 89.99,
       stock: 30,
       categoryId: office.id,
-      images: [img.product('acoustic-office-divider')],
+      images: [unsplash('photo-1497366216548-37526070297c', 600, 400, '&crop=left')],
       rating: 4.2,
       reviewCount: 17,
       specs: {
@@ -1224,7 +1352,7 @@ async function main() {
       price: 12.99,
       stock: 200,
       categoryId: office.id,
-      images: [img.product('desk-organizer-plastic')],
+      images: [unsplash('photo-1518455027359-f3f8164ba6bd', 600, 400, '&crop=right')],
       rating: 1.0,
       reviewCount: 3,
       specs: {
@@ -1247,7 +1375,10 @@ async function main() {
       price: 1249.0,
       stock: 5,
       categoryId: office.id,
-      images: [img.product('executive-desk-walnut')],
+      images: [
+        unsplash('photo-1518455027359-f3f8164ba6bd', 600, 400, '&crop=top'),
+        unsplash('photo-1524758631624-e2822e304c36', 600, 400, '&crop=center'),
+      ],
       rating: 4.7,
       reviewCount: 7,
       specs: {
@@ -1269,7 +1400,10 @@ async function main() {
       price: 199.99,
       stock: 15,
       categoryId: office.id,
-      images: [img.product('bookcase-office')],
+      images: [
+        unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=center'),
+        unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=right'),
+      ],
       rating: 4.1,
       reviewCount: 12,
       specs: {
@@ -1296,7 +1430,11 @@ async function main() {
       salePrice: 999.99,
       stock: 4,
       categoryId: outdoor.id,
-      images: [img.product('garden-lounge-set')],
+      images: [
+        unsplash('photo-1595231776515-ddffb1f4eb73'),
+        unsplash('photo-1574180045827-681f8a1a9622'),
+        unsplash('photo-1595231776515-ddffb1f4eb73', 600, 400, '&crop=center'),
+      ],
       rating: 4.5,
       reviewCount: 14,
       specs: {
@@ -1319,7 +1457,7 @@ async function main() {
       price: 79.99,
       stock: 30,
       categoryId: outdoor.id,
-      images: [img.product('folding-bistro-table')],
+      images: [unsplash('photo-1574180045827-681f8a1a9622', 600, 400, '&crop=center')],
       rating: 4.2,
       reviewCount: 20,
       specs: {
@@ -1342,7 +1480,10 @@ async function main() {
       price: 229.99,
       stock: 11,
       categoryId: outdoor.id,
-      images: [img.product('outdoor-bench-storage')],
+      images: [
+        unsplash('photo-1595231776515-ddffb1f4eb73', 600, 400, '&crop=right'),
+        unsplash('photo-1574180045827-681f8a1a9622', 600, 400, '&crop=left'),
+      ],
       rating: 4.4,
       reviewCount: 9,
       specs: {
@@ -1365,7 +1506,7 @@ async function main() {
       price: 54.99,
       stock: 25,
       categoryId: outdoor.id,
-      images: [img.product('planter-box-large')],
+      images: [unsplash('photo-1595231776515-ddffb1f4eb73', 600, 400, '&crop=left')],
       rating: 4.1,
       reviewCount: 17,
       specs: {
@@ -1389,7 +1530,10 @@ async function main() {
       salePrice: 119.99,
       stock: 8,
       categoryId: outdoor.id,
-      images: [img.product('hammock-with-stand')],
+      images: [
+        unsplash('photo-1574180045827-681f8a1a9622', 600, 400, '&crop=right'),
+        unsplash('photo-1595231776515-ddffb1f4eb73', 600, 400, '&crop=top'),
+      ],
       rating: 4.7,
       reviewCount: 36,
       specs: {
@@ -1412,7 +1556,10 @@ async function main() {
       price: 899.99,
       stock: 5,
       categoryId: outdoor.id,
-      images: [img.product('outdoor-dining-set')],
+      images: [
+        unsplash('photo-1574180045827-681f8a1a9622', 600, 400, '&crop=top'),
+        unsplash('photo-1595231776515-ddffb1f4eb73', 600, 400, '&crop=bottom'),
+      ],
       rating: 4.3,
       reviewCount: 11,
       specs: {
@@ -1435,7 +1582,7 @@ async function main() {
       price: 549.99,
       stock: 6,
       categoryId: outdoor.id,
-      images: [img.product('fire-pit-table')],
+      images: [unsplash('photo-1574180045827-681f8a1a9622', 600, 400, '&crop=bottom')],
       rating: 4.6,
       reviewCount: 8,
       specs: {
@@ -1461,7 +1608,10 @@ async function main() {
       salePrice: 89.99,
       stock: 20,
       categoryId: decor.id,
-      images: [img.product('abstract-canvas-print')],
+      images: [
+        unsplash('photo-1508873535684-277a3cbcc4e8'),
+        unsplash('photo-1508873535684-277a3cbcc4e8', 600, 400, '&crop=center'),
+      ],
       rating: 4.6,
       reviewCount: 33,
       specs: {
@@ -1483,7 +1633,10 @@ async function main() {
       price: 79.99,
       stock: 15,
       categoryId: decor.id,
-      images: [img.product('gallery-wall-set')],
+      images: [
+        unsplash('photo-1508873535684-277a3cbcc4e8', 600, 400, '&crop=left'),
+        unsplash('photo-1508873535684-277a3cbcc4e8', 600, 400, '&crop=right'),
+      ],
       rating: 4.8,
       reviewCount: 51,
       specs: {
@@ -1506,7 +1659,10 @@ async function main() {
       price: 139.99,
       stock: 18,
       categoryId: decor.id,
-      images: [img.product('round-arch-mirror')],
+      images: [
+        unsplash('photo-1502005229762-cf1b738bef69'),
+        unsplash('photo-1502005229762-cf1b738bef69', 600, 400, '&crop=center'),
+      ],
       rating: 4.9,
       reviewCount: 72,
       specs: {
@@ -1530,7 +1686,11 @@ async function main() {
       salePrice: 39.99,
       stock: 40,
       categoryId: decor.id,
-      images: [img.product('ceramic-vase-set')],
+      images: [
+        unsplash('photo-1481277542470-605612bd2d61'),
+        unsplash('photo-1481277542470-605612bd2d61', 600, 400, '&crop=center'),
+        unsplash('photo-1481277542470-605612bd2d61', 600, 400, '&crop=top'),
+      ],
       rating: 4.7,
       reviewCount: 48,
       specs: {
@@ -1553,7 +1713,7 @@ async function main() {
       price: 34.99,
       stock: 80,
       categoryId: decor.id,
-      images: [img.product('scented-candle-set')],
+      images: [unsplash('photo-1481277542470-605612bd2d61', 600, 400, '&crop=right')],
       rating: 4.5,
       reviewCount: 89,
       specs: {
@@ -1576,7 +1736,7 @@ async function main() {
       price: 44.99,
       stock: 55,
       categoryId: decor.id,
-      images: [img.product('minimalist-wall-clock')],
+      images: [unsplash('photo-1508873535684-277a3cbcc4e8', 600, 400, '&crop=top')],
       rating: 4.4,
       reviewCount: 27,
       specs: {
@@ -1599,7 +1759,10 @@ async function main() {
       price: 59.99,
       stock: 12,
       categoryId: decor.id,
-      images: [img.product('macrame-wall-hanging')],
+      images: [
+        unsplash('photo-1508873535684-277a3cbcc4e8', 600, 400, '&crop=bottom'),
+        unsplash('photo-1481277542470-605612bd2d61', 600, 400, '&crop=left'),
+      ],
       rating: 4.3,
       reviewCount: 19,
       specs: {
@@ -1623,7 +1786,7 @@ async function main() {
       price: 29.99,
       stock: 60,
       categoryId: decor.id,
-      images: [img.product('decorative-tray-set')],
+      images: [unsplash('photo-1481277542470-605612bd2d61', 600, 400, '&crop=bottom')],
       rating: 4.2,
       reviewCount: 15,
       specs: {
@@ -1646,7 +1809,7 @@ async function main() {
       price: 39.99,
       stock: 30,
       categoryId: decor.id,
-      images: [img.product('terrazzo-bookends')],
+      images: [unsplash('photo-1502005229762-cf1b738bef69', 600, 400, '&crop=left')],
       rating: 4.4,
       reviewCount: 13,
       specs: {
@@ -1669,7 +1832,10 @@ async function main() {
       price: 159.99,
       stock: 8,
       categoryId: decor.id,
-      images: [img.product('sculpture-abstract')],
+      images: [
+        unsplash('photo-1502005229762-cf1b738bef69', 600, 400, '&crop=right'),
+        unsplash('photo-1508873535684-277a3cbcc4e8', 600, 400, '&crop=center'),
+      ],
       rating: 4.6,
       reviewCount: 6,
       specs: {
@@ -1695,7 +1861,10 @@ async function main() {
       salePrice: 99.99,
       stock: 30,
       categoryId: textiles.id,
-      images: [img.product('linen-duvet-cover')],
+      images: [
+        unsplash('photo-1584100936595-c0654b55a2e2'),
+        unsplash('photo-1616486338812-3dadae4b4ace'),
+      ],
       rating: 4.8,
       reviewCount: 64,
       specs: {
@@ -1719,7 +1888,11 @@ async function main() {
       salePrice: 54.99,
       stock: 45,
       categoryId: textiles.id,
-      images: [img.product('velvet-cushion-set')],
+      images: [
+        unsplash('photo-1616486338812-3dadae4b4ace', 600, 400, '&crop=center'),
+        unsplash('photo-1616486338812-3dadae4b4ace', 600, 400, '&crop=top'),
+        unsplash('photo-1584100936595-c0654b55a2e2', 600, 400, '&crop=center'),
+      ],
       rating: 4.6,
       reviewCount: 41,
       specs: {
@@ -1742,7 +1915,10 @@ async function main() {
       price: 89.99,
       stock: 20,
       categoryId: textiles.id,
-      images: [img.product('chunky-knit-throw')],
+      images: [
+        unsplash('photo-1555396273-367ea4eb4db5'),
+        unsplash('photo-1555396273-367ea4eb4db5', 600, 400, '&crop=center'),
+      ],
       rating: 4.9,
       reviewCount: 93,
       specs: {
@@ -1765,7 +1941,7 @@ async function main() {
       price: 79.99,
       stock: 25,
       categoryId: textiles.id,
-      images: [img.product('linen-blackout-curtains')],
+      images: [unsplash('photo-1584100936595-c0654b55a2e2', 600, 400, '&crop=right')],
       rating: 4.4,
       reviewCount: 38,
       specs: {
@@ -1789,7 +1965,10 @@ async function main() {
       salePrice: 39.99,
       stock: 60,
       categoryId: textiles.id,
-      images: [img.product('waffle-bath-towels')],
+      images: [
+        unsplash('photo-1584100936595-c0654b55a2e2', 600, 400, '&crop=left'),
+        unsplash('photo-1584100936595-c0654b55a2e2', 600, 400, '&crop=top'),
+      ],
       rating: 4.5,
       reviewCount: 55,
       specs: {
@@ -1812,7 +1991,7 @@ async function main() {
       price: 24.99,
       stock: 70,
       categoryId: textiles.id,
-      images: [img.product('table-runner-linen')],
+      images: [unsplash('photo-1584100936595-c0654b55a2e2', 600, 400, '&crop=bottom')],
       rating: 4.3,
       reviewCount: 22,
       specs: {
@@ -1835,7 +2014,7 @@ async function main() {
       price: 19.99,
       stock: 90,
       categoryId: textiles.id,
-      images: [img.product('shaggy-bath-mat')],
+      images: [unsplash('photo-1616486338812-3dadae4b4ace', 600, 400, '&crop=right')],
       rating: 4.1,
       reviewCount: 31,
       specs: {
@@ -1858,7 +2037,10 @@ async function main() {
       price: 79.99,
       stock: 25,
       categoryId: textiles.id,
-      images: [img.product('silk-pillowcase-set')],
+      images: [
+        unsplash('photo-1616486338812-3dadae4b4ace', 600, 400, '&crop=left'),
+        unsplash('photo-1555396273-367ea4eb4db5', 600, 400, '&crop=right'),
+      ],
       rating: 4.7,
       reviewCount: 36,
       specs: {
@@ -1880,7 +2062,10 @@ async function main() {
       price: 119.99,
       stock: 18,
       categoryId: textiles.id,
-      images: [img.product('wool-plaid-blanket')],
+      images: [
+        unsplash('photo-1555396273-367ea4eb4db5', 600, 400, '&crop=left'),
+        unsplash('photo-1555396273-367ea4eb4db5', 600, 400, '&crop=top'),
+      ],
       rating: 4.5,
       reviewCount: 20,
       specs: {
@@ -1906,7 +2091,10 @@ async function main() {
       salePrice: 74.99,
       stock: 25,
       categoryId: lighting.id,
-      images: [img.product('brass-pendant-light')],
+      images: [
+        unsplash('photo-1507473885765-e6ed057ab3fe'),
+        unsplash('photo-1507473885765-e6ed057ab3fe', 600, 400, '&crop=center'),
+      ],
       rating: 4.7,
       reviewCount: 44,
       specs: {
@@ -1929,7 +2117,7 @@ async function main() {
       price: 64.99,
       stock: 30,
       categoryId: lighting.id,
-      images: [img.product('wall-sconce-set')],
+      images: [unsplash('photo-1513506003901-1e6a229e2d15', 600, 400, '&crop=center')],
       rating: 4.5,
       reviewCount: 29,
       specs: {
@@ -1952,7 +2140,10 @@ async function main() {
       price: 39.99,
       stock: 80,
       categoryId: lighting.id,
-      images: [img.product('led-desk-lamp')],
+      images: [
+        unsplash('photo-1513506003901-1e6a229e2d15'),
+        unsplash('photo-1513506003901-1e6a229e2d15', 600, 400, '&crop=right'),
+      ],
       rating: 4.6,
       reviewCount: 112,
       specs: {
@@ -1975,7 +2166,10 @@ async function main() {
       price: 59.99,
       stock: 22,
       categoryId: lighting.id,
-      images: [img.product('rattan-table-lamp')],
+      images: [
+        unsplash('photo-1513506003901-1e6a229e2d15', 600, 400, '&crop=left'),
+        unsplash('photo-1507473885765-e6ed057ab3fe', 600, 400, '&crop=right'),
+      ],
       rating: 4.8,
       reviewCount: 37,
       specs: {
@@ -1999,7 +2193,7 @@ async function main() {
       salePrice: 24.99,
       stock: 120,
       categoryId: lighting.id,
-      images: [img.product('smart-led-strip')],
+      images: [unsplash('photo-1507473885765-e6ed057ab3fe', 600, 400, '&crop=left')],
       rating: 4.3,
       reviewCount: 178,
       specs: {
@@ -2022,7 +2216,10 @@ async function main() {
       price: 149.99,
       stock: 10,
       categoryId: lighting.id,
-      images: [img.product('cluster-ceiling-light')],
+      images: [
+        unsplash('photo-1540932239986-30128078f3c5'),
+        unsplash('photo-1507473885765-e6ed057ab3fe', 600, 400, '&crop=top'),
+      ],
       rating: 4.6,
       reviewCount: 21,
       specs: {
@@ -2046,7 +2243,10 @@ async function main() {
       price: 449.99,
       stock: 5,
       categoryId: lighting.id,
-      images: [img.product('chandelier-crystal')],
+      images: [
+        unsplash('photo-1540932239986-30128078f3c5', 600, 400, '&crop=center'),
+        unsplash('photo-1540932239986-30128078f3c5', 600, 400, '&crop=top'),
+      ],
       rating: 4.8,
       reviewCount: 9,
       specs: {
@@ -2069,7 +2269,10 @@ async function main() {
       price: 169.99,
       stock: 14,
       categoryId: lighting.id,
-      images: [img.product('floor-lamp-tripod')],
+      images: [
+        unsplash('photo-1513506003901-1e6a229e2d15', 600, 400, '&crop=top'),
+        unsplash('photo-1507473885765-e6ed057ab3fe', 600, 400, '&crop=bottom'),
+      ],
       rating: 4.5,
       reviewCount: 25,
       specs: {
@@ -2094,7 +2297,10 @@ async function main() {
       price: 69.99,
       stock: 35,
       categoryId: storage.id,
-      images: [img.product('wooden-coat-rack')],
+      images: [
+        unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=right'),
+        unsplash('photo-1588854337236-6889d631faa8'),
+      ],
       rating: 4.4,
       reviewCount: 26,
       specs: {
@@ -2117,7 +2323,10 @@ async function main() {
       price: 44.99,
       stock: 50,
       categoryId: storage.id,
-      images: [img.product('seagrass-basket-set')],
+      images: [
+        unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=center'),
+        unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=left'),
+      ],
       rating: 4.7,
       reviewCount: 59,
       specs: {
@@ -2140,7 +2349,7 @@ async function main() {
       price: 34.99,
       stock: 45,
       categoryId: storage.id,
-      images: [img.product('wall-shelf-with-hooks')],
+      images: [unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=left')],
       rating: 4.5,
       reviewCount: 33,
       specs: {
@@ -2163,7 +2372,7 @@ async function main() {
       price: 39.99,
       stock: 40,
       categoryId: storage.id,
-      images: [img.product('shoe-rack-10-tier')],
+      images: [unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=top')],
       rating: 4.2,
       reviewCount: 18,
       specs: {
@@ -2186,7 +2395,7 @@ async function main() {
       price: 29.99,
       stock: 65,
       categoryId: storage.id,
-      images: [img.product('linen-storage-boxes')],
+      images: [unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=bottom')],
       rating: 4.3,
       reviewCount: 42,
       specs: {
@@ -2209,7 +2418,10 @@ async function main() {
       price: 179.99,
       stock: 12,
       categoryId: storage.id,
-      images: [img.product('modular-shelving')],
+      images: [
+        unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=bottom'),
+        unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=top'),
+      ],
       rating: 4.4,
       reviewCount: 20,
       specs: {
@@ -2232,7 +2444,10 @@ async function main() {
       price: 249.99,
       stock: 9,
       categoryId: storage.id,
-      images: [img.product('entryway-bench-storage')],
+      images: [
+        unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=center'),
+        unsplash('photo-1588854337236-6889d631faa8', 600, 400, '&crop=right'),
+      ],
       rating: 4.6,
       reviewCount: 14,
       specs: {
@@ -2257,7 +2472,10 @@ async function main() {
       price: 1399.0,
       stock: 3,
       categoryId: kitchen.id,
-      images: [img.product('solid-oak-dining-table')],
+      images: [
+        unsplash('photo-1533090481720-856c6e3c1fdc', 600, 400, '&crop=left'),
+        unsplash('photo-1550226891-ef816aed4a98', 600, 400, '&crop=center'),
+      ],
       rating: 4.8,
       reviewCount: 4,
       specs: {
@@ -2279,7 +2497,10 @@ async function main() {
       price: 349.99,
       stock: 8,
       categoryId: livingRoom.id,
-      images: [img.product('boucle-armchair')],
+      images: [
+        unsplash('photo-1506439773649-6e0eb8cfb237', 600, 400, '&crop=left'),
+        unsplash('photo-1567016432779-094069958ea5', 600, 400, '&crop=center'),
+      ],
       rating: 4.5,
       reviewCount: 12,
       specs: {
@@ -2303,7 +2524,10 @@ async function main() {
       salePrice: 549.99,
       stock: 6,
       categoryId: livingRoom.id,
-      images: [img.product('nordic-sofa')],
+      images: [
+        unsplash('photo-1555041469-a586c1ea9b54', 600, 400, '&crop=left'),
+        unsplash('photo-1493663284031-b7e3aefcae8e', 600, 400, '&crop=center'),
+      ],
       rating: 4.6,
       reviewCount: 15,
       specs: {
@@ -2326,7 +2550,7 @@ async function main() {
       price: 89.99,
       stock: 30,
       categoryId: livingRoom.id,
-      images: [img.product('glass-side-table')],
+      images: [unsplash('photo-1586023492125-27b2c045efd7', 600, 400, '&crop=top')],
       rating: 4.3,
       reviewCount: 19,
       specs: {
@@ -2349,7 +2573,7 @@ async function main() {
       price: 299.99,
       stock: 10,
       categoryId: outdoor.id,
-      images: [img.product('garden-lounge-set')],
+      images: [unsplash('photo-1595231776515-ddffb1f4eb73', 600, 400, '&crop=top')],
       rating: 4.4,
       reviewCount: 16,
       specs: {
@@ -2372,7 +2596,7 @@ async function main() {
       price: 149.99,
       stock: 15,
       categoryId: storage.id,
-      images: [img.product('modular-shelving')],
+      images: [unsplash('photo-1595428774223-ef52624120d2', 600, 400, '&crop=left')],
       rating: 4.7,
       reviewCount: 22,
       specs: {
@@ -2395,7 +2619,7 @@ async function main() {
       price: 49.99,
       stock: 25,
       categoryId: lighting.id,
-      images: [img.product('rattan-table-lamp')],
+      images: [unsplash('photo-1507473885765-e6ed057ab3fe', 600, 400, '&crop=center')],
       rating: 4.4,
       reviewCount: 18,
       specs: {
@@ -2418,7 +2642,10 @@ async function main() {
       price: 449.99,
       stock: 7,
       categoryId: bathroom.id,
-      images: [img.product('bathroom-cabinet-mirror')],
+      images: [
+        unsplash('photo-1552321554-5fefe8c9ef14', 600, 400, '&crop=left'),
+        unsplash('photo-1507652313519-d4e9174996dd', 600, 400, '&crop=bottom'),
+      ],
       rating: 4.5,
       reviewCount: 10,
       specs: {
@@ -2440,7 +2667,7 @@ async function main() {
       price: 34.99,
       stock: 40,
       categoryId: office.id,
-      images: [img.product('desk-organizer-plastic')],
+      images: [unsplash('photo-1518455027359-f3f8164ba6bd', 600, 400, '&crop=left')],
       rating: 4.6,
       reviewCount: 14,
       specs: {
@@ -2463,7 +2690,7 @@ async function main() {
       price: 44.99,
       stock: 35,
       categoryId: textiles.id,
-      images: [img.product('velvet-cushion-set')],
+      images: [unsplash('photo-1616486338812-3dadae4b4ace', 600, 400, '&crop=bottom')],
       rating: 4.2,
       reviewCount: 11,
       specs: {
@@ -2486,7 +2713,7 @@ async function main() {
       price: 79.99,
       stock: 20,
       categoryId: lighting.id,
-      images: [img.product('rattan-table-lamp')],
+      images: [unsplash('photo-1513506003901-1e6a229e2d15', 600, 400, '&crop=bottom')],
       rating: 4.5,
       reviewCount: 16,
       specs: {
@@ -2508,7 +2735,7 @@ async function main() {
       price: 69.99,
       stock: 20,
       categoryId: outdoor.id,
-      images: [img.product('wool-area-rug')],
+      images: [unsplash('photo-1584100936595-c0654b55a2e2', 600, 400, '&crop=bottom')],
       rating: 4.1,
       reviewCount: 13,
       specs: {
@@ -3280,7 +3507,7 @@ async function main() {
         'Explore the latest Scandinavian design trends that are shaping modern interiors this year.',
       content:
         '<h2>The Evolution of Nordic Minimalism</h2><p>Scandinavian design continues to evolve, blending functionality with warmth. This year, we see a shift toward organic shapes, earth tones, and sustainable materials that bring nature indoors.</p><h2>Key Trends</h2><ul><li><strong>Curved furniture:</strong> Soft, rounded edges replace sharp angles</li><li><strong>Natural textures:</strong> Boucle, linen, and raw wood dominate</li><li><strong>Warm neutrals:</strong> Sand, terracotta, and warm grey replace cool whites</li><li><strong>Biophilic design:</strong> Indoor plants and natural light take center stage</li></ul><p>These trends reflect a broader movement toward creating homes that feel both modern and deeply comfortable.</p>',
-      coverImage: img.blog('scandinavian-design-trends-2026'),
+      coverImage: blogImages['scandinavian-design-trends-2026'],
       category: 'trends',
       authorName: 'Emma Lindqvist',
     },
@@ -3291,7 +3518,7 @@ async function main() {
         'Smart furniture solutions for apartments and compact living spaces without sacrificing style.',
       content:
         '<h2>Living Large in Small Spaces</h2><p>Urban living often means working with limited square footage, but that does not mean compromising on style or comfort. The key is choosing furniture that works harder.</p><h2>Essential Strategies</h2><ul><li><strong>Multi-functional pieces:</strong> Sofa beds, extendable tables, and storage ottomans</li><li><strong>Vertical storage:</strong> Tall bookshelves and wall-mounted solutions</li><li><strong>Light colors:</strong> Pale tones create an illusion of space</li><li><strong>Transparent furniture:</strong> Glass and acrylic pieces reduce visual clutter</li></ul><p>With thoughtful selection, even the smallest apartment can feel spacious and inviting.</p>',
-      coverImage: img.blog('small-space-furniture-guide'),
+      coverImage: blogImages['small-space-furniture-guide'],
       category: 'guides',
       authorName: 'Marcus Berg',
     },
@@ -3302,7 +3529,7 @@ async function main() {
         'Discover how the right color combinations can completely change the mood of your living space.',
       content:
         '<h2>The Power of Color</h2><p>Color is one of the most powerful tools in interior design. The right palette can make a room feel larger, cozier, more energetic, or more serene.</p><h2>Our Favorite Palettes</h2><ul><li><strong>Warm Earth:</strong> Terracotta, sand, olive green, and cream</li><li><strong>Coastal Calm:</strong> Soft blue, white, driftwood grey, and sand</li><li><strong>Modern Luxe:</strong> Deep navy, gold accents, marble white, and charcoal</li><li><strong>Forest Retreat:</strong> Deep green, brown, cream, and moss</li></ul><p>Start with a neutral base and layer in accent colors through textiles, art, and accessories.</p>',
-      coverImage: img.blog('living-room-color-palettes'),
+      coverImage: blogImages['living-room-color-palettes'],
       category: 'inspiration',
       authorName: 'Sofia Andersson',
     },
@@ -3313,7 +3540,7 @@ async function main() {
         'How eco-friendly materials are revolutionizing furniture manufacturing without compromising quality.',
       content:
         '<h2>Building a Greener Future</h2><p>The furniture industry is undergoing a sustainability revolution. Consumers increasingly demand products that are kind to the planet without sacrificing quality or aesthetics.</p><h2>Materials Leading the Change</h2><ul><li><strong>Bamboo:</strong> Fast-growing, durable, and beautiful</li><li><strong>Recycled metals:</strong> Aluminum and steel get a second life</li><li><strong>FSC-certified wood:</strong> Responsibly sourced timber</li><li><strong>Recycled plastics:</strong> Ocean plastics transformed into furniture</li><li><strong>Cork:</strong> Renewable, lightweight, and naturally antimicrobial</li></ul><p>At PLANQ, we are committed to increasing our range of sustainably sourced products every year.</p>',
-      coverImage: img.blog('sustainable-materials-furniture'),
+      coverImage: blogImages['sustainable-materials-furniture'],
       category: 'sustainability',
       authorName: 'Lars Eriksson',
     },
@@ -3324,7 +3551,7 @@ async function main() {
         'Create a productive and comfortable workspace at home with the right furniture and layout.',
       content:
         '<h2>Work From Home, Done Right</h2><p>A well-designed home office can dramatically improve your productivity and well-being. The key is balancing ergonomics, aesthetics, and functionality.</p><h2>Essential Elements</h2><ul><li><strong>Ergonomic chair:</strong> Invest in proper lumbar support</li><li><strong>Standing desk:</strong> Alternate between sitting and standing</li><li><strong>Good lighting:</strong> Natural light supplemented by task lighting</li><li><strong>Cable management:</strong> Keep your workspace tidy and organized</li><li><strong>Personal touches:</strong> Plants, art, and photos boost mood</li></ul><p>Remember: your home office should inspire you, not feel like a corporate cubicle.</p>',
-      coverImage: img.blog('perfect-home-office-setup'),
+      coverImage: blogImages['perfect-home-office-setup'],
       category: 'guides',
       authorName: 'Anna Johansson',
     },
@@ -3335,7 +3562,7 @@ async function main() {
         'Transform your bedroom into a serene retreat with these design ideas and furniture picks.',
       content:
         '<h2>Your Personal Sanctuary</h2><p>The bedroom should be your most peaceful room. A well-designed sleeping space promotes better rest and starts each day on the right note.</p><h2>Makeover Ideas</h2><ul><li><strong>Layer your bedding:</strong> Mix textures with linen, cotton, and knit throws</li><li><strong>Ambient lighting:</strong> Ditch the overhead light for bedside lamps and fairy lights</li><li><strong>Declutter:</strong> A clean room equals a calm mind</li><li><strong>Statement headboard:</strong> Make the bed the focal point</li><li><strong>Soft rugs:</strong> Warm your feet and add visual warmth</li></ul><p>Small changes can make a dramatic difference. Start with one element and build from there.</p>',
-      coverImage: img.blog('bedroom-makeover-inspiration'),
+      coverImage: blogImages['bedroom-makeover-inspiration'],
       category: 'inspiration',
       authorName: 'Emma Lindqvist',
     },
