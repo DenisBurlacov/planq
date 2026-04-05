@@ -137,14 +137,42 @@ model Product {
 
   specs       Json?
 
-  category   Category    @relation(fields: [categoryId], references: [id])
-  cartItems  CartItem[]
-  orderItems OrderItem[]
-  reviews    Review[]
-  wishlist   Wishlist[]
+  category           Category           @relation(fields: [categoryId], references: [id])
+  cartItems          CartItem[]
+  orderItems         OrderItem[]
+  reviews            Review[]
+  wishlist           Wishlist[]
+  variants           ProductVariant[]
+  stockNotifications StockNotification[]
 
   @@index([categoryId])
   @@index([slug])
+}
+
+model ProductVariant {
+  id              String  @id @default(uuid())
+  productId       String
+  name            String
+  color           String?
+  size            String?
+  stock           Int     @default(0)
+  priceAdjustment Float   @default(0)
+  image           String?
+  product         Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model StockNotification {
+  id        String   @id @default(uuid())
+  email     String
+  productId String
+  notified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@unique([email, productId])
+  @@index([productId])
 }
 
 model Cart {
@@ -158,15 +186,16 @@ model Cart {
 }
 
 model CartItem {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
   cartId    String
   productId String
-  quantity  Int    @default(1)
+  quantity  Int     @default(1)
+  variantId String?
 
   cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId, variantId])
 }
 
 model Wishlist {
@@ -189,6 +218,9 @@ model Order {
   shippingAddress    String
   paymentMethod      PaymentMethod
   cancellationReason String?
+  deliveryMethod     String        @default("standard")
+  deliveryCost       Float         @default(0)
+  trackingEvents     Json?
   deletedAt          DateTime?
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
@@ -216,6 +248,7 @@ model Review {
   productId String
   rating    Int
   comment   String?
+  images    String[]
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

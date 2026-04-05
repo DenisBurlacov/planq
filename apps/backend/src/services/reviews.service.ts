@@ -5,13 +5,18 @@ import { AppError } from '@utils/AppError.js';
 export const CreateReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   comment: z.string().max(1000).optional(),
+  images: z.array(z.string()).max(3).optional(),
 });
 
 export type CreateReviewInput = z.infer<typeof CreateReviewSchema>;
 
-export async function getProductReviews(productId: string, page = 1, limit = 10) {
+export async function getProductReviews(productId: string, page = 1, limit = 10, rating?: number) {
   const skip = (page - 1) * limit;
-  const where = { productId, deletedAt: null };
+  const where = {
+    productId,
+    deletedAt: null,
+    ...(rating !== undefined && { rating }),
+  };
   const [items, total] = await Promise.all([
     prisma.review.findMany({
       where,

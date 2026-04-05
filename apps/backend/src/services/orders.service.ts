@@ -12,11 +12,18 @@ export const CancelOrderSchema = z.object({
 
 export type CancelOrderInput = z.infer<typeof CancelOrderSchema>;
 
+const DELIVERY_COSTS: Record<string, number> = {
+  standard: 0,
+  express: 14.99,
+  nextDay: 24.99,
+};
+
 export const CheckoutSchema = z.object({
   shippingAddress: z.string().min(5),
   paymentMethod: z.nativeEnum(PaymentMethod),
   promoCode: z.string().optional(),
   cardNumber: z.string().optional(),
+  deliveryMethod: z.enum(['standard', 'express', 'nextDay']).default('standard'),
 });
 
 export type CheckoutInput = z.infer<typeof CheckoutSchema>;
@@ -118,8 +125,14 @@ export async function checkout(userId: string, input: CheckoutInput) {
     }
   }
 
+  // Calculate delivery cost
+  const deliveryCost = DELIVERY_COSTS[input.deliveryMethod] ?? 0;
+  total = round2(total + deliveryCost);
+
   // Create order in transaction
   const order = await prisma.$transaction(async tx => {
+    const trackingEvents = [{ status: 'ordered', timestamp: new Date().toISOString() }];
+
     const newOrder = await tx.order.create({
       data: {
         userId,
@@ -127,6 +140,9 @@ export async function checkout(userId: string, input: CheckoutInput) {
         totalAmount: total,
         shippingAddress: input.shippingAddress,
         paymentMethod: input.paymentMethod,
+        deliveryMethod: input.deliveryMethod,
+        deliveryCost,
+        trackingEvents,
         items: {
           create: cart.items.map(item => ({
             productId: item.productId,
@@ -212,11 +228,20 @@ export async function cancelOrder(userId: string, orderId: string, input: Cancel
       });
     }
 
+    // Append cancelled tracking event
+    const existingEvents =
+      (order.trackingEvents as Array<{ status: string; timestamp: string }>) ?? [];
+    const trackingEvents = [
+      ...existingEvents,
+      { status: 'cancelled', timestamp: new Date().toISOString() },
+    ];
+
     return tx.order.update({
       where: { id: orderId },
       data: {
         status: OrderStatus.CANCELLED,
         cancellationReason: input.reason,
+        trackingEvents,
       },
       include: { items: { include: { product: true } } },
     });

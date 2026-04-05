@@ -7,7 +7,8 @@ import {
   getProductStockHandler,
 } from '@controllers/products.controller.js';
 import * as productsService from '@services/products.service.js';
-import { ok } from '@utils/response.js';
+import * as stockNotificationService from '@services/stockNotification.service.js';
+import { ok, created } from '@utils/response.js';
 
 const router: ExpressRouter = Router();
 
@@ -28,6 +29,9 @@ const SuggestSchema = z.object({
  *       - { in: query, name: minPrice, schema: { type: number } }
  *       - { in: query, name: maxPrice, schema: { type: number } }
  *       - { in: query, name: inStock, schema: { type: boolean } }
+ *       - { in: query, name: material, schema: { type: string } }
+ *       - { in: query, name: color, schema: { type: string } }
+ *       - { in: query, name: style, schema: { type: string } }
  *       - { in: query, name: page, schema: { type: integer, default: 1 } }
  *       - { in: query, name: limit, schema: { type: integer, default: 20 } }
  *     responses:
@@ -89,5 +93,44 @@ router.get('/:id', getProductHandler);
  *         description: Current stock count
  */
 router.get('/:id/stock', getProductStockHandler);
+
+/**
+ * @openapi
+ * /products/{id}/notify:
+ *   post:
+ *     tags: [Products]
+ *     summary: Subscribe to stock notification for a product
+ *     security: []
+ *     parameters:
+ *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email: { type: string, format: email }
+ *     responses:
+ *       201:
+ *         description: Notification subscription created
+ *       404:
+ *         description: Product not found
+ *       409:
+ *         description: Already subscribed
+ */
+router.post('/:id/notify', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const input = stockNotificationService.CreateStockNotificationSchema.parse(req.body);
+    const notification = await stockNotificationService.createStockNotification(
+      req.params.id as string,
+      input.email
+    );
+    created(res, notification);
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

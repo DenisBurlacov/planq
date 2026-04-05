@@ -225,9 +225,17 @@ export async function updateOrderStatus(id: string, newStatus: OrderStatus) {
     );
   }
 
+  // Append tracking event
+  const existingEvents =
+    (order.trackingEvents as Array<{ status: string; timestamp: string }>) ?? [];
+  const trackingEvents = [
+    ...existingEvents,
+    { status: newStatus.toLowerCase(), timestamp: new Date().toISOString() },
+  ];
+
   const updated = await prisma.order.update({
     where: { id },
-    data: { status: newStatus },
+    data: { status: newStatus, trackingEvents },
     include: {
       items: { include: { product: true } },
       user: { select: { id: true, name: true, email: true } },

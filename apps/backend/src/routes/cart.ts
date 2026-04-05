@@ -52,8 +52,12 @@ router.post(
   validate(cartService.AddToCartSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { productId, quantity } = req.body as { productId: string; quantity: number };
-      ok(res, await cartService.addToCart(getAuthUser(req).userId, productId, quantity));
+      const { productId, quantity, variantId } = req.body as {
+        productId: string;
+        quantity: number;
+        variantId?: string;
+      };
+      ok(res, await cartService.addToCart(getAuthUser(req).userId, productId, quantity, variantId));
     } catch (err) {
       next(err);
     }

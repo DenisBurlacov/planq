@@ -74,6 +74,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
  *               paymentMethod: { type: string, enum: [CARD, WALLET] }
  *               promoCode: { type: string }
  *               cardNumber: { type: string }
+ *               deliveryMethod: { type: string, enum: [standard, express, nextDay], default: standard }
  *     responses:
  *       201:
  *         description: Order created

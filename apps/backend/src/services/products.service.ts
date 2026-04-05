@@ -15,6 +15,9 @@ export const ProductsQuerySchema = z.object({
     .string()
     .optional()
     .transform(v => v === 'true'),
+  material: z.string().optional(),
+  color: z.string().optional(),
+  style: z.string().optional(),
   sort: z.enum(['newest', 'priceAsc', 'priceDesc', 'rating']).optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
@@ -23,8 +26,33 @@ export const ProductsQuerySchema = z.object({
 export type ProductsQuery = z.infer<typeof ProductsQuerySchema>;
 
 export async function getProducts(query: ProductsQuery) {
-  const { categoryId, search, minPrice, maxPrice, inStock, onSale, sort, page, limit } = query;
+  const {
+    categoryId,
+    search,
+    minPrice,
+    maxPrice,
+    inStock,
+    onSale,
+    material,
+    color,
+    style,
+    sort,
+    page,
+    limit,
+  } = query;
   const skip = (page - 1) * limit;
+
+  // Build JSON path filters for specs
+  const specsFilters: Record<string, unknown>[] = [];
+  if (material) {
+    specsFilters.push({ specs: { path: ['material'], string_contains: material } });
+  }
+  if (color) {
+    specsFilters.push({ specs: { path: ['color'], string_contains: color } });
+  }
+  if (style) {
+    specsFilters.push({ specs: { path: ['style'], string_contains: style } });
+  }
 
   const where = {
     deletedAt: null,
@@ -39,6 +67,7 @@ export async function getProducts(query: ProductsQuery) {
     ...(maxPrice !== undefined && { price: { lte: maxPrice } }),
     ...(inStock && { stock: { gt: 0 } }),
     ...(onSale && { salePrice: { not: null } }),
+    ...(specsFilters.length > 0 && { AND: specsFilters }),
   };
 
   const orderBy = (() => {
@@ -65,7 +94,11 @@ export async function getProducts(query: ProductsQuery) {
 export async function getProductById(id: string) {
   const product = await prisma.product.findFirst({
     where: { id, deletedAt: null },
-    include: { category: true, reviews: { where: { deletedAt: null }, take: 10 } },
+    include: {
+      category: true,
+      reviews: { where: { deletedAt: null }, take: 10 },
+      variants: true,
+    },
   });
 
   if (!product) {

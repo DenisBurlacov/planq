@@ -234,6 +234,7 @@ async function main() {
         dimensions: '210x90x85 cm',
         weight: '42 kg',
         color: 'Light Grey',
+        style: 'Scandinavian',
         warranty: '5 years',
         careInstructions: 'Vacuum regularly, spot clean with mild detergent',
       },
@@ -254,6 +255,7 @@ async function main() {
         dimensions: '90x90x45 cm',
         weight: '12.5 kg',
         color: 'Walnut / Black',
+        style: 'Minimalist',
         warranty: '2 years',
         careInstructions: 'Wipe with damp cloth, avoid abrasive cleaners',
       },
@@ -274,6 +276,7 @@ async function main() {
         dimensions: '40x40x190 cm',
         weight: '8.2 kg',
         color: 'White / Silver',
+        style: 'Modern',
         warranty: '2 years',
         careInstructions: 'Dust with soft cloth, use E27 LED bulb max 12W',
       },
@@ -294,6 +297,7 @@ async function main() {
         dimensions: '80x30x180 cm',
         weight: '28 kg',
         color: 'Natural Oak',
+        style: 'Scandinavian',
         warranty: '3 years',
         careInstructions: 'Dust regularly, treat with wood oil every 6 months',
       },
@@ -315,6 +319,7 @@ async function main() {
         dimensions: '200x300 cm',
         weight: '9.5 kg',
         color: 'Ivory / Terracotta',
+        style: 'Bohemian',
         warranty: '2 years',
         careInstructions: 'Professional cleaning recommended, vacuum on low power',
       },
@@ -336,6 +341,7 @@ async function main() {
         dimensions: '75x80x82 cm',
         weight: '18 kg',
         color: 'Cream',
+        style: 'Scandinavian',
         warranty: '3 years',
         careInstructions: 'Brush gently to maintain texture, spot clean only',
       },
@@ -356,6 +362,7 @@ async function main() {
         dimensions: '150x40x50 cm',
         weight: '24 kg',
         color: 'Natural Oak / Black',
+        style: 'Scandinavian',
         warranty: '2 years',
         careInstructions: 'Wipe with slightly damp cloth, do not use polish',
       },
@@ -375,6 +382,7 @@ async function main() {
         dimensions: '160x200x30 cm',
         weight: '35 kg',
         color: 'Walnut',
+        style: 'Minimalist',
         warranty: '5 years',
         careInstructions: 'Tighten bolts every 6 months, wipe with dry cloth',
       },
@@ -729,6 +737,7 @@ async function main() {
         dimensions: '140x70x65-130 cm',
         weight: '32 kg',
         color: 'Natural Bamboo / Black',
+        style: 'Modern',
         warranty: '5 years',
         careInstructions: 'Wipe bamboo surface with damp cloth, lubricate motor yearly',
       },
@@ -750,6 +759,7 @@ async function main() {
         dimensions: '68x68x110-125 cm',
         weight: '14 kg',
         color: 'Black',
+        style: 'Modern',
         warranty: '5 years',
         careInstructions: 'Vacuum mesh periodically, tighten screws every 3 months',
       },
@@ -1079,6 +1089,7 @@ async function main() {
         dimensions: '60x90 cm',
         weight: '0.9 kg',
         color: 'Natural Ivory',
+        style: 'Bohemian',
         warranty: '1 year',
         careInstructions: 'Shake out dust, spot clean with cold water only',
       },
@@ -1368,6 +1379,7 @@ async function main() {
         dimensions: '50x50x40 cm (adjustable arms)',
         weight: '4.5 kg',
         color: 'Matte Black',
+        style: 'Industrial',
         warranty: '2 years',
         careInstructions: 'Professional installation required, use 6x E27 LED max 8W',
       },
@@ -1491,6 +1503,7 @@ async function main() {
         dimensions: '320x200x90 cm',
         weight: '85 kg',
         color: 'Natural Linen',
+        style: 'Scandinavian',
         warranty: '7 years',
         careInstructions:
           'Professional cleaning recommended, vacuum weekly, rotate cushions monthly',
@@ -1507,6 +1520,126 @@ async function main() {
       })
     )
   );
+
+  // ─── Product Variants ─────────────────────────────────────────────────────
+
+  // Clean up existing variants to avoid duplicates on re-seed
+  await prisma.productVariant.deleteMany({});
+
+  const variantData: Record<
+    string,
+    Array<{ name: string; color?: string; size?: string; stock: number; priceAdjustment: number }>
+  > = {
+    'nordic-sofa': [
+      { name: 'Light Grey', color: '#D3D3D3', stock: 5, priceAdjustment: 0 },
+      { name: 'Sand', color: '#C2B280', stock: 4, priceAdjustment: 0 },
+      { name: 'Charcoal', color: '#36454F', stock: 3, priceAdjustment: 20 },
+    ],
+    'minimalist-coffee-table': [
+      { name: 'Walnut / Black', color: '#5B3A29', stock: 15, priceAdjustment: 0 },
+      { name: 'Oak / White', color: '#D4A76A', stock: 15, priceAdjustment: 10 },
+    ],
+    'floor-lamp-arco': [
+      { name: 'White / Silver', color: '#FFFFFF', stock: 20, priceAdjustment: 0 },
+      { name: 'Black / Gold', color: '#000000', stock: 25, priceAdjustment: 15 },
+    ],
+    'bookshelf-tall-oak': [
+      { name: 'Natural Oak', color: '#D4A76A', stock: 4, priceAdjustment: 0 },
+      { name: 'Walnut', color: '#5B3A29', stock: 4, priceAdjustment: 30 },
+    ],
+    'boucle-armchair': [
+      { name: 'Cream', color: '#FFFDD0', stock: 5, priceAdjustment: 0 },
+      { name: 'Sage', color: '#9DC183', stock: 3, priceAdjustment: 0 },
+      { name: 'Dusty Pink', color: '#DCAE96', stock: 2, priceAdjustment: 10 },
+    ],
+    'platform-bed-queen': [
+      { name: 'Walnut', color: '#5B3A29', stock: 10, priceAdjustment: 0 },
+      { name: 'Natural Oak', color: '#D4A76A', stock: 10, priceAdjustment: -20 },
+    ],
+    'bedside-table-duo': [
+      { name: 'White', color: '#FFFFFF', stock: 12, priceAdjustment: 0 },
+      { name: 'Black', color: '#000000', stock: 13, priceAdjustment: 0 },
+    ],
+    'dresser-6-drawer': [
+      { name: 'Natural Oak', color: '#D4A76A', stock: 7, priceAdjustment: 0 },
+      { name: 'White', color: '#FFFFFF', stock: 7, priceAdjustment: -20 },
+    ],
+    'dining-table-extendable': [
+      { name: 'White', color: '#FFFFFF', stock: 5, priceAdjustment: 0 },
+      { name: 'Natural Birch', color: '#E8D4A2', stock: 5, priceAdjustment: 30 },
+    ],
+    'dining-chairs-set': [
+      { name: 'White / Natural', color: '#FFFFFF', stock: 6, priceAdjustment: 0 },
+      { name: 'Black / Natural', color: '#000000', stock: 6, priceAdjustment: 0 },
+      { name: 'Grey / Natural', color: '#808080', stock: 6, priceAdjustment: 0 },
+    ],
+    'standing-desk-electric': [
+      { name: 'Natural Bamboo / Black', color: '#D4A76A', stock: 5, priceAdjustment: 0 },
+      { name: 'Walnut / Black', color: '#5B3A29', stock: 4, priceAdjustment: 50 },
+    ],
+    'ergonomic-office-chair': [
+      { name: 'Black', color: '#000000', stock: 8, priceAdjustment: 0 },
+      { name: 'Grey', color: '#808080', stock: 7, priceAdjustment: 0 },
+    ],
+    'abstract-canvas-print': [
+      { name: 'Multicolor', stock: 10, priceAdjustment: 0 },
+      { name: 'Blue Tones', stock: 10, priceAdjustment: 0 },
+    ],
+    'ceramic-vase-set': [
+      { name: 'Sand / Terracotta / Sage', color: '#C2B280', stock: 20, priceAdjustment: 0 },
+      { name: 'White / Grey / Black', color: '#FFFFFF', stock: 20, priceAdjustment: 5 },
+    ],
+    'linen-duvet-cover': [
+      { name: 'Natural Linen', color: '#E0D5C1', stock: 10, priceAdjustment: 0 },
+      { name: 'White', color: '#FFFFFF', stock: 10, priceAdjustment: 0 },
+      { name: 'Dusty Blue', color: '#7BA7BC', stock: 10, priceAdjustment: 10 },
+    ],
+    'velvet-cushion-set': [
+      {
+        name: 'Sage / Terracotta / Ivory / Dusty Blue',
+        color: '#9DC183',
+        stock: 15,
+        priceAdjustment: 0,
+      },
+      { name: 'Navy / Mustard / Cream / Blush', color: '#000080', stock: 15, priceAdjustment: 0 },
+      { name: 'S', size: 'S', stock: 15, priceAdjustment: -10 },
+      { name: 'L', size: 'L', stock: 15, priceAdjustment: 15 },
+    ],
+    'chunky-knit-throw': [
+      { name: 'Natural Ivory', color: '#FFFFF0', stock: 10, priceAdjustment: 0 },
+      { name: 'Light Grey', color: '#D3D3D3', stock: 10, priceAdjustment: 0 },
+    ],
+    'brass-pendant-light': [
+      { name: 'Brass / White', color: '#B5A642', stock: 12, priceAdjustment: 0 },
+      { name: 'Matte Black / White', color: '#000000', stock: 13, priceAdjustment: -5 },
+    ],
+    'garden-lounge-set': [
+      { name: 'Brown / Beige', color: '#8B4513', stock: 2, priceAdjustment: 0 },
+      { name: 'Grey / Charcoal', color: '#808080', stock: 2, priceAdjustment: 50 },
+    ],
+    'wooden-coat-rack': [
+      { name: 'Natural Beech', color: '#D4A76A', stock: 15, priceAdjustment: 0 },
+      { name: 'Walnut', color: '#5B3A29', stock: 10, priceAdjustment: 10 },
+      { name: 'White', color: '#FFFFFF', stock: 10, priceAdjustment: 0 },
+    ],
+  };
+
+  for (const [slug, variants] of Object.entries(variantData)) {
+    const product = products.find(p => p.slug === slug);
+    if (!product) continue;
+    for (const v of variants) {
+      await prisma.productVariant.create({
+        data: {
+          productId: product.id,
+          name: v.name,
+          color: v.color,
+          size: v.size,
+          stock: v.stock,
+          priceAdjustment: v.priceAdjustment,
+        },
+      });
+    }
+  }
 
   // ─── Carts ────────────────────────────────────────────────────────────────
 
@@ -1864,6 +1997,8 @@ async function main() {
   console.log(`  Categories: ${categories.length}`);
   // eslint-disable-next-line no-console
   console.log(`  Products: ${products.length}`);
+  // eslint-disable-next-line no-console
+  console.log(`  Product variants: ${Object.values(variantData).flat().length}`);
   // eslint-disable-next-line no-console
   console.log(`  Promo codes: 3`);
   // eslint-disable-next-line no-console

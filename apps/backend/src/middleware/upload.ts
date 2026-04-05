@@ -8,9 +8,10 @@ const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
 const AVATARS_DIR = path.join(UPLOADS_DIR, 'avatars');
 const PRODUCTS_DIR = path.join(UPLOADS_DIR, 'products');
 const CATEGORIES_DIR = path.join(UPLOADS_DIR, 'categories');
+const REVIEWS_DIR = path.join(UPLOADS_DIR, 'reviews');
 
 // Ensure directories exist
-for (const dir of [UPLOADS_DIR, AVATARS_DIR, PRODUCTS_DIR, CATEGORIES_DIR]) {
+for (const dir of [UPLOADS_DIR, AVATARS_DIR, PRODUCTS_DIR, CATEGORIES_DIR, REVIEWS_DIR]) {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
@@ -73,4 +74,14 @@ const categoryImageUpload = multer({
 
 export function uploadCategoryImage(req: Request, res: Response, next: NextFunction): void {
   categoryImageUpload.single('image')(req, res, next);
+}
+
+const reviewImagesUpload = multer({
+  storage: createStorage(REVIEWS_DIR),
+  limits: { fileSize: MAX_PRODUCT_IMAGE_SIZE },
+  fileFilter,
+});
+
+export function uploadReviewImages(req: Request, res: Response, next: NextFunction): void {
+  reviewImagesUpload.array('images', 3)(req, res, next);
 }
