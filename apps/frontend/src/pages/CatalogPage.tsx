@@ -383,218 +383,223 @@ export function CatalogPage() {
             </Button>
           </div>
 
-          {/* Row 1: Material + Style (same pill style, side by side) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-            {/* Material pills */}
-            <div>
-              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
-                {t('filters.material')}
-              </label>
-              <div className="flex flex-wrap gap-1">
-                {(['wood', 'metal', 'fabric', 'glass', 'leather', 'plastic'] as const).map(mat => {
-                  const isActive = query.material?.includes(mat);
-                  return (
-                    <button
-                      key={mat}
-                      type="button"
-                      data-testid={`filter-material-${mat}`}
-                      onClick={() =>
-                        setQuery(q => ({
-                          ...q,
-                          material: isActive
-                            ? (q.material ?? []).filter(m => m !== mat)
-                            : [...(q.material ?? []), mat],
-                          page: 1,
-                        }))
-                      }
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                        isActive
-                          ? 'bg-accent text-white'
-                          : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
-                      }`}
-                    >
-                      {t(`filters.materialOptions.${mat}`)}
-                    </button>
-                  );
-                })}
+          {/* Two-column layout: Left = Price/Color/Checkboxes, Right = Material/Style */}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Left column: Price + Color + Checkboxes */}
+            <div className="flex flex-wrap items-end gap-4">
+              {/* Price range */}
+              <div>
+                <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
+                  {t('filters.price')}
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <div className="relative">
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)] pointer-events-none">
+                      {t('common:currency')}
+                    </span>
+                    <input
+                      id="filter-min-price"
+                      data-testid="filter-min-price"
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      value={localMinPrice}
+                      className={`w-[90px] rounded-md border bg-[var(--bg-card)] pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
+                      onChange={e => {
+                        const raw = e.target.value;
+                        setLocalMinPrice(raw);
+                        const min = raw ? Number(raw) : undefined;
+                        const max = query.maxPrice;
+                        if (min !== undefined && max !== undefined && min > max) {
+                          setPriceError(t('filters.priceError'));
+                        } else {
+                          setPriceError('');
+                        }
+                        setQuery(q => ({ ...q, minPrice: min, page: 1 }));
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs text-[var(--text-secondary)]">&ndash;</span>
+                  <div className="relative">
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)] pointer-events-none">
+                      {t('common:currency')}
+                    </span>
+                    <input
+                      id="filter-max-price"
+                      data-testid="filter-max-price"
+                      type="number"
+                      placeholder="∞"
+                      min="0"
+                      value={localMaxPrice}
+                      className={`w-[90px] rounded-md border bg-[var(--bg-card)] pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
+                      onChange={e => {
+                        const raw = e.target.value;
+                        setLocalMaxPrice(raw);
+                        const max = raw ? Number(raw) : undefined;
+                        const min = query.minPrice;
+                        if (min !== undefined && max !== undefined && min > max) {
+                          setPriceError(t('filters.priceError'));
+                        } else {
+                          setPriceError('');
+                        }
+                        setQuery(q => ({ ...q, maxPrice: max, page: 1 }));
+                      }}
+                    />
+                  </div>
+                </div>
+                {priceError && <p className="text-xs text-red-500 mt-1">{priceError}</p>}
               </div>
-            </div>
 
-            {/* Style pills */}
-            <div>
-              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
-                {t('filters.style')}
-              </label>
-              <div className="flex flex-wrap gap-1">
-                {(['scandinavian', 'modern', 'industrial', 'minimalist', 'classic'] as const).map(
-                  sty => {
-                    const isActive = query.style?.includes(sty);
+              {/* Color swatches */}
+              <div>
+                <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
+                  {t('filters.color')}
+                </label>
+                <div className="flex flex-wrap gap-1">
+                  {(
+                    [
+                      { key: 'natural', hex: '#d4a574' },
+                      { key: 'white', hex: '#f5f5f5' },
+                      { key: 'black', hex: '#222222' },
+                      { key: 'walnut', hex: '#5c4033' },
+                      { key: 'gray', hex: '#9ca3af' },
+                      { key: 'blue', hex: '#3b82f6' },
+                    ] as const
+                  ).map(({ key, hex }) => {
+                    const isActive = query.color?.includes(key);
                     return (
                       <button
-                        key={sty}
+                        key={key}
                         type="button"
-                        data-testid={`filter-style-${sty}`}
+                        data-testid={`filter-color-${key}`}
                         onClick={() =>
                           setQuery(q => ({
                             ...q,
-                            style: isActive
-                              ? (q.style ?? []).filter(s => s !== sty)
-                              : [...(q.style ?? []), sty],
+                            color: isActive
+                              ? (q.color ?? []).filter(c => c !== key)
+                              : [...(q.color ?? []), key],
                             page: 1,
                           }))
                         }
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                        className={`h-6 w-6 rounded-full border-2 transition-all ${
                           isActive
-                            ? 'bg-accent text-white'
-                            : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
+                            ? 'border-accent ring-2 ring-accent/30'
+                            : 'border-[var(--border)] hover:border-accent/50'
                         }`}
-                      >
-                        {t(`filters.styleOptions.${sty}`)}
-                      </button>
+                        style={{ backgroundColor: hex }}
+                        aria-label={t(`filters.colorOptions.${key}`)}
+                        title={t(`filters.colorOptions.${key}`)}
+                      />
                     );
+                  })}
+                </div>
+              </div>
+
+              {/* On Sale checkbox */}
+              <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)] pb-0.5">
+                <input
+                  type="checkbox"
+                  data-testid="filter-on-sale"
+                  className="rounded"
+                  checked={!!query.onSale}
+                  onChange={e =>
+                    setQuery(q => ({ ...q, onSale: e.target.checked || undefined, page: 1 }))
                   }
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2: Price + Color + On Sale + In Stock */}
-          <div className="flex flex-wrap items-end gap-4">
-            {/* Price range */}
-            <div>
-              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
-                {t('filters.price')}
+                />
+                {t('filters.onSale')}
               </label>
-              <div className="flex items-center gap-1.5">
-                <div className="relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)] pointer-events-none">
-                    {t('common:currency')}
-                  </span>
-                  <input
-                    id="filter-min-price"
-                    data-testid="filter-min-price"
-                    type="number"
-                    placeholder="0"
-                    min="0"
-                    value={localMinPrice}
-                    className={`w-[90px] rounded-md border bg-[var(--bg-card)] pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
-                    onChange={e => {
-                      const raw = e.target.value;
-                      setLocalMinPrice(raw);
-                      const min = raw ? Number(raw) : undefined;
-                      const max = query.maxPrice;
-                      if (min !== undefined && max !== undefined && min > max) {
-                        setPriceError(t('filters.priceError'));
-                      } else {
-                        setPriceError('');
-                      }
-                      setQuery(q => ({ ...q, minPrice: min, page: 1 }));
-                    }}
-                  />
-                </div>
-                <span className="text-xs text-[var(--text-secondary)]">&ndash;</span>
-                <div className="relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-secondary)] pointer-events-none">
-                    {t('common:currency')}
-                  </span>
-                  <input
-                    id="filter-max-price"
-                    data-testid="filter-max-price"
-                    type="number"
-                    placeholder="∞"
-                    min="0"
-                    value={localMaxPrice}
-                    className={`w-[90px] rounded-md border bg-[var(--bg-card)] pl-6 pr-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${priceError ? 'border-red-500' : 'border-[var(--border)]'}`}
-                    onChange={e => {
-                      const raw = e.target.value;
-                      setLocalMaxPrice(raw);
-                      const max = raw ? Number(raw) : undefined;
-                      const min = query.minPrice;
-                      if (min !== undefined && max !== undefined && min > max) {
-                        setPriceError(t('filters.priceError'));
-                      } else {
-                        setPriceError('');
-                      }
-                      setQuery(q => ({ ...q, maxPrice: max, page: 1 }));
-                    }}
-                  />
+
+              {/* In Stock checkbox */}
+              <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)] pb-0.5">
+                <input
+                  type="checkbox"
+                  data-testid="filter-in-stock"
+                  className="rounded"
+                  checked={!!query.inStock}
+                  onChange={e =>
+                    setQuery(q => ({ ...q, inStock: e.target.checked || undefined, page: 1 }))
+                  }
+                />
+                {t('filters.inStock')}
+              </label>
+            </div>
+
+            {/* Right column: Material above Style, aligned right */}
+            <div className="md:ml-auto space-y-2">
+              {/* Material pills */}
+              <div>
+                <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
+                  {t('filters.material')}
+                </label>
+                <div className="flex flex-wrap gap-1">
+                  {(['wood', 'metal', 'fabric', 'glass', 'leather', 'plastic'] as const).map(
+                    mat => {
+                      const isActive = query.material?.includes(mat);
+                      return (
+                        <button
+                          key={mat}
+                          type="button"
+                          data-testid={`filter-material-${mat}`}
+                          onClick={() =>
+                            setQuery(q => ({
+                              ...q,
+                              material: isActive
+                                ? (q.material ?? []).filter(m => m !== mat)
+                                : [...(q.material ?? []), mat],
+                              page: 1,
+                            }))
+                          }
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            isActive
+                              ? 'bg-accent text-white'
+                              : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
+                          }`}
+                        >
+                          {t(`filters.materialOptions.${mat}`)}
+                        </button>
+                      );
+                    }
+                  )}
                 </div>
               </div>
-              {priceError && <p className="text-xs text-red-500 mt-1">{priceError}</p>}
-            </div>
 
-            {/* Color swatches */}
-            <div>
-              <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
-                {t('filters.color')}
-              </label>
-              <div className="flex flex-wrap gap-1">
-                {(
-                  [
-                    { key: 'natural', hex: '#d4a574' },
-                    { key: 'white', hex: '#f5f5f5' },
-                    { key: 'black', hex: '#222222' },
-                    { key: 'walnut', hex: '#5c4033' },
-                    { key: 'gray', hex: '#9ca3af' },
-                    { key: 'blue', hex: '#3b82f6' },
-                  ] as const
-                ).map(({ key, hex }) => {
-                  const isActive = query.color?.includes(key);
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      data-testid={`filter-color-${key}`}
-                      onClick={() =>
-                        setQuery(q => ({
-                          ...q,
-                          color: isActive
-                            ? (q.color ?? []).filter(c => c !== key)
-                            : [...(q.color ?? []), key],
-                          page: 1,
-                        }))
-                      }
-                      className={`h-6 w-6 rounded-full border-2 transition-all ${
-                        isActive
-                          ? 'border-accent ring-2 ring-accent/30'
-                          : 'border-[var(--border)] hover:border-accent/50'
-                      }`}
-                      style={{ backgroundColor: hex }}
-                      aria-label={t(`filters.colorOptions.${key}`)}
-                      title={t(`filters.colorOptions.${key}`)}
-                    />
-                  );
-                })}
+              {/* Style pills */}
+              <div>
+                <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
+                  {t('filters.style')}
+                </label>
+                <div className="flex flex-wrap gap-1">
+                  {(['scandinavian', 'modern', 'industrial', 'minimalist', 'classic'] as const).map(
+                    sty => {
+                      const isActive = query.style?.includes(sty);
+                      return (
+                        <button
+                          key={sty}
+                          type="button"
+                          data-testid={`filter-style-${sty}`}
+                          onClick={() =>
+                            setQuery(q => ({
+                              ...q,
+                              style: isActive
+                                ? (q.style ?? []).filter(s => s !== sty)
+                                : [...(q.style ?? []), sty],
+                              page: 1,
+                            }))
+                          }
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                            isActive
+                              ? 'bg-accent text-white'
+                              : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-accent/40'
+                          }`}
+                        >
+                          {t(`filters.styleOptions.${sty}`)}
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* On Sale checkbox */}
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)] pb-0.5">
-              <input
-                type="checkbox"
-                data-testid="filter-on-sale"
-                className="rounded"
-                checked={!!query.onSale}
-                onChange={e =>
-                  setQuery(q => ({ ...q, onSale: e.target.checked || undefined, page: 1 }))
-                }
-              />
-              {t('filters.onSale')}
-            </label>
-
-            {/* In Stock checkbox */}
-            <label className="flex items-center gap-1.5 text-sm cursor-pointer text-[var(--text-primary)] pb-0.5">
-              <input
-                type="checkbox"
-                data-testid="filter-in-stock"
-                className="rounded"
-                checked={!!query.inStock}
-                onChange={e =>
-                  setQuery(q => ({ ...q, inStock: e.target.checked || undefined, page: 1 }))
-                }
-              />
-              {t('filters.inStock')}
-            </label>
           </div>
         </div>
       )}
