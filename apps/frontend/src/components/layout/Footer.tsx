@@ -193,9 +193,7 @@ export function Footer() {
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterError, setNewsletterError] = useState('');
-  const [newsletterSubscribed, setNewsletterSubscribed] = useState(
-    () => !!localStorage.getItem('planq_newsletter_email')
-  );
+  const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -207,17 +205,22 @@ export function Footer() {
     setShowLogoutModal(false);
   };
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setNewsletterError('');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newsletterEmail)) {
       setNewsletterError(t('footer.newsletter.invalidEmail'));
       return;
     }
-    localStorage.setItem('planq_newsletter_email', newsletterEmail);
-    setNewsletterSubscribed(true);
-    toast('success', t('footer.newsletter.success'));
-    setNewsletterEmail('');
+    try {
+      const { newsletterApi } = await import('@api/newsletter');
+      await newsletterApi.subscribe(newsletterEmail);
+      setNewsletterSubscribed(true);
+      toast('success', t('footer.newsletter.success'));
+      setNewsletterEmail('');
+    } catch {
+      setNewsletterError(t('common:errors.generic'));
+    }
   };
 
   return (

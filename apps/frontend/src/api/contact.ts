@@ -1,3 +1,5 @@
+import { apiFetch } from './client';
+
 export interface ContactFormInput {
   name: string;
   email: string;
@@ -6,8 +8,9 @@ export interface ContactFormInput {
 }
 
 export const contactApi = {
-  submit: async (_input: ContactFormInput): Promise<{ success: boolean }> => {
-    await new Promise(r => setTimeout(r, 800));
-    return { success: true };
-  },
+  submit: (input: ContactFormInput) =>
+    apiFetch<{ message: string }>('/api/v1/contact', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
 };

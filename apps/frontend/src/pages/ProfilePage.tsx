@@ -1498,18 +1498,32 @@ function PaymentMethodsTab({ profileName }: { profileName: string }) {
       className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6"
     >
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-[var(--text-primary)]">{t('paymentMethods.title')}</h2>
-        <Button
-          data-testid="add-card-button"
-          size="sm"
-          onClick={() => {
-            setCardholderName(profileName);
-            setAddModalOpen(true);
-          }}
-          disabled={cards.length >= 5}
-        >
-          <CreditCard className="h-4 w-4" /> {t('paymentMethods.addCard')}
-        </Button>
+        <div className="flex items-center gap-2">
+          <h2 className="font-semibold text-[var(--text-primary)]">{t('paymentMethods.title')}</h2>
+          <span
+            data-testid="card-count"
+            className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+              cards.length >= 5
+                ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+                : 'bg-[var(--bg-sidebar)] text-[var(--text-secondary)]'
+            }`}
+          >
+            {cards.length}/5
+          </span>
+        </div>
+        {cards.length < 5 && (
+          <Button
+            data-testid="add-card-button"
+            size="sm"
+            onClick={() => {
+              setCardholderName(profileName);
+              setAddModalOpen(true);
+            }}
+            disabled={cards.length >= 5}
+          >
+            <CreditCard className="h-4 w-4" /> {t('paymentMethods.addCard')}
+          </Button>
+        )}
       </div>
 
       {loading ? (
