@@ -2,7 +2,16 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, SlidersHorizontal, ArrowLeftRight, X } from 'lucide-react';
+import {
+  Search,
+  SlidersHorizontal,
+  ArrowLeftRight,
+  X,
+  Star,
+  ChevronDown,
+  Trash2,
+  Save,
+} from 'lucide-react';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardList } from '@components/features/ProductCardList';
 import { QuickViewModal } from '@components/features/QuickViewModal';
@@ -62,6 +71,36 @@ export function CatalogPage() {
   const [loadMorePage, setLoadMorePage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [savedFiltersOpen, setSavedFiltersOpen] = useState(false);
+  const [savedFilters, setSavedFilters] = useState<{ name: string; query: ProductsQuery }[]>(() => {
+    try {
+      const raw = localStorage.getItem('planq-saved-filters');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const savedFiltersRef = useRef<HTMLDivElement>(null);
+
+  // Persist saved filters
+  useEffect(() => {
+    try {
+      localStorage.setItem('planq-saved-filters', JSON.stringify(savedFilters));
+    } catch {
+      // ignore
+    }
+  }, [savedFilters]);
+
+  // Close saved filters dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (savedFiltersRef.current && !savedFiltersRef.current.contains(e.target as Node)) {
+        setSavedFiltersOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const { data: wishlist } = useQuery({
     queryKey: ['wishlist'],
@@ -114,6 +153,7 @@ export function CatalogPage() {
     query.material,
     query.color,
     query.style,
+    query.rating,
   ]);
 
   // Accumulate items in load-more mode
@@ -277,6 +317,139 @@ export function CatalogPage() {
     setPullDistance(0);
   }, [pullDistance, qc]);
 
+  // Active filters computation
+  type ActiveFilter = { type: string; value: string; label: string; onRemove: () => void };
+  const activeFilters: ActiveFilter[] = [];
+
+  if (query.categoryId && activeCategory) {
+    activeFilters.push({
+      type: 'category',
+      value: query.categoryId,
+      label: activeCategoryName ?? activeCategory.name,
+      onRemove: () => handleCategoryChange(undefined),
+    });
+  }
+  if (query.search) {
+    activeFilters.push({
+      type: 'search',
+      value: query.search,
+      label: t('filters.activeFilters.search', { term: query.search }),
+      onRemove: () => {
+        setSearch('');
+        setQuery(q => ({ ...q, search: undefined, page: 1 }));
+      },
+    });
+  }
+  if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+    const currency = t('common:currency');
+    const label =
+      query.minPrice !== undefined && query.maxPrice !== undefined
+        ? t('filters.activeFilters.price', { currency, min: query.minPrice, max: query.maxPrice })
+        : query.minPrice !== undefined
+          ? t('filters.activeFilters.priceMin', { currency, min: query.minPrice })
+          : t('filters.activeFilters.priceMax', { currency, max: query.maxPrice });
+    activeFilters.push({
+      type: 'price',
+      value: `${query.minPrice ?? ''}-${query.maxPrice ?? ''}`,
+      label,
+      onRemove: () => {
+        setLocalMinPrice('');
+        setLocalMaxPrice('');
+        setPriceError('');
+        setQuery(q => ({ ...q, minPrice: undefined, maxPrice: undefined, page: 1 }));
+      },
+    });
+  }
+  if (query.onSale) {
+    activeFilters.push({
+      type: 'onSale',
+      value: 'true',
+      label: t('filters.activeFilters.onSale'),
+      onRemove: () => setQuery(q => ({ ...q, onSale: undefined, page: 1 })),
+    });
+  }
+  if (query.inStock) {
+    activeFilters.push({
+      type: 'inStock',
+      value: 'true',
+      label: t('filters.activeFilters.inStock'),
+      onRemove: () => setQuery(q => ({ ...q, inStock: undefined, page: 1 })),
+    });
+  }
+  if (query.rating) {
+    activeFilters.push({
+      type: 'rating',
+      value: String(query.rating),
+      label: t('filters.activeFilters.rating', { count: query.rating }),
+      onRemove: () => setQuery(q => ({ ...q, rating: undefined, page: 1 })),
+    });
+  }
+  for (const mat of query.material ?? []) {
+    activeFilters.push({
+      type: 'material',
+      value: mat,
+      label: t(`filters.materialOptions.${mat}`),
+      onRemove: () =>
+        setQuery(q => ({
+          ...q,
+          material: (q.material ?? []).filter(m => m !== mat),
+          page: 1,
+        })),
+    });
+  }
+  for (const col of query.color ?? []) {
+    activeFilters.push({
+      type: 'color',
+      value: col,
+      label: t(`filters.colorOptions.${col}`),
+      onRemove: () =>
+        setQuery(q => ({
+          ...q,
+          color: (q.color ?? []).filter(c => c !== col),
+          page: 1,
+        })),
+    });
+  }
+  for (const sty of query.style ?? []) {
+    activeFilters.push({
+      type: 'style',
+      value: sty,
+      label: t(`filters.styleOptions.${sty}`),
+      onRemove: () =>
+        setQuery(q => ({
+          ...q,
+          style: (q.style ?? []).filter(s => s !== sty),
+          page: 1,
+        })),
+    });
+  }
+
+  const hasActiveFilters = activeFilters.length > 0;
+
+  const handleSaveFilter = () => {
+    if (savedFilters.length >= 5) {
+      toast('error', t('filters.maxSavedFilters'));
+      return;
+    }
+    const defaultName = t('filters.savedFilterName', { index: savedFilters.length + 1 });
+    const name = window.prompt(t('filters.savedFilterPrompt'), defaultName);
+    if (!name) return;
+    setSavedFilters(prev => [...prev, { name, query: { ...query } }]);
+  };
+
+  const handleDeleteSavedFilter = (index: number) => {
+    setSavedFilters(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleApplySavedFilter = (savedQuery: ProductsQuery) => {
+    setQuery(savedQuery);
+    setSearch(savedQuery.search ?? '');
+    setLocalMinPrice(savedQuery.minPrice !== undefined ? String(savedQuery.minPrice) : '');
+    setLocalMaxPrice(savedQuery.maxPrice !== undefined ? String(savedQuery.maxPrice) : '');
+    setPriceError('');
+    setSavedFiltersOpen(false);
+  };
+
   return (
     <div onTouchStart={handlePullStart} onTouchMove={handlePullMove} onTouchEnd={handlePullEnd}>
       {/* Pull-to-refresh indicator (mobile) */}
@@ -349,10 +522,17 @@ export function CatalogPage() {
           type="button"
           data-testid="catalog-filter-toggle"
           onClick={handleFilterToggle}
-          className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-accent/40 transition-colors"
+          className="relative flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-accent/40 transition-colors"
         >
           <SlidersHorizontal className="h-4 w-4" />
-          <span className="hidden sm:inline">{t('filters.title')}</span>
+          <span className="hidden sm:inline">
+            {hasActiveFilters && data?.total !== undefined
+              ? t('filters.filtersWithCount', { count: data.total })
+              : t('filters.title')}
+          </span>
+          {hasActiveFilters && (
+            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-accent" />
+          )}
         </button>
       </form>
 
@@ -362,25 +542,87 @@ export function CatalogPage() {
           data-testid="catalog-filter-panel"
           className="hidden md:block mb-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3"
         >
-          {/* Header: Filters + Clear */}
+          {/* Header: Filters + Save + Saved + Clear */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-[var(--text-primary)]">
               {t('filters.title')}
             </span>
-            <Button
-              data-testid="catalog-clear-filters"
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                setQuery({ page: 1, limit: 12, sort: 'newest' });
-                setSearch('');
-                setPriceError('');
-                setLocalMinPrice('');
-                setLocalMaxPrice('');
-              }}
-            >
-              {t('filters.clear')}
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Save button */}
+              <Button
+                data-testid="save-filter-button"
+                variant="ghost"
+                size="sm"
+                onClick={handleSaveFilter}
+              >
+                <Save className="h-3.5 w-3.5 mr-1" />
+                {t('filters.save')}
+              </Button>
+
+              {/* Saved Filters dropdown */}
+              <div className="relative" ref={savedFiltersRef}>
+                <Button
+                  data-testid="saved-filters-dropdown"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSavedFiltersOpen(o => !o)}
+                >
+                  {t('filters.savedFilters')}
+                  <ChevronDown className="h-3.5 w-3.5 ml-1" />
+                </Button>
+                {savedFiltersOpen && (
+                  <div className="absolute right-0 top-full mt-1 z-50 w-56 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] shadow-lg py-1">
+                    {savedFilters.length === 0 ? (
+                      <p className="px-3 py-2 text-xs text-[var(--text-secondary)]">
+                        {t('filters.noSavedFilters')}
+                      </p>
+                    ) : (
+                      savedFilters.map((sf, idx) => (
+                        <div
+                          key={idx}
+                          data-testid={`saved-filter-${idx}`}
+                          className="flex items-center justify-between px-3 py-1.5 hover:bg-[var(--bg-sidebar)] cursor-pointer"
+                        >
+                          <button
+                            type="button"
+                            className="flex-1 text-left text-sm text-[var(--text-primary)] truncate"
+                            onClick={() => handleApplySavedFilter(sf.query)}
+                          >
+                            {sf.name}
+                          </button>
+                          <button
+                            type="button"
+                            data-testid={`saved-filter-delete-${idx}`}
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleDeleteSavedFilter(idx);
+                            }}
+                            className="ml-2 p-0.5 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <Button
+                data-testid="catalog-clear-filters"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setQuery({ page: 1, limit: 12, sort: 'newest' });
+                  setSearch('');
+                  setPriceError('');
+                  setLocalMinPrice('');
+                  setLocalMaxPrice('');
+                }}
+              >
+                {t('filters.clear')}
+              </Button>
+            </div>
           </div>
 
           {/* Two-column layout: Left = Price/Color/Checkboxes, Right = Material/Style */}
@@ -522,6 +764,39 @@ export function CatalogPage() {
                 />
                 {t('filters.inStock')}
               </label>
+
+              {/* Rating stars */}
+              <div>
+                <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
+                  {t('filters.rating')}
+                </label>
+                <div data-testid="filter-rating" className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      data-testid={`filter-star-${star}`}
+                      aria-label={t('filters.starAria', { count: star })}
+                      onClick={() =>
+                        setQuery(q => ({
+                          ...q,
+                          rating: q.rating === star ? undefined : star,
+                          page: 1,
+                        }))
+                      }
+                      className="p-0.5 transition-colors"
+                    >
+                      <Star
+                        className={`h-5 w-5 ${
+                          query.rating && star <= query.rating
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'fill-none text-[var(--text-secondary)] hover:text-amber-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Right column: Material above Style, aligned right */}
@@ -601,6 +876,29 @@ export function CatalogPage() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Active Filter Chips */}
+      {hasActiveFilters && (
+        <div data-testid="active-filters" className="mb-4 flex flex-wrap gap-2">
+          {activeFilters.map(af => (
+            <span
+              key={`${af.type}-${af.value}`}
+              data-testid={`active-filter-${af.type}-${af.value}`}
+              className="inline-flex items-center gap-1 rounded-full bg-[var(--bg-sidebar)] border border-[var(--border)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)]"
+            >
+              {af.label}
+              <button
+                type="button"
+                data-testid={`active-filter-remove-${af.type}-${af.value}`}
+                onClick={af.onRemove}
+                className="ml-0.5 p-0.5 rounded-full hover:bg-[var(--border)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
         </div>
       )}
 

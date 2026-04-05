@@ -14,6 +14,7 @@ export interface ProductsQuery {
   material?: string[];
   color?: string[];
   style?: string[];
+  rating?: number;
 }
 
 export const productsApi = {

@@ -18,6 +18,7 @@ export const ProductsQuerySchema = z.object({
   material: z.string().optional(),
   color: z.string().optional(),
   style: z.string().optional(),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
   sort: z.enum(['newest', 'priceAsc', 'priceDesc', 'rating']).optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
@@ -36,6 +37,7 @@ export async function getProducts(query: ProductsQuery) {
     material,
     color,
     style,
+    rating,
     sort,
     page,
     limit,
@@ -79,6 +81,7 @@ export async function getProducts(query: ProductsQuery) {
     }),
     ...(inStock && { stock: { gt: 0 } }),
     ...(onSale && { salePrice: { not: null } }),
+    ...(rating !== undefined && { rating: { gte: rating } }),
     ...(specsFilters.length > 0 && { AND: specsFilters }),
   };
 

@@ -43,6 +43,25 @@
       "gray": "Серый",
       "blue": "Голубой"
     },
+    "rating": "Рейтинг",
+    "starAria": "{{count}} звёзд и выше",
+    "save": "Сохранить",
+    "savedFilters": "Сохранённые фильтры",
+    "savedFilterName": "Фильтр {{index}}",
+    "noSavedFilters": "Нет сохранённых фильтров",
+    "maxSavedFilters": "Максимум 5 сохранённых фильтров",
+    "savedFilterPrompt": "Название для этого набора фильтров:",
+    "filtersWithCount": "Фильтры ({{count}})",
+    "activeFilters": {
+      "onSale": "Со скидкой",
+      "inStock": "В наличии",
+      "price": "{{currency}}{{min}}–{{max}}",
+      "priceMin": "{{currency}}{{min}}+",
+      "priceMax": "До {{currency}}{{max}}",
+      "rating": "★{{count}}+",
+      "category": "{{name}}",
+      "search": "\"{{term}}\""
+    },
     "style": "Стиль",
     "styleOptions": {
       "scandinavian": "Скандинавский",

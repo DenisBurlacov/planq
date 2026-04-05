@@ -43,6 +43,25 @@
       "gray": "Gray",
       "blue": "Blue"
     },
+    "rating": "Rating",
+    "starAria": "{{count}} star and above",
+    "save": "Save",
+    "savedFilters": "Saved Filters",
+    "savedFilterName": "Filter {{index}}",
+    "noSavedFilters": "No saved filters",
+    "maxSavedFilters": "Maximum 5 saved filters",
+    "savedFilterPrompt": "Name for this filter preset:",
+    "filtersWithCount": "Filters ({{count}})",
+    "activeFilters": {
+      "onSale": "On Sale",
+      "inStock": "In Stock",
+      "price": "{{currency}}{{min}}–{{max}}",
+      "priceMin": "{{currency}}{{min}}+",
+      "priceMax": "Up to {{currency}}{{max}}",
+      "rating": "★{{count}}+",
+      "category": "{{name}}",
+      "search": "\"{{term}}\""
+    },
     "style": "Style",
     "styleOptions": {
       "scandinavian": "Scandinavian",
