@@ -44,6 +44,9 @@
       "zip": "Zip / Postal Code",
       "country": "Country",
       "isDefault": "Set as default address"
+    },
+    "validation": {
+      "dangerousContent": "Contains invalid or potentially unsafe characters"
     }
   },
   "wallet": {

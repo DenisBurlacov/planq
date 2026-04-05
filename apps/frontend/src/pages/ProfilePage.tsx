@@ -385,7 +385,48 @@ export function ProfilePage() {
     setAddressModalOpen(true);
   };
 
+  const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
+
   const handleSaveAddress = async () => {
+    // Validate all fields
+    const { validateField: vf, hasDangerousContent: hdc } = await import('@utils/validation');
+    const errs: Record<string, string> = {};
+    const nameErr = vf(addressForm.name, {
+      required: true,
+      minLength: 2,
+      maxLength: 50,
+      fieldName: t('addresses.form.name'),
+    });
+    if (nameErr) errs.name = nameErr;
+    const streetErr = vf(addressForm.street, {
+      required: true,
+      minLength: 5,
+      maxLength: 100,
+      fieldName: t('addresses.form.street'),
+    });
+    if (streetErr) errs.street = streetErr;
+    const cityErr = vf(addressForm.city, {
+      required: true,
+      minLength: 2,
+      maxLength: 50,
+      fieldName: t('addresses.form.city'),
+    });
+    if (cityErr) errs.city = cityErr;
+    const zipErr = vf(addressForm.zip, {
+      required: true,
+      minLength: 3,
+      maxLength: 10,
+      fieldName: t('addresses.form.zip'),
+    });
+    if (zipErr) errs.zip = zipErr;
+    for (const [key, val] of Object.entries(addressForm)) {
+      if (typeof val === 'string' && hdc(val)) {
+        errs[key] = t('addresses.validation.dangerousContent');
+      }
+    }
+    setAddressErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     setSavingAddress(true);
     try {
       if (editingAddress) {
@@ -1051,10 +1092,18 @@ export function ProfilePage() {
                   <input
                     data-testid="address-name-input"
                     value={addressForm.name}
-                    onChange={e => setAddressForm(f => ({ ...f, name: e.target.value }))}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    required
+                    onChange={e => {
+                      setAddressForm(f => ({ ...f, name: e.target.value }));
+                      setAddressErrors(p => ({ ...p, name: '' }));
+                    }}
+                    className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${addressErrors.name ? 'border-red-500' : 'border-[var(--border)]'}`}
+                    maxLength={50}
                   />
+                  {addressErrors.name && (
+                    <p data-testid="address-name-error" className="text-xs text-red-500 mt-1">
+                      {addressErrors.name}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs font-medium text-[var(--text-secondary)]">
@@ -1063,10 +1112,18 @@ export function ProfilePage() {
                   <input
                     data-testid="address-street-input"
                     value={addressForm.street}
-                    onChange={e => setAddressForm(f => ({ ...f, street: e.target.value }))}
-                    className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                    required
+                    onChange={e => {
+                      setAddressForm(f => ({ ...f, street: e.target.value }));
+                      setAddressErrors(p => ({ ...p, street: '' }));
+                    }}
+                    className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${addressErrors.street ? 'border-red-500' : 'border-[var(--border)]'}`}
+                    maxLength={100}
                   />
+                  {addressErrors.street && (
+                    <p data-testid="address-street-error" className="text-xs text-red-500 mt-1">
+                      {addressErrors.street}
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -1076,10 +1133,18 @@ export function ProfilePage() {
                     <input
                       data-testid="address-city-input"
                       value={addressForm.city}
-                      onChange={e => setAddressForm(f => ({ ...f, city: e.target.value }))}
-                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                      required
+                      onChange={e => {
+                        setAddressForm(f => ({ ...f, city: e.target.value }));
+                        setAddressErrors(p => ({ ...p, city: '' }));
+                      }}
+                      className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${addressErrors.city ? 'border-red-500' : 'border-[var(--border)]'}`}
+                      maxLength={50}
                     />
+                    {addressErrors.city && (
+                      <p data-testid="address-city-error" className="text-xs text-red-500 mt-1">
+                        {addressErrors.city}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="text-xs font-medium text-[var(--text-secondary)]">
@@ -1088,10 +1153,18 @@ export function ProfilePage() {
                     <input
                       data-testid="address-zip-input"
                       value={addressForm.zip}
-                      onChange={e => setAddressForm(f => ({ ...f, zip: e.target.value }))}
-                      className="mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                      required
+                      onChange={e => {
+                        setAddressForm(f => ({ ...f, zip: e.target.value }));
+                        setAddressErrors(p => ({ ...p, zip: '' }));
+                      }}
+                      className={`mt-1 w-full rounded-lg border bg-[var(--bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent ${addressErrors.zip ? 'border-red-500' : 'border-[var(--border)]'}`}
+                      maxLength={10}
                     />
+                    {addressErrors.zip && (
+                      <p data-testid="address-zip-error" className="text-xs text-red-500 mt-1">
+                        {addressErrors.zip}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
