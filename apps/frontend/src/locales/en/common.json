@@ -13,7 +13,11 @@
     "support": "Support",
     "about": "About",
     "sale": "Sale",
-    "newArrivals": "New Arrivals"
+    "newArrivals": "New Arrivals",
+    "search": "Search",
+    "searchPlaceholder": "Search products...",
+    "searchNoResults": "No products found",
+    "searchViewAll": "View all results"
   },
   "support": {
     "title": "Support",
@@ -76,7 +80,32 @@
     "builtFor": "Built for QA automation training",
     "logoutTitle": "Sign Out",
     "logoutMessage": "Are you sure you want to sign out?",
-    "keyboardShortcuts": "Keyboard Shortcuts"
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "followUs": "Follow Us",
+    "socialLabel": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "pinterest": "Pinterest",
+      "youtube": "YouTube",
+      "twitter": "X (Twitter)"
+    },
+    "newsletter": {
+      "title": "Stay in the loop",
+      "description": "Subscribe to our newsletter for new arrivals, exclusive deals, and design inspiration.",
+      "placeholder": "Enter your email",
+      "subscribe": "Subscribe",
+      "success": "Thanks for subscribing!",
+      "alreadySubscribed": "You're already subscribed.",
+      "invalidEmail": "Please enter a valid email address."
+    },
+    "legal": "Legal",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "shipping": "Shipping Info",
+    "returns": "Returns",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "blog": "Blog"
   },
   "emailVerification": {
     "checkEmail": "Check your email",

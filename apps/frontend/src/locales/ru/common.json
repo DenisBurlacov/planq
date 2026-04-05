@@ -13,7 +13,11 @@
     "support": "Поддержка",
     "about": "О нас",
     "sale": "Скидки",
-    "newArrivals": "Новинки"
+    "newArrivals": "Новинки",
+    "search": "Поиск",
+    "searchPlaceholder": "Поиск товаров...",
+    "searchNoResults": "Товары не найдены",
+    "searchViewAll": "Все результаты"
   },
   "support": {
     "title": "Поддержка",
@@ -76,7 +80,32 @@
     "builtFor": "Создано для тренировки QA автоматизации",
     "logoutTitle": "Выход",
     "logoutMessage": "Вы уверены, что хотите выйти?",
-    "keyboardShortcuts": "Горячие клавиши"
+    "keyboardShortcuts": "Горячие клавиши",
+    "followUs": "Мы в соцсетях",
+    "socialLabel": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "pinterest": "Pinterest",
+      "youtube": "YouTube",
+      "twitter": "X (Twitter)"
+    },
+    "newsletter": {
+      "title": "Будьте в курсе",
+      "description": "Подпишитесь на рассылку: новинки, эксклюзивные предложения и идеи для дизайна.",
+      "placeholder": "Введите ваш email",
+      "subscribe": "Подписаться",
+      "success": "Спасибо за подписку!",
+      "alreadySubscribed": "Вы уже подписаны.",
+      "invalidEmail": "Введите корректный email."
+    },
+    "legal": "Правовая информация",
+    "faq": "Частые вопросы",
+    "contact": "Контакты",
+    "shipping": "Доставка",
+    "returns": "Возвраты",
+    "privacy": "Конфиденциальность",
+    "terms": "Условия использования",
+    "blog": "Блог"
   },
   "emailVerification": {
     "checkEmail": "Проверьте почту",

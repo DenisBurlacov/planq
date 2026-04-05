@@ -1,0 +1,364 @@
+{
+  "blog": {
+    "title": "Blog & Inspiration",
+    "subtitle": "Design ideas, guides, and trends for your home",
+    "filterAll": "All",
+    "filterTrends": "Trends",
+    "filterGuides": "Guides",
+    "filterInspiration": "Inspiration",
+    "filterSustainability": "Sustainability",
+    "readMore": "Read more",
+    "minRead": "{{minutes}} min read",
+    "noArticles": "No articles found in this category.",
+    "backToBlog": "Back to Blog",
+    "relatedArticles": "Related Articles",
+    "articles": {
+      "scandinavian-design-trends-2026": {
+        "title": "Scandinavian Design Trends for 2026",
+        "excerpt": "Discover the latest Scandinavian design trends shaping modern interiors this year, from warm minimalism to nature-inspired textures.",
+        "content": "<h2>The Evolution of Nordic Design</h2><p>Scandinavian design continues to evolve in 2026, embracing warmer tones and organic materials while maintaining its hallmark simplicity. This year, we see a shift toward what designers call 'warm minimalism' — spaces that feel both clean and inviting.</p><h3>Key Trends</h3><ul><li><strong>Warm Neutrals:</strong> Beige, camel, and terracotta replace stark whites</li><li><strong>Curved Furniture:</strong> Soft, rounded forms dominate new collections</li><li><strong>Natural Textures:</strong> Bouclé, linen, and raw wood take center stage</li><li><strong>Japandi Influence:</strong> The fusion of Japanese and Scandinavian aesthetics deepens</li></ul><p>These trends reflect a growing desire for homes that feel like sanctuaries — calm, warm, and deeply personal.</p>"
+      },
+      "small-space-furniture-guide": {
+        "title": "The Ultimate Small-Space Furniture Guide",
+        "excerpt": "Make the most of compact living with our expert tips on choosing multifunctional furniture that maximizes every square meter.",
+        "content": "<h2>Living Large in Small Spaces</h2><p>Urban living often means making the most of limited square footage. The right furniture choices can transform a cramped apartment into a functional, stylish home.</p><h3>Multi-Functional Pieces</h3><p>Look for furniture that serves double duty: storage ottomans, extendable dining tables, and sofa beds with hidden storage compartments.</p><h3>Scale Matters</h3><p>Choose furniture proportional to your space. A slim-profile sofa can make a small living room feel much more open than an oversized sectional.</p><h3>Vertical Storage</h3><ul><li>Wall-mounted shelving systems</li><li>Tall, narrow bookcases</li><li>Over-door organizers</li><li>Floating nightstands</li></ul><p>Remember: in small spaces, every piece of furniture should earn its place.</p>"
+      },
+      "living-room-color-palettes": {
+        "title": "Color Palettes That Transform Your Living Room",
+        "excerpt": "From serene neutrals to bold accents, explore color combinations that bring personality and warmth to your living space.",
+        "content": "<h2>The Power of Color</h2><p>Color is one of the most powerful tools in interior design. The right palette can make a room feel larger, cozier, more energetic, or more serene.</p><h3>Trending Palettes for 2026</h3><ul><li><strong>Forest & Sage:</strong> Deep greens paired with soft sage and cream</li><li><strong>Warm Earth:</strong> Terracotta, rust, and warm beige</li><li><strong>Ocean Calm:</strong> Navy, soft blue, and sandy neutrals</li><li><strong>Modern Blush:</strong> Dusty pink with charcoal and gold accents</li></ul><h3>Tips for Implementation</h3><p>Start with a base neutral, add your main color through larger pieces like sofas and rugs, then layer accent colors through cushions, artwork, and accessories.</p>"
+      },
+      "sustainable-materials-furniture": {
+        "title": "Sustainable Materials in Modern Furniture",
+        "excerpt": "Learn about eco-friendly materials revolutionizing furniture manufacturing and how to make environmentally conscious choices.",
+        "content": "<h2>Building a Greener Future</h2><p>The furniture industry is undergoing a sustainability revolution. Consumers increasingly demand eco-friendly options, and manufacturers are responding with innovative materials and processes.</p><h3>Materials to Look For</h3><ul><li><strong>FSC-Certified Wood:</strong> Sourced from responsibly managed forests</li><li><strong>Recycled Metals:</strong> Aluminum and steel with high recycled content</li><li><strong>Organic Fabrics:</strong> GOTS-certified cotton, linen, and hemp</li><li><strong>Bamboo:</strong> Fast-growing, renewable, and incredibly versatile</li><li><strong>Cork:</strong> Harvested without cutting trees, naturally renewable</li></ul><h3>What to Avoid</h3><p>Steer clear of furniture containing formaldehyde-based adhesives, PVC, and non-recyclable composite materials. Look for certifications like Greenguard, OEKO-TEX, and Cradle to Cradle.</p>"
+      },
+      "home-office-setup-guide": {
+        "title": "The Perfect Home Office Setup",
+        "excerpt": "Create a productive and comfortable workspace at home with our comprehensive guide to ergonomic furniture and smart layouts.",
+        "content": "<h2>Designing Your Workspace</h2><p>A well-designed home office can dramatically improve your productivity, comfort, and work-life balance. Here's how to create the perfect setup.</p><h3>The Essential Desk</h3><p>Your desk should be at elbow height when seated. Consider a sit-stand desk for flexibility throughout the day. A minimum width of 120cm provides adequate space for a monitor and workspace.</p><h3>Ergonomic Seating</h3><p>Invest in a quality office chair with adjustable height, lumbar support, and armrests. Your feet should rest flat on the floor with knees at 90 degrees.</p><h3>Lighting</h3><ul><li>Position your desk perpendicular to windows to reduce glare</li><li>Add a quality desk lamp with adjustable color temperature</li><li>Ensure ambient lighting is sufficient to reduce eye strain</li></ul><h3>Organization</h3><p>Cable management, drawer organizers, and wall-mounted storage keep your workspace clean and your mind focused.</p>"
+      },
+      "bedroom-makeover-inspiration": {
+        "title": "Bedroom Makeover: From Drab to Dream",
+        "excerpt": "Transform your bedroom into a restful sanctuary with these design tips, from choosing the right bed frame to creating the perfect ambiance.",
+        "content": "<h2>Your Personal Retreat</h2><p>Your bedroom should be your sanctuary — a place where you can truly relax and recharge. Here's how to create a space that promotes rest and reflects your style.</p><h3>Start with the Bed</h3><p>The bed is the focal point of any bedroom. Choose a frame that anchors the room and invest in quality bedding. A upholstered headboard adds both comfort and visual warmth.</p><h3>Layer Your Lighting</h3><ul><li>Overhead: dimmable main light for flexibility</li><li>Task: bedside lamps for reading</li><li>Ambient: LED strips or fairy lights for atmosphere</li></ul><h3>Textiles Make the Room</h3><p>Layer different textures — a knitted throw, linen sheets, velvet cushions. This creates depth and makes the space feel luxurious and inviting.</p><h3>Keep It Clutter-Free</h3><p>A tidy bedroom promotes better sleep. Invest in smart storage solutions and keep surfaces minimal.</p>"
+      }
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about orders, shipping, returns, and more",
+    "searchPlaceholder": "Search questions...",
+    "noResults": "No questions match your search.",
+    "stillHaveQuestions": "Still have questions?",
+    "stillHaveQuestionsDesc": "Can't find what you're looking for? Our support team is here to help.",
+    "contactUs": "Contact Us",
+    "sections": {
+      "ordersShipping": "Orders & Shipping",
+      "returnsRefunds": "Returns & Refunds",
+      "products": "Products",
+      "payment": "Payment",
+      "account": "Account"
+    },
+    "questions": {
+      "0": {
+        "0": {
+          "q": "How can I track my order?",
+          "a": "Once your order has been shipped, you'll receive a tracking number via email. You can also check your order status in your account under 'My Orders'."
+        },
+        "1": {
+          "q": "What are the delivery times?",
+          "a": "Standard delivery takes 5-7 business days. Express delivery is available for 2-3 business days. Large furniture items may take 7-14 business days due to special handling."
+        },
+        "2": {
+          "q": "How much does shipping cost?",
+          "a": "Shipping costs vary by destination. Orders over €200 within the Netherlands qualify for free standard shipping. Check our Shipping Info page for detailed rates."
+        },
+        "3": {
+          "q": "Do you ship internationally?",
+          "a": "Yes, we ship throughout the EU and to the UK. International shipping rates and delivery times vary by destination. See our Shipping Info page for details."
+        }
+      },
+      "1": {
+        "0": {
+          "q": "What is your return window?",
+          "a": "We offer a 30-day return policy for most items. Items must be in their original condition and packaging. Custom orders and clearance items are final sale."
+        },
+        "1": {
+          "q": "How do I return an item?",
+          "a": "Log into your account, go to 'My Orders', select the order, and click 'Initiate Return'. Follow the instructions to print a return label and schedule a pickup."
+        },
+        "2": {
+          "q": "When will I receive my refund?",
+          "a": "Refunds are processed within 5-10 business days after we receive your returned item. The refund will be credited to your original payment method or wallet."
+        },
+        "3": {
+          "q": "What if my item arrives damaged?",
+          "a": "Contact us immediately at support@planq.store with photos of the damage. We'll arrange a replacement or full refund at no extra cost, including return shipping."
+        }
+      },
+      "2": {
+        "0": {
+          "q": "What materials are used in your furniture?",
+          "a": "We use high-quality, sustainably sourced materials including FSC-certified solid wood, premium fabrics (linen, cotton, bouclé), and powder-coated steel. Each product page lists specific materials."
+        },
+        "1": {
+          "q": "Does the furniture require assembly?",
+          "a": "Most items are delivered flat-packed with clear assembly instructions and all necessary hardware. Assembly typically takes 30-60 minutes. Some larger pieces are available with professional assembly for an additional fee."
+        },
+        "2": {
+          "q": "What warranty do you offer?",
+          "a": "All furniture comes with a 2-year warranty covering manufacturing defects. Structural frames have a 5-year warranty. The warranty does not cover normal wear and tear."
+        }
+      },
+      "3": {
+        "0": {
+          "q": "What payment methods do you accept?",
+          "a": "We accept Visa, Mastercard, American Express, and wallet payments. All transactions are secured with SSL encryption."
+        },
+        "1": {
+          "q": "Can I use a promo code?",
+          "a": "Yes! Enter your promo code in the cart before checkout. Promo codes cannot be combined with other offers. Each code can only be used once per account."
+        },
+        "2": {
+          "q": "Do you offer installment payments?",
+          "a": "Currently, we do not offer installment payments. However, you can use your PLANQ wallet to split payments. Top up your wallet and pay for orders using your balance."
+        }
+      },
+      "4": {
+        "0": {
+          "q": "How do I create an account?",
+          "a": "Click 'Sign Up' in the top navigation. You can register with your email address or continue with Google or GitHub. Verify your email to access all features."
+        },
+        "1": {
+          "q": "How do I reset my password?",
+          "a": "Click 'Forgot password?' on the sign-in page. Enter your email address and we'll send you a reset link. The link expires after 1 hour."
+        },
+        "2": {
+          "q": "How do I delete my account?",
+          "a": "Contact our support team at support@planq.store to request account deletion. Please note that all order history and wallet balance will be permanently removed."
+        }
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We'd love to hear from you. Send us a message and we'll respond within 24 hours.",
+    "name": "Full Name",
+    "namePlaceholder": "Your name",
+    "email": "Email Address",
+    "emailPlaceholder": "you@example.com",
+    "subject": "Subject",
+    "subjectPlaceholder": "Select a subject",
+    "subjects": {
+      "general": "General Inquiry",
+      "order": "Order Issue",
+      "product": "Product Question",
+      "feedback": "Feedback",
+      "other": "Other"
+    },
+    "message": "Message",
+    "messagePlaceholder": "Tell us how we can help...",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "successMessage": "Message sent! We'll get back to you within 24 hours.",
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameMin": "Name must be at least 2 characters",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "subjectRequired": "Please select a subject",
+      "messageRequired": "Message is required",
+      "messageMin": "Message must be at least 10 characters"
+    },
+    "info": {
+      "emailLabel": "Email",
+      "emailValue": "support@planq.store",
+      "phoneLabel": "Phone",
+      "phoneValue": "+31 20 123 4567",
+      "addressLabel": "Address",
+      "addressValue": "Herengracht 100, 1015 Amsterdam, Netherlands",
+      "hoursLabel": "Working Hours",
+      "hoursValue": "Mon-Fri 9:00-17:00 CET"
+    }
+  },
+  "static": {
+    "lastUpdated": "Last updated: {{date}}"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "sections": {
+      "0": {
+        "heading": "Introduction",
+        "content": "At PLANQ, we are committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store, and protect your information when you use our website and services. By using our platform, you consent to the practices described in this policy."
+      },
+      "1": {
+        "heading": "Information We Collect",
+        "content": "<p>We collect the following types of information:</p><ul><li><strong>Personal Data:</strong> Name, email address, shipping address, phone number, and payment information when you create an account or place an order.</li><li><strong>Usage Data:</strong> Browsing history, pages visited, products viewed, search queries, and interaction patterns to improve our services.</li><li><strong>Cookies:</strong> We use essential, analytics, and marketing cookies to enhance your experience. See our Cookies section below for details.</li></ul>"
+      },
+      "2": {
+        "heading": "How We Use Your Information",
+        "content": "<p>Your information is used to:</p><ul><li>Process and fulfill your orders</li><li>Manage your account and provide customer support</li><li>Send order updates and shipping notifications</li><li>Personalize your shopping experience</li><li>Send promotional offers (with your consent)</li><li>Improve our website and services</li><li>Prevent fraud and ensure security</li></ul>"
+      },
+      "3": {
+        "heading": "Data Sharing & Third Parties",
+        "content": "We do not sell your personal data. We share information only with trusted third parties necessary to operate our business: payment processors (Stripe), shipping carriers, email service providers, and analytics tools (Google Analytics). All third parties are bound by data processing agreements."
+      },
+      "4": {
+        "heading": "Data Retention",
+        "content": "We retain your personal data for as long as your account is active or as needed to provide services. Order data is kept for 7 years for legal and accounting purposes. You may request deletion of your data at any time, subject to legal retention requirements."
+      },
+      "5": {
+        "heading": "Your Rights",
+        "content": "<p>Under GDPR, you have the right to:</p><ul><li><strong>Access:</strong> Request a copy of your personal data</li><li><strong>Rectification:</strong> Correct inaccurate or incomplete data</li><li><strong>Erasure:</strong> Request deletion of your data ('right to be forgotten')</li><li><strong>Portability:</strong> Receive your data in a structured, machine-readable format</li><li><strong>Object:</strong> Opt out of marketing communications at any time</li></ul><p>To exercise these rights, contact us at support@planq.store.</p>"
+      },
+      "6": {
+        "heading": "Cookies Policy",
+        "content": "<p>We use the following types of cookies:</p><ul><li><strong>Essential:</strong> Required for the website to function (cart, authentication)</li><li><strong>Analytics:</strong> Help us understand how visitors use our site</li><li><strong>Marketing:</strong> Used for personalized advertising</li></ul><p>You can manage cookie preferences through the cookie consent banner or your browser settings.</p>"
+      },
+      "7": {
+        "heading": "Contact Us",
+        "content": "If you have questions about this Privacy Policy or your data, please contact us at support@planq.store or visit our <a href='/contact'>Contact page</a>."
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms & Conditions",
+    "sections": {
+      "0": {
+        "heading": "Acceptance of Terms",
+        "content": "By accessing and using the PLANQ website, you agree to be bound by these Terms & Conditions. If you do not agree with any part of these terms, please do not use our services. We reserve the right to update these terms at any time, and continued use of the site constitutes acceptance of any changes."
+      },
+      "1": {
+        "heading": "Products & Pricing",
+        "content": "All product descriptions, images, and prices are provided as accurately as possible. Prices are displayed in euros (€) and include applicable VAT. We reserve the right to modify prices without prior notice. In the event of a pricing error, we will contact you before processing the order."
+      },
+      "2": {
+        "heading": "Orders & Payment",
+        "content": "By placing an order, you are making an offer to purchase. We reserve the right to refuse any order. Payment is required at the time of ordering. We accept Visa, Mastercard, American Express, and PLANQ wallet payments. All transactions are processed securely."
+      },
+      "3": {
+        "heading": "Shipping & Delivery",
+        "content": "Delivery times are estimates and not guaranteed. We are not responsible for delays caused by carriers, customs, or circumstances beyond our control. Risk of loss passes to you upon delivery. Please inspect items upon receipt and report any damage within 48 hours."
+      },
+      "4": {
+        "heading": "Returns & Refunds",
+        "content": "Items may be returned within 30 days of delivery in their original condition and packaging. Custom orders, clearance items, and opened mattresses are non-returnable. Refunds are processed within 5-10 business days after receipt of returned items. Return shipping costs are the buyer's responsibility unless the item is defective."
+      },
+      "5": {
+        "heading": "Warranty",
+        "content": "All furniture products come with a 2-year manufacturer's warranty covering defects in materials and workmanship. Structural frames carry a 5-year warranty. The warranty does not cover normal wear and tear, misuse, or unauthorized modifications. Proof of purchase is required for warranty claims."
+      },
+      "6": {
+        "heading": "Limitation of Liability",
+        "content": "PLANQ shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our products or services. Our total liability shall not exceed the amount paid for the product in question. This limitation applies to the fullest extent permitted by law."
+      },
+      "7": {
+        "heading": "Governing Law",
+        "content": "These Terms & Conditions are governed by the laws of the Netherlands. Any disputes shall be resolved in the courts of Amsterdam. If any provision of these terms is found unenforceable, the remaining provisions shall continue in full force and effect."
+      },
+      "8": {
+        "heading": "Changes to Terms",
+        "content": "We reserve the right to update these Terms & Conditions at any time. Material changes will be communicated via email or a prominent notice on our website. Your continued use of the site after changes are posted constitutes acceptance of the revised terms."
+      }
+    }
+  },
+  "shipping": {
+    "title": "Shipping Information",
+    "sections": {
+      "0": {
+        "heading": "Shipping Methods",
+        "content": "We offer two shipping methods: <strong>Standard Delivery</strong> (5-7 business days) and <strong>Express Delivery</strong> (2-3 business days). Express delivery is available for most items except oversized furniture. All orders are processed within 1-2 business days before shipping."
+      },
+      "1": {
+        "heading": "Shipping Rates",
+        "content": "Shipping rates depend on your location and chosen delivery method. See the rates table below for detailed pricing."
+      },
+      "2": {
+        "heading": "Free Shipping",
+        "content": "Free standard shipping is available when your order reaches the minimum threshold for your delivery region. Free shipping applies to standard delivery only; express shipping fees still apply."
+      },
+      "3": {
+        "heading": "Order Processing Time",
+        "content": "Orders placed before 2:00 PM CET on business days are processed the same day. Orders placed after 2:00 PM or on weekends/holidays are processed the next business day. You'll receive a confirmation email with tracking information once your order ships."
+      },
+      "4": {
+        "heading": "Tracking Your Order",
+        "content": "Once your order ships, you'll receive a tracking number via email. You can also track your order in your account under 'My Orders'. Tracking information is typically updated within 24 hours of shipment."
+      },
+      "5": {
+        "heading": "Large Items & Furniture Delivery",
+        "content": "Large furniture items require special handling and may have longer delivery times (7-14 business days). These items are delivered to your door by a specialized carrier. White-glove delivery service (unpacking and room placement) is available for an additional fee. Please ensure someone is available to receive the delivery."
+      },
+      "6": {
+        "heading": "International Shipping",
+        "content": "We ship throughout the EU and to the UK. International orders may be subject to customs duties and import taxes, which are the responsibility of the recipient. Delivery times for international orders may vary depending on customs processing."
+      }
+    },
+    "table": {
+      "destination": "Destination",
+      "standard": "Standard (5-7 days)",
+      "express": "Express (2-3 days)",
+      "freeThreshold": "Free shipping from",
+      "rows": {
+        "0": {
+          "destination": "Netherlands",
+          "standard": "€4.95",
+          "express": "€9.95",
+          "free": "€75+"
+        },
+        "1": {
+          "destination": "Germany, Belgium, Luxembourg",
+          "standard": "€7.95",
+          "express": "€14.95",
+          "free": "€150+"
+        },
+        "2": {
+          "destination": "Rest of EU",
+          "standard": "€12.95",
+          "express": "€24.95",
+          "free": "€200+"
+        },
+        "3": {
+          "destination": "United Kingdom",
+          "standard": "€14.95",
+          "express": "€29.95",
+          "free": "€250+"
+        }
+      }
+    }
+  },
+  "returns": {
+    "title": "Returns & Refunds",
+    "sections": {
+      "0": {
+        "heading": "30-Day Return Policy",
+        "content": "We want you to love your purchase. If you're not completely satisfied, you can return most items within 30 days of delivery for a full refund. Items must be in their original, unused condition with all original packaging and tags."
+      },
+      "1": {
+        "heading": "Eligible Items",
+        "content": "<p>The following items are eligible for return:</p><ul><li>Furniture in original, unassembled condition</li><li>Decor and accessories in original packaging</li><li>Textiles with tags attached and unwashed</li><li>Lighting fixtures in original packaging</li></ul>"
+      },
+      "2": {
+        "heading": "Non-Returnable Items",
+        "content": "<p>The following items cannot be returned:</p><ul><li>Custom or made-to-order furniture</li><li>Clearance and final sale items</li><li>Opened mattresses and bedding (for hygiene reasons)</li><li>Items that have been assembled, used, or modified</li><li>Gift cards</li></ul>"
+      },
+      "3": {
+        "heading": "How to Initiate a Return",
+        "content": "<ol><li>Log into your PLANQ account and go to 'My Orders'</li><li>Select the order containing the item you wish to return</li><li>Click 'Initiate Return' and select the reason</li><li>Print the prepaid return label</li><li>Pack the item securely in its original packaging</li><li>Drop off at your nearest carrier location or schedule a pickup</li></ol>"
+      },
+      "4": {
+        "heading": "Refund Process & Timeline",
+        "content": "Once we receive and inspect your returned item, we'll process your refund within 5-10 business days. Refunds are credited to your original payment method. Wallet refunds are processed immediately. Please allow an additional 3-5 business days for the refund to appear on your bank statement."
+      },
+      "5": {
+        "heading": "Exchanges",
+        "content": "We do not offer direct exchanges. To get a different item, please return the original item for a refund and place a new order. This ensures the fastest processing time and guarantees stock availability for your desired item."
+      },
+      "6": {
+        "heading": "Damaged or Defective Items",
+        "content": "If you receive a damaged or defective item, contact us at support@planq.store within 48 hours of delivery. Include photos of the damage and your order number. We'll arrange a free return and send a replacement or issue a full refund, including any shipping costs."
+      }
+    }
+  }
+}

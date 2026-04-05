@@ -1,7 +1,16 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import {
+  ArrowRight,
+  Truck,
+  ShieldCheck,
+  RefreshCw,
+  Headphones,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { productsApi } from '@api/products';
@@ -13,6 +22,7 @@ import type { Product } from '@appTypes/api';
 import { ApiException } from '@api/client';
 import { useTranslation } from 'react-i18next';
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '@constants/categoryIcons';
+import { TESTIMONIALS } from '@constants/testimonials';
 
 // Verified Unsplash hero images (Scandinavian interior)
 const HERO_IMAGES = [
@@ -31,6 +41,7 @@ export function HomePage() {
   const location = useLocation();
 
   const heroBgRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   // Parallax on scroll
   useEffect(() => {
@@ -138,6 +149,50 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── Trust Badges ─────────────────────────────────────────────────── */}
+      <section data-testid="trust-badges" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            icon: Truck,
+            titleKey: 'home.trustBadges.shipping.title',
+            subtitleKey: 'home.trustBadges.shipping.subtitle',
+            testId: 'trust-badge-shipping',
+          },
+          {
+            icon: ShieldCheck,
+            titleKey: 'home.trustBadges.payment.title',
+            subtitleKey: 'home.trustBadges.payment.subtitle',
+            testId: 'trust-badge-payment',
+          },
+          {
+            icon: RefreshCw,
+            titleKey: 'home.trustBadges.returns.title',
+            subtitleKey: 'home.trustBadges.returns.subtitle',
+            testId: 'trust-badge-returns',
+          },
+          {
+            icon: Headphones,
+            titleKey: 'home.trustBadges.support.title',
+            subtitleKey: 'home.trustBadges.support.subtitle',
+            testId: 'trust-badge-support',
+          },
+        ].map(badge => (
+          <div
+            key={badge.testId}
+            data-testid={badge.testId}
+            className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-4"
+          >
+            <div className="rounded-lg bg-accent/10 p-2.5">
+              <badge.icon className="h-5 w-5 text-accent" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-[var(--text-primary)]">{t(badge.titleKey)}</p>
+              <p className="text-xs text-[var(--text-secondary)]">{t(badge.subtitleKey)}</p>
+            </div>
+          </div>
+        ))}
+      </section>
+
       {/* ── Category tiles ────────────────────────────────────────────────── */}
       {categories && categories.length > 0 && (
         <section data-testid="categories-section">
@@ -215,6 +270,9 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── Testimonials Carousel ────────────────────────────────────────── */}
+      <TestimonialsSection carouselRef={carouselRef} t={t} />
+
       {/* ── Sale Banner ───────────────────────────────────────────────────── */}
       <section
         data-testid="sale-banner"
@@ -246,6 +304,113 @@ export function HomePage() {
           </Link>
         </div>
       </section>
+      {/* ── Brand Partners ────────────────────────────────────────────────── */}
+      <section data-testid="partners-section">
+        <p
+          data-testid="partners-title"
+          className="text-center text-sm font-medium uppercase tracking-widest text-[var(--text-secondary)] mb-6"
+        >
+          {t('home.partners.title')}
+        </p>
+        <div className="flex items-center justify-between gap-8 overflow-x-auto scrollbar-hide py-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span
+              key={i}
+              data-testid={`partner-logo-${i}`}
+              className="text-lg font-bold text-[var(--text-secondary)] opacity-50 hover:opacity-100 hover:text-[var(--text-primary)] transition-all duration-200 shrink-0"
+            >
+              {t(`home.partners.names.${i}`)}
+            </span>
+          ))}
+        </div>
+      </section>
     </div>
+  );
+}
+
+function TestimonialsSection({
+  carouselRef,
+  t,
+}: {
+  carouselRef: React.RefObject<HTMLDivElement>;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+}) {
+  const scrollBy = useCallback(
+    (direction: number) => {
+      if (!carouselRef.current) return;
+      const scrollAmount = carouselRef.current.offsetWidth * 0.8 * direction;
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    },
+    [carouselRef]
+  );
+
+  return (
+    <section data-testid="testimonials-section">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2
+            data-testid="testimonials-title"
+            className="text-xl font-bold text-[var(--text-primary)]"
+          >
+            {t('home.testimonials.title')}
+          </h2>
+          <p className="text-sm text-[var(--text-secondary)]">{t('home.testimonials.subtitle')}</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            data-testid="testimonials-prev"
+            onClick={() => scrollBy(-1)}
+            className="p-2 rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-sm hover:bg-[var(--bg-sidebar)] transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            data-testid="testimonials-next"
+            onClick={() => scrollBy(1)}
+            className="p-2 rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-sm hover:bg-[var(--bg-sidebar)] transition-colors"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      <div
+        ref={carouselRef}
+        data-testid="testimonials-carousel"
+        className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide pb-2"
+      >
+        {TESTIMONIALS.map(testimonial => (
+          <div
+            key={testimonial.id}
+            data-testid={`testimonial-card-${testimonial.id}`}
+            className="snap-start shrink-0 w-[85vw] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6"
+          >
+            <div className="flex gap-0.5 mb-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star
+                  key={i}
+                  className={`h-4 w-4 ${i < testimonial.rating ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
+                />
+              ))}
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed mb-4">
+              &ldquo;{t(testimonial.quoteKey.replace('catalog:', ''))}&rdquo;
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-accent/10 text-accent font-semibold text-sm flex items-center justify-center">
+                {testimonial.avatar}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-[var(--text-primary)]">
+                  {t(testimonial.nameKey.replace('catalog:', ''))}
+                </p>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  {t(testimonial.locationKey.replace('catalog:', ''))}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

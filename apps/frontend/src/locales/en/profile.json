@@ -6,7 +6,8 @@
     "security": "Security",
     "notifications": "Notifications",
     "addresses": "Addresses",
-    "webhooks": "Webhooks"
+    "webhooks": "Webhooks",
+    "paymentMethods": "Payment Methods"
   },
   "notifications": {
     "title": "Notification Preferences",
@@ -127,7 +128,30 @@
     "addressAdded": "Address added",
     "addressUpdated": "Address updated",
     "addressDeleted": "Address deleted",
-    "defaultAddressUpdated": "Default address updated"
+    "defaultAddressUpdated": "Default address updated",
+    "cardAdded": "Card added",
+    "cardDeleted": "Card deleted",
+    "defaultCardUpdated": "Default card updated"
+  },
+  "paymentMethods": {
+    "title": "Payment Methods",
+    "addCard": "Add Card",
+    "deleteCard": "Remove Card",
+    "deleteConfirm": "Are you sure you want to remove this card?",
+    "setDefault": "Set as Default",
+    "default": "Default",
+    "empty": "No saved cards",
+    "emptyHint": "Add a payment card for faster checkout",
+    "maxCards": "Maximum 5 cards allowed",
+    "cardNumber": "Card Number",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "cardholderName": "Cardholder Name",
+    "cardholderPlaceholder": "Name on card",
+    "expMonth": "Expiry Month",
+    "expYear": "Expiry Year",
+    "brand": "Brand",
+    "maskedNumber": "**** **** **** {{last4}}",
+    "expires": "Expires {{month}}/{{year}}"
   },
   "auth": {
     "login": "Sign In",

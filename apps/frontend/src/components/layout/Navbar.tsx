@@ -8,10 +8,11 @@ import {
   Moon,
   LogOut,
   Menu,
-  X,
+  X as XIcon,
   Shield,
   ChevronDown,
   ChevronRight,
+  Search,
 } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,11 @@ export function Navbar() {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [catalogExpanded, setCatalogExpanded] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<import('@appTypes/api').Product[]>([]);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuItemsRef = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
   const megaMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -133,15 +139,49 @@ export function Navbar() {
     }, 300);
   };
 
+  const isAdminRole = user?.role === 'ADMIN';
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'MANAGER';
 
+  // Search debounce
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const result = await productsApi.list({ search: searchQuery, limit: 5 });
+        setSearchResults(result.items);
+      } catch {
+        setSearchResults([]);
+      }
+    }, 300);
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, [searchQuery]);
+
+  // Ctrl+K opens search
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+        setTimeout(() => searchInputRef.current?.focus(), 50);
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
   const pathname = location.pathname;
-  const search = location.search;
+  const locationSearch = location.search;
 
   const navLinkClass = (path: string, matchSearch?: string) => {
     const isActive = matchSearch
-      ? pathname === path.split('?')[0] && search.includes(matchSearch)
-      : pathname === path && !search;
+      ? pathname === path.split('?')[0] && locationSearch.includes(matchSearch)
+      : pathname === path && !locationSearch;
     return `px-3 py-2 text-sm transition-colors rounded-lg ${
       isActive
         ? 'text-accent font-medium bg-accent/5'
@@ -175,56 +215,186 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            <div
-              className="relative"
-              onMouseEnter={handleCatalogMouseEnter}
-              onMouseLeave={handleCatalogMouseLeave}
-            >
-              <Link data-testid="nav-catalog" to="/catalog" className={navLinkClass('/catalog')}>
-                {t('nav.catalog')}
-              </Link>
-            </div>
-            <Link data-testid="nav-about" to="/about" className={navLinkClass('/about')}>
-              {t('nav.about')}
-            </Link>
-            <Link
-              data-testid="nav-sale"
-              to="/catalog?onSale=true"
-              className={`${navLinkClass('/catalog', 'onSale=true')} ${
-                pathname === '/catalog' && search.includes('onSale=true')
-                  ? '!text-red-500 !font-medium'
-                  : 'text-red-500 hover:text-red-600'
-              }`}
-            >
-              {t('nav.sale')}
-            </Link>
-            <Link
-              data-testid="nav-new-arrivals"
-              to="/catalog?sort=newest"
-              className={navLinkClass('/catalog', 'sort=newest')}
-            >
-              {t('nav.newArrivals')}
-            </Link>
-            {accessToken && (
-              <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
-                {t('nav.orders')}
-              </Link>
-            )}
-            {isAdmin && (
-              <Link
-                data-testid="nav-admin"
-                to="/admin"
-                className="flex items-center gap-1 px-3 py-2 text-sm text-accent hover:text-accent-hover transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
-              >
-                <Shield className="h-4 w-4" />
-                {t('nav.admin')}
-              </Link>
+            {isAdminRole ? (
+              <>
+                <Link
+                  data-testid="nav-admin"
+                  to="/admin"
+                  className="flex items-center gap-1 px-3 py-2 text-sm text-accent hover:text-accent-hover transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
+                >
+                  <Shield className="h-4 w-4" />
+                  {t('nav.admin')}
+                </Link>
+              </>
+            ) : (
+              <>
+                <div
+                  className="relative"
+                  onMouseEnter={handleCatalogMouseEnter}
+                  onMouseLeave={handleCatalogMouseLeave}
+                >
+                  <Link
+                    data-testid="nav-catalog"
+                    to="/catalog"
+                    className={navLinkClass('/catalog')}
+                  >
+                    {t('nav.catalog')}
+                  </Link>
+                </div>
+                <Link data-testid="nav-about" to="/about" className={navLinkClass('/about')}>
+                  {t('nav.about')}
+                </Link>
+                <Link
+                  data-testid="nav-sale"
+                  to="/catalog?onSale=true"
+                  className={`${navLinkClass('/catalog', 'onSale=true')} ${
+                    pathname === '/catalog' && locationSearch.includes('onSale=true')
+                      ? '!text-red-500 !font-medium'
+                      : 'text-red-500 hover:text-red-600'
+                  }`}
+                >
+                  {t('nav.sale')}
+                </Link>
+                <Link
+                  data-testid="nav-new-arrivals"
+                  to="/catalog?sort=newest"
+                  className={navLinkClass('/catalog', 'sort=newest')}
+                >
+                  {t('nav.newArrivals')}
+                </Link>
+                {accessToken && (
+                  <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
+                    {t('nav.orders')}
+                  </Link>
+                )}
+                {isAdmin && (
+                  <Link
+                    data-testid="nav-admin"
+                    to="/admin"
+                    className="flex items-center gap-1 px-3 py-2 text-sm text-accent hover:text-accent-hover transition-colors rounded-lg hover:bg-[var(--bg-sidebar)]"
+                  >
+                    <Shield className="h-4 w-4" />
+                    {t('nav.admin')}
+                  </Link>
+                )}
+              </>
             )}
           </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-1">
-            <Tooltip text={t('tooltips.language')}>
+            {/* Search */}
+            {!isAdminRole && (
+              <div className="relative hidden md:block">
+                <button
+                  data-testid="navbar-search-trigger"
+                  onClick={() => {
+                    setSearchOpen(!searchOpen);
+                    setTimeout(() => searchInputRef.current?.focus(), 50);
+                  }}
+                  className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                  aria-label={t('nav.search')}
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+                {searchOpen && (
+                  <div className="absolute right-0 top-full mt-1 z-50">
+                    <div className="flex items-center gap-2">
+                      <input
+                        ref={searchInputRef}
+                        data-testid="navbar-search-input"
+                        type="text"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Escape') {
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                          }
+                          if (e.key === 'Enter' && searchQuery.trim()) {
+                            navigate(`/catalog?search=${encodeURIComponent(searchQuery)}`);
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                          }
+                        }}
+                        placeholder={t('nav.searchPlaceholder')}
+                        className="w-64 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-accent"
+                      />
+                      <button
+                        data-testid="navbar-search-close"
+                        onClick={() => {
+                          setSearchOpen(false);
+                          setSearchQuery('');
+                          setSearchResults([]);
+                        }}
+                        className="p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      >
+                        <XIcon className="h-4 w-4" />
+                      </button>
+                    </div>
+                    {searchQuery.trim() && (
+                      <div
+                        data-testid="navbar-search-dropdown"
+                        className="mt-1 w-80 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg max-h-80 overflow-y-auto"
+                      >
+                        {searchResults.length === 0 ? (
+                          <p className="px-3 py-4 text-sm text-[var(--text-secondary)] text-center">
+                            {t('nav.searchNoResults')}
+                          </p>
+                        ) : (
+                          <>
+                            {searchResults.map(product => (
+                              <Link
+                                key={product.id}
+                                data-testid={`navbar-search-result-${product.id}`}
+                                to={`/catalog/${product.id}`}
+                                onClick={() => {
+                                  setSearchOpen(false);
+                                  setSearchQuery('');
+                                  setSearchResults([]);
+                                }}
+                                className="flex items-center gap-3 px-3 py-2.5 hover:bg-[var(--bg-sidebar)] transition-colors cursor-pointer"
+                              >
+                                {product.images[0] ? (
+                                  <img
+                                    src={product.images[0]}
+                                    alt=""
+                                    className="h-10 w-10 rounded-lg object-cover bg-[var(--bg-sidebar)]"
+                                  />
+                                ) : (
+                                  <div className="h-10 w-10 rounded-lg bg-[var(--bg-sidebar)]" />
+                                )}
+                                <div>
+                                  <p className="text-sm text-[var(--text-primary)]">
+                                    {product.name}
+                                  </p>
+                                  <p className="text-xs text-[var(--text-secondary)]">
+                                    €{(product.salePrice ?? product.price).toFixed(2)}
+                                  </p>
+                                </div>
+                              </Link>
+                            ))}
+                            <Link
+                              to={`/catalog?search=${encodeURIComponent(searchQuery)}`}
+                              onClick={() => {
+                                setSearchOpen(false);
+                                setSearchQuery('');
+                                setSearchResults([]);
+                              }}
+                              className="block px-3 py-2.5 text-sm text-accent text-center hover:bg-[var(--bg-sidebar)] border-t border-[var(--border)]"
+                            >
+                              {t('nav.searchViewAll')}
+                            </Link>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <Tooltip text={t('tooltips.language') ?? 'Language'}>
               <button
                 data-testid="lang-toggle"
                 onClick={toggleLang}
@@ -246,35 +416,39 @@ export function Navbar() {
               </button>
             </Tooltip>
 
-            <Tooltip text={t('tooltips.wishlist')}>
-              <Link
-                data-testid="nav-wishlist"
-                to="/wishlist"
-                className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-                aria-label={t('nav.wishlist')}
-              >
-                <Heart className="h-5 w-5" />
-              </Link>
-            </Tooltip>
+            {!isAdminRole && (
+              <Tooltip text={t('tooltips.wishlist') ?? t('nav.wishlist')}>
+                <Link
+                  data-testid="nav-wishlist"
+                  to="/wishlist"
+                  className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                  aria-label={t('nav.wishlist')}
+                >
+                  <Heart className="h-5 w-5" />
+                </Link>
+              </Tooltip>
+            )}
 
-            <Tooltip text={t('tooltips.cart')}>
-              <Link
-                data-testid="nav-cart"
-                to="/cart"
-                className="relative p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
-                aria-label={t('nav.cart')}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {itemCount > 0 && (
-                  <span
-                    data-testid="cart-badge"
-                    className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white"
-                  >
-                    {itemCount > 9 ? '9+' : itemCount}
-                  </span>
-                )}
-              </Link>
-            </Tooltip>
+            {!isAdminRole && (
+              <Tooltip text={t('tooltips.cart') ?? t('nav.cart')}>
+                <Link
+                  data-testid="nav-cart"
+                  to="/cart"
+                  className="relative p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-sidebar)] transition-colors"
+                  aria-label={t('nav.cart')}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  {itemCount > 0 && (
+                    <span
+                      data-testid="cart-badge"
+                      className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white"
+                    >
+                      {itemCount > 9 ? '9+' : itemCount}
+                    </span>
+                  )}
+                </Link>
+              </Tooltip>
+            )}
 
             {accessToken && <NotificationDropdown />}
 
@@ -362,7 +536,7 @@ export function Navbar() {
               aria-label="Menu"
               aria-expanded={menuOpen}
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {menuOpen ? <XIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -370,6 +544,26 @@ export function Navbar() {
         {/* Mobile menu */}
         {menuOpen && (
           <div className="md:hidden py-2 border-t border-[var(--border)]">
+            {/* Mobile search */}
+            {!isAdminRole && (
+              <div className="px-3 pb-2">
+                <input
+                  data-testid="mobile-menu-search"
+                  type="text"
+                  placeholder={t('nav.searchPlaceholder')}
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-accent"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val) {
+                        navigate(`/catalog?search=${encodeURIComponent(val)}`);
+                        setMenuOpen(false);
+                      }
+                    }
+                  }}
+                />
+              </div>
+            )}
             {/* Catalog with accordion */}
             <div>
               <button

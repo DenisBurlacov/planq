@@ -76,6 +76,19 @@ export function CheckoutPage() {
 
   const { data: cart } = useQuery({ queryKey: ['cart'], queryFn: cartApi.get });
   const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: profileApi.get });
+  const [savedCards, setSavedCards] = useState<import('@api/cards').SavedCard[]>([]);
+  const [useSavedCard, setUseSavedCard] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  useEffect(() => {
+    import('@api/cards').then(({ cardsApi }) => {
+      cardsApi.list().then(cards => {
+        setSavedCards(cards);
+        const def = cards.find(c => c.isDefault);
+        if (def) setSelectedCardId(def.id);
+      });
+    });
+  }, []);
 
   const {
     register,
@@ -291,21 +304,85 @@ export function CheckoutPage() {
 
           {paymentMethod === 'CARD' && (
             <div className="space-y-3">
-              <Input
-                id="cardNumber"
-                data-testid="checkout-card-number"
-                label={t('payment.cardNumber')}
-                placeholder={t('payment.cardNumberPlaceholder')}
-                {...register('cardNumber')}
-              />
-
-              {import.meta.env.VITE_SHOW_TEST_CREDENTIALS === 'true' && (
-                <div className="rounded-lg bg-[var(--bg-sidebar)] p-3 text-xs text-[var(--text-secondary)] space-y-1">
-                  <p className="font-medium text-[var(--text-primary)]">{t('payment.testCards')}</p>
-                  <p>✓ {t('payment.cardSuccess')}</p>
-                  <p>✗ {t('payment.cardDeclined')}</p>
-                  <p>✗ {t('payment.cardInsufficient')}</p>
+              {/* Saved cards selection */}
+              {savedCards.length > 0 && (
+                <div data-testid="checkout-saved-cards" className="space-y-2">
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
+                    {t('payment.savedCards')}
+                  </p>
+                  {savedCards.map(card => (
+                    <label
+                      key={card.id}
+                      data-testid={`checkout-saved-card-${card.id}`}
+                      className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${useSavedCard && selectedCardId === card.id ? 'border-accent bg-accent/5' : 'border-[var(--border)]'}`}
+                    >
+                      <input
+                        type="radio"
+                        name="savedCard"
+                        checked={useSavedCard && selectedCardId === card.id}
+                        onChange={() => {
+                          setUseSavedCard(true);
+                          setSelectedCardId(card.id);
+                          setValue('cardNumber', `4242424242${card.last4}`);
+                        }}
+                        className="sr-only"
+                      />
+                      <CreditCard className="h-4 w-4 text-[var(--text-secondary)]" />
+                      <div className="text-sm">
+                        <span className="font-medium text-[var(--text-primary)]">{card.brand}</span>
+                        <span className="text-[var(--text-secondary)] ml-2">
+                          &bull;&bull;&bull;&bull; {card.last4}
+                        </span>
+                        {card.isDefault && (
+                          <span className="ml-2 text-xs text-accent">
+                            {t('payment.savedCards', { defaultValue: '' })}
+                          </span>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                  <label
+                    data-testid="checkout-use-new-card"
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${!useSavedCard ? 'border-accent bg-accent/5' : 'border-[var(--border)]'}`}
+                  >
+                    <input
+                      type="radio"
+                      name="savedCard"
+                      checked={!useSavedCard}
+                      onChange={() => {
+                        setUseSavedCard(false);
+                        setValue('cardNumber', '');
+                      }}
+                      className="sr-only"
+                    />
+                    <span className="text-sm font-medium text-[var(--text-primary)]">
+                      {t('payment.useNewCard')}
+                    </span>
+                  </label>
                 </div>
+              )}
+
+              {!useSavedCard && (
+                <>
+                  <Input
+                    id="cardNumber"
+                    data-testid="checkout-card-number"
+                    label={t('payment.cardNumber')}
+                    placeholder={t('payment.cardNumberPlaceholder')}
+                    {...register('cardNumber')}
+                  />
+
+                  {import.meta.env.VITE_SHOW_TEST_CREDENTIALS === 'true' && (
+                    <div className="rounded-lg bg-[var(--bg-sidebar)] p-3 text-xs text-[var(--text-secondary)] space-y-1">
+                      <p className="font-medium text-[var(--text-primary)]">
+                        {t('payment.testCards')}
+                      </p>
+                      <p>✓ {t('payment.cardSuccess')}</p>
+                      <p>✗ {t('payment.cardDeclined')}</p>
+                      <p>✗ {t('payment.cardInsufficient')}</p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

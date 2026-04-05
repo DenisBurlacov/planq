@@ -6,7 +6,8 @@
     "security": "Безопасность",
     "notifications": "Уведомления",
     "addresses": "Адреса",
-    "webhooks": "Вебхуки"
+    "webhooks": "Вебхуки",
+    "paymentMethods": "Способы оплаты"
   },
   "notifications": {
     "title": "Настройки уведомлений",
@@ -127,7 +128,30 @@
     "addressAdded": "Адрес добавлен",
     "addressUpdated": "Адрес обновлён",
     "addressDeleted": "Адрес удалён",
-    "defaultAddressUpdated": "Адрес по умолчанию обновлён"
+    "defaultAddressUpdated": "Адрес по умолчанию обновлён",
+    "cardAdded": "Карта добавлена",
+    "cardDeleted": "Карта удалена",
+    "defaultCardUpdated": "Карта по умолчанию обновлена"
+  },
+  "paymentMethods": {
+    "title": "Способы оплаты",
+    "addCard": "Добавить карту",
+    "deleteCard": "Удалить карту",
+    "deleteConfirm": "Вы уверены, что хотите удалить эту карту?",
+    "setDefault": "Сделать основной",
+    "default": "Основная",
+    "empty": "Нет сохранённых карт",
+    "emptyHint": "Добавьте карту для быстрого оформления заказов",
+    "maxCards": "Максимум 5 карт",
+    "cardNumber": "Номер карты",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "cardholderName": "Имя держателя",
+    "cardholderPlaceholder": "Имя на карте",
+    "expMonth": "Месяц",
+    "expYear": "Год",
+    "brand": "Бренд",
+    "maskedNumber": "**** **** **** {{last4}}",
+    "expires": "Действует до {{month}}/{{year}}"
   },
   "auth": {
     "login": "Войти",

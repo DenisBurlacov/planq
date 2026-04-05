@@ -1,5 +1,17 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, Users, ArrowLeft, FileText } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  ArrowLeft,
+  FileText,
+  Tag,
+  FolderTree,
+  MessageSquare,
+  BarChart3,
+  Settings,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
 
@@ -10,6 +22,7 @@ interface NavItem {
   end: boolean;
   testId: string;
   adminOnly?: boolean;
+  managerAllowed?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -50,6 +63,46 @@ const navItems: NavItem[] = [
     testId: 'admin-nav-audit',
     adminOnly: true,
   },
+  {
+    icon: Tag,
+    labelKey: 'sidebar.promos',
+    to: '/admin/promos',
+    end: false,
+    testId: 'admin-nav-promos',
+    adminOnly: true,
+  },
+  {
+    icon: FolderTree,
+    labelKey: 'sidebar.categories',
+    to: '/admin/categories',
+    end: false,
+    testId: 'admin-nav-categories',
+    adminOnly: true,
+  },
+  {
+    icon: MessageSquare,
+    labelKey: 'sidebar.reviews',
+    to: '/admin/reviews',
+    end: false,
+    testId: 'admin-nav-reviews',
+    managerAllowed: true,
+  },
+  {
+    icon: BarChart3,
+    labelKey: 'sidebar.stats',
+    to: '/admin/stats',
+    end: false,
+    testId: 'admin-nav-stats',
+    adminOnly: true,
+  },
+  {
+    icon: Settings,
+    labelKey: 'sidebar.settings',
+    to: '/admin/settings',
+    end: false,
+    testId: 'admin-nav-settings',
+    adminOnly: true,
+  },
 ];
 
 export function AdminLayout() {
@@ -57,7 +110,12 @@ export function AdminLayout() {
   const user = useAuthStore(s => s.user);
   const isManager = user?.role === 'MANAGER';
 
-  const visibleItems = navItems.filter(item => !item.adminOnly || !isManager);
+  const visibleItems = navItems.filter(item => {
+    if (isManager) {
+      return !item.adminOnly || item.managerAllowed;
+    }
+    return true;
+  });
 
   return (
     <div className="flex min-h-[calc(100vh-12rem)]">

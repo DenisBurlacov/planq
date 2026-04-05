@@ -86,7 +86,9 @@
     "inStockUnits": "In stock ({{count}} unit)",
     "inStockUnits_other": "In stock ({{count}} units)",
     "ratingLabel": "Rating",
-    "videoReview": "Video Review"
+    "videoReview": "Video Review",
+    "recentlyViewed": "Recently Viewed",
+    "youMayAlsoLike": "You May Also Like"
   },
   "compare": {
     "title": "Compare Products",
@@ -122,7 +124,58 @@
     "saleBannerLabel": "Limited Time",
     "saleBannerTitle": "Up to 30% off sale items",
     "saleBannerSubtitle": "Don't miss out on our seasonal discounts",
-    "shopSale": "Shop Sale"
+    "shopSale": "Shop Sale",
+    "trustBadges": {
+      "shipping": { "title": "Free Shipping", "subtitle": "On orders over €200" },
+      "payment": { "title": "Secure Payment", "subtitle": "SSL encrypted checkout" },
+      "returns": { "title": "30-Day Returns", "subtitle": "Hassle-free returns" },
+      "support": { "title": "24/7 Support", "subtitle": "We're here to help" }
+    },
+    "testimonials": {
+      "title": "What Our Customers Say",
+      "subtitle": "Real reviews from real homes",
+      "1": {
+        "name": "Anna K.",
+        "location": "Amsterdam, NL",
+        "quote": "The quality of the oak dining table exceeded my expectations. Beautiful craftsmanship and the delivery was right on time."
+      },
+      "2": {
+        "name": "Lars M.",
+        "location": "Berlin, DE",
+        "quote": "I furnished my entire apartment with PLANQ pieces. The Scandinavian aesthetic is exactly what I was looking for. Love it!"
+      },
+      "3": {
+        "name": "Sophie J.",
+        "location": "Copenhagen, DK",
+        "quote": "Great customer service. Had an issue with a delivery and they resolved it within 24 hours. Will definitely shop again."
+      },
+      "4": {
+        "name": "Emma N.",
+        "location": "Rotterdam, NL",
+        "quote": "The linen sofa is incredibly comfortable and looks stunning in our living room. Everyone asks where we got it!"
+      },
+      "5": {
+        "name": "Marcus P.",
+        "location": "Stockholm, SE",
+        "quote": "Fast shipping and well-packaged. The bookshelf was easy to assemble and fits perfectly in my home office."
+      },
+      "6": {
+        "name": "Julia V.",
+        "location": "Brussels, BE",
+        "quote": "Beautifully designed furniture at fair prices. The bedside tables are minimalist perfection. Highly recommend PLANQ!"
+      }
+    },
+    "partners": {
+      "title": "Our Partners",
+      "names": {
+        "0": "NordicWood",
+        "1": "ScandHome",
+        "2": "EcoFurn",
+        "3": "MinimalLiving",
+        "4": "CraftHaus",
+        "5": "PureDesign"
+      }
+    }
   },
   "wishlist": {
     "title": "Wishlist",

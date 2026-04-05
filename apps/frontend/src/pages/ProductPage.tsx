@@ -20,6 +20,11 @@ import { useCartStore } from '@store/cart.store';
 import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
+import { RelatedProductsSection } from '@components/features/RelatedProductsSection';
+import {
+  RecentlyViewedSection,
+  addToRecentlyViewed,
+} from '@components/features/RecentlyViewedSection';
 
 export function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -55,6 +60,11 @@ export function ProductPage() {
     queryFn: () => productsApi.getReviews(id ?? '', 1),
     enabled: !!id,
   });
+
+  // Track recently viewed
+  useEffect(() => {
+    if (id) addToRecentlyViewed(id);
+  }, [id]);
 
   // Sync initial reviews
   useEffect(() => {
@@ -595,6 +605,14 @@ export function ProductPage() {
           )}
         </div>
       </section>
+
+      {/* You May Also Like */}
+      {product.category && (
+        <RelatedProductsSection categoryId={product.category.id} currentProductId={product.id} />
+      )}
+
+      {/* Recently Viewed */}
+      <RecentlyViewedSection currentProductId={product.id} />
     </div>
   );
 }

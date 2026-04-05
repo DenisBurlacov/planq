@@ -36,6 +36,19 @@ import { AdminDashboardPage } from '@pages/admin/AdminDashboardPage';
 import { AdminProductsPage } from '@pages/admin/AdminProductsPage';
 import { AdminOrdersPage } from '@pages/admin/AdminOrdersPage';
 import { AdminUsersPage } from '@pages/admin/AdminUsersPage';
+import { AdminPromosPage } from '@pages/admin/AdminPromosPage';
+import { AdminCategoriesPage } from '@pages/admin/AdminCategoriesPage';
+import { AdminStatsPage } from '@pages/admin/AdminStatsPage';
+import { AdminReviewsPage } from '@pages/admin/AdminReviewsPage';
+import { AdminSettingsPage } from '@pages/admin/AdminSettingsPage';
+import { BlogPage } from '@pages/BlogPage';
+import { BlogArticlePage } from '@pages/BlogArticlePage';
+import { FaqPage } from '@pages/FaqPage';
+import { ContactPage } from '@pages/ContactPage';
+import { PrivacyPage } from '@pages/PrivacyPage';
+import { TermsPage } from '@pages/TermsPage';
+import { ShippingPage } from '@pages/ShippingPage';
+import { ReturnsPage } from '@pages/ReturnsPage';
 
 import './i18n';
 
@@ -73,6 +86,11 @@ export default function App() {
                   <Route path="products" element={<AdminProductsPage />} />
                   <Route path="orders" element={<AdminOrdersPage />} />
                   <Route path="users" element={<AdminUsersPage />} />
+                  <Route path="promos" element={<AdminPromosPage />} />
+                  <Route path="categories" element={<AdminCategoriesPage />} />
+                  <Route path="reviews" element={<AdminReviewsPage />} />
+                  <Route path="stats" element={<AdminStatsPage />} />
+                  <Route path="settings" element={<AdminSettingsPage />} />
                 </Route>
               </Route>
 
@@ -85,6 +103,14 @@ export default function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/compare" element={<ComparePage />} />
                 <Route path="/support" element={<SupportPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogArticlePage />} />
+                <Route path="/faq" element={<FaqPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/shipping" element={<ShippingPage />} />
+                <Route path="/returns" element={<ReturnsPage />} />
 
                 {/* Protected */}
                 <Route

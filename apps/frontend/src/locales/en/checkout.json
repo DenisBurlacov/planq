@@ -42,7 +42,11 @@
     "testCards": "Test Cards",
     "cardSuccess": "4242 4242 4242 4242 — Success",
     "cardDeclined": "4000 0000 0000 0002 — Declined",
-    "cardInsufficient": "4000 0000 0000 9995 — Insufficient funds"
+    "cardInsufficient": "4000 0000 0000 9995 — Insufficient funds",
+    "savedCards": "Saved Cards",
+    "useNewCard": "Use new card",
+    "useSavedCard": "Use saved card",
+    "noSavedCards": "No saved cards"
   },
   "processing": {
     "title": "Processing Payment",
