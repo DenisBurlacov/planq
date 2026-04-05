@@ -76,7 +76,17 @@ export function ProfilePage() {
     orderUpdates: true,
     promotions: false,
   });
+  const [savedNotifPrefs, setSavedNotifPrefs] = useState<NotificationPreferences | null>(null);
   const [savingNotifs, setSavingNotifs] = useState(false);
+  const [unsavedModal, setUnsavedModal] = useState<string | null>(null);
+
+  const hasUnsavedNotifChanges =
+    savedNotifPrefs !== null &&
+    (notifPrefs.email !== savedNotifPrefs.email ||
+      notifPrefs.push !== savedNotifPrefs.push ||
+      notifPrefs.newsletter !== savedNotifPrefs.newsletter ||
+      notifPrefs.orderUpdates !== savedNotifPrefs.orderUpdates ||
+      notifPrefs.promotions !== savedNotifPrefs.promotions);
 
   // Address state
   const [addressModalOpen, setAddressModalOpen] = useState(false);
@@ -121,6 +131,7 @@ export function ProfilePage() {
       try {
         const prefs = await notificationsApi.get();
         setNotifPrefs(prefs);
+        setSavedNotifPrefs(prefs);
         return prefs;
       } catch {
         return notifPrefs;
@@ -223,6 +234,7 @@ export function ProfilePage() {
     setSavingNotifs(true);
     try {
       await notificationsApi.update(notifPrefs);
+      setSavedNotifPrefs({ ...notifPrefs });
       toast('success', t('toast.preferencesSaved'));
     } catch (err) {
       toast(
@@ -233,6 +245,36 @@ export function ProfilePage() {
       setSavingNotifs(false);
     }
   };
+
+  const handleTabSwitch = (tab: string) => {
+    if (activeTab === 'notifications' && hasUnsavedNotifChanges) {
+      setUnsavedModal(tab);
+      return;
+    }
+    setActiveTab(tab as TabId);
+  };
+
+  const handleDiscardAndSwitch = () => {
+    if (savedNotifPrefs) setNotifPrefs({ ...savedNotifPrefs });
+    if (unsavedModal) setActiveTab(unsavedModal as TabId);
+    setUnsavedModal(null);
+  };
+
+  const handleSaveAndSwitch = async () => {
+    await handleSaveNotifications();
+    if (unsavedModal) setActiveTab(unsavedModal as TabId);
+    setUnsavedModal(null);
+  };
+
+  // Warn on page leave with unsaved notification changes
+  useEffect(() => {
+    if (!hasUnsavedNotifChanges) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [hasUnsavedNotifChanges]);
 
   const handleOpenAddressModal = (address?: Address) => {
     if (address) {
@@ -465,42 +507,42 @@ export function ProfilePage() {
       >
         <button
           data-testid="tab-settings"
-          onClick={() => setActiveTab('settings')}
+          onClick={() => handleTabSwitch('settings')}
           className={tabClass('settings')}
         >
           {t('tabs.settings')}
         </button>
         <button
           data-testid="tab-security"
-          onClick={() => setActiveTab('security')}
+          onClick={() => handleTabSwitch('security')}
           className={tabClass('security')}
         >
           {t('tabs.security')}
         </button>
         <button
           data-testid="tab-notifications"
-          onClick={() => setActiveTab('notifications')}
+          onClick={() => handleTabSwitch('notifications')}
           className={tabClass('notifications')}
         >
           {t('tabs.notifications')}
         </button>
         <button
           data-testid="tab-addresses"
-          onClick={() => setActiveTab('addresses')}
+          onClick={() => handleTabSwitch('addresses')}
           className={tabClass('addresses')}
         >
           {t('tabs.addresses')}
         </button>
         <button
           data-testid="tab-webhooks"
-          onClick={() => setActiveTab('webhooks')}
+          onClick={() => handleTabSwitch('webhooks')}
           className={tabClass('webhooks')}
         >
           {t('tabs.webhooks')}
         </button>
         <button
           data-testid="tab-payment-methods"
-          onClick={() => setActiveTab('paymentMethods')}
+          onClick={() => handleTabSwitch('paymentMethods')}
           className={tabClass('paymentMethods')}
         >
           {t('tabs.paymentMethods')}
@@ -775,12 +817,22 @@ export function ProfilePage() {
               />
             </div>
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="flex items-center justify-end gap-3 mt-4">
+            {hasUnsavedNotifChanges && (
+              <span
+                data-testid="unsaved-changes-indicator"
+                className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                {t('notifications.unsavedChanges')}
+              </span>
+            )}
             <Button
               data-testid="save-notifications"
               size="sm"
               onClick={handleSaveNotifications}
               loading={savingNotifs}
+              variant={hasUnsavedNotifChanges ? 'primary' : 'secondary'}
             >
               {t('notifications.save')}
             </Button>
@@ -1198,6 +1250,20 @@ export function ProfilePage() {
 
       {/* Tab: Payment Methods */}
       {activeTab === 'paymentMethods' && <PaymentMethodsTab />}
+
+      {/* Unsaved notification changes modal */}
+      <Modal
+        open={!!unsavedModal}
+        title={t('notifications.unsavedTitle')}
+        onConfirm={handleSaveAndSwitch}
+        onCancel={handleDiscardAndSwitch}
+        confirmLabel={t('notifications.saveAndContinue')}
+        cancelLabel={t('notifications.discardChanges')}
+      >
+        <p data-testid="unsaved-changes-modal" className="text-sm text-[var(--text-secondary)]">
+          {t('notifications.unsavedMessage')}
+        </p>
+      </Modal>
     </div>
   );
 }

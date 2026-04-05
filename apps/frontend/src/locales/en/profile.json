@@ -21,7 +21,12 @@
     "orderUpdatesDesc": "Get notified about your order status changes",
     "promotions": "Promotions",
     "promotionsDesc": "Personalized deals and product recommendations",
-    "save": "Save Preferences"
+    "save": "Save Preferences",
+    "unsavedChanges": "Unsaved changes",
+    "unsavedTitle": "Unsaved Changes",
+    "unsavedMessage": "You have unsaved notification preference changes. Would you like to save them before leaving?",
+    "saveAndContinue": "Save & Continue",
+    "discardChanges": "Discard"
   },
   "addresses": {
     "title": "Shipping Addresses",
