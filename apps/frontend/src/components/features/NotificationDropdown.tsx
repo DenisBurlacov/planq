@@ -2,19 +2,50 @@ import { useState, useRef, useEffect } from 'react';
 import { Bell, BellOff } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { notificationsApi } from '@api/notifications';
+import { notificationsApi, type NotificationPreferences } from '@api/notifications';
 import { useNotificationsStore } from '@store/notifications.store';
 import { useAuthStore } from '@store/auth.store';
 import { useWebSocket } from '@ws/useWebSocket';
+import { useToast } from '@components/ui/Toast';
 import type { WsMessage, Notification } from '@appTypes/api';
+
+// Maps scheduler notification types to user preference keys
+const TYPE_TO_PREF: Record<string, keyof NotificationPreferences | null> = {
+  promo: 'promotions',
+  order_update: 'orderUpdates',
+  newsletter: 'newsletter',
+  system: null, // always delivered
+};
+
+function isNotificationMuted(notifType: string, prefs: NotificationPreferences | null): boolean {
+  const prefKey = TYPE_TO_PREF[notifType];
+  if (prefKey === null || prefKey === undefined) return false; // system or unknown — not muted
+  if (!prefs) return true; // no prefs loaded — treat as muted for non-system
+  return !prefs[prefKey];
+}
 
 export function NotificationDropdown() {
   const { t } = useTranslation('common');
   const { accessToken } = useAuthStore();
   const { unreadCount, setUnreadCount, increment } = useNotificationsStore();
   const qc = useQueryClient();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user notification preferences
+  const { data: userPrefs } = useQuery({
+    queryKey: ['notification-prefs'],
+    queryFn: async () => {
+      try {
+        return await notificationsApi.get();
+      } catch {
+        return null;
+      }
+    },
+    enabled: !!accessToken,
+    staleTime: 60_000,
+  });
 
   // Fetch unread count
   useQuery({
@@ -53,6 +84,15 @@ export function NotificationDropdown() {
       if (msg.event === 'notification.new') {
         increment();
         void qc.invalidateQueries({ queryKey: ['notifications-list'] });
+
+        // Show toast only if preference for this type is ON
+        const payload = msg.payload as Notification | undefined;
+        if (payload) {
+          const muted = isNotificationMuted(payload.type, userPrefs ?? null);
+          if (!muted) {
+            toast('info', payload.title);
+          }
+        }
       }
     },
   });
@@ -147,37 +187,56 @@ export function NotificationDropdown() {
                 </p>
               </div>
             ) : (
-              notifications.items.map(notif => (
-                <div
-                  key={notif.id}
-                  data-testid={`notification-item-${notif.id}`}
-                  className={`px-4 py-3 border-b border-[var(--border)] last:border-0 ${
-                    !notif.read ? 'bg-accent/5' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                        {notif.title}
-                      </p>
-                      <p className="text-xs text-[var(--text-secondary)] mt-0.5 line-clamp-2">
-                        {notif.message}
-                      </p>
-                      <p className="text-xs text-[var(--text-secondary)] mt-1">
-                        {new Date(notif.createdAt).toLocaleString()}
-                      </p>
+              notifications.items.map(notif => {
+                const muted = isNotificationMuted(notif.type, userPrefs ?? null);
+                return (
+                  <div
+                    key={notif.id}
+                    data-testid={`notification-item-${notif.id}`}
+                    className={`px-4 py-3 border-b border-[var(--border)] last:border-0 ${
+                      !notif.read ? 'bg-accent/5' : ''
+                    } ${muted ? 'opacity-50' : ''}`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={`text-sm font-medium truncate ${
+                            muted ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'
+                          }`}
+                        >
+                          {notif.title}
+                          {muted && (
+                            <span
+                              data-testid={`notification-muted-${notif.id}`}
+                              className="ml-1 text-xs font-normal text-[var(--text-secondary)]"
+                            >
+                              {t('notifications.muted')}
+                            </span>
+                          )}
+                        </p>
+                        <p
+                          className={`text-xs mt-0.5 line-clamp-2 ${
+                            muted ? 'text-[var(--text-secondary)]' : 'text-[var(--text-secondary)]'
+                          }`}
+                        >
+                          {notif.message}
+                        </p>
+                        <p className="text-xs text-[var(--text-secondary)] mt-1">
+                          {new Date(notif.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      {!notif.read && (
+                        <button
+                          data-testid={`mark-read-${notif.id}`}
+                          onClick={() => handleMarkRead(notif.id)}
+                          className="shrink-0 h-2 w-2 rounded-full bg-accent mt-1.5"
+                          aria-label={t('notifications.markRead')}
+                        />
+                      )}
                     </div>
-                    {!notif.read && (
-                      <button
-                        data-testid={`mark-read-${notif.id}`}
-                        onClick={() => handleMarkRead(notif.id)}
-                        className="shrink-0 h-2 w-2 rounded-full bg-accent mt-1.5"
-                        aria-label={t('notifications.markRead')}
-                      />
-                    )}
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

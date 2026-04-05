@@ -140,4 +140,21 @@ export const adminApi = {
   // Audit Log
   getAuditLog: (query: AuditLogQuery = {}) =>
     apiFetch<PaginatedResponse<AuditLogEntry>>(`/api/v1/admin/audit?${buildParams(query)}`),
+
+  // Settings
+  getSettings: () =>
+    apiFetch<Array<{ key: string; value: string; updatedAt: string }>>('/api/v1/admin/settings'),
+
+  updateSettings: (settings: Array<{ key: string; value: string }>) =>
+    apiFetch<Array<{ key: string; value: string; updatedAt: string }>>('/api/v1/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify({ settings }),
+    }),
+
+  // Scheduler
+  restartScheduler: () =>
+    apiFetch<{ started: boolean; enabled: boolean; interval: number; max: number; type: string }>(
+      '/api/v1/admin/scheduler/restart',
+      { method: 'POST' }
+    ),
 };

@@ -289,7 +289,8 @@
     "empty": "No notifications yet",
     "emptyDesc": "When you receive notifications, they will appear here.",
     "markAllRead": "Mark all as read",
-    "markRead": "Mark as read"
+    "markRead": "Mark as read",
+    "muted": "(muted)"
   },
   "tooltips": {
     "notifications": "Notifications"

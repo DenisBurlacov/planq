@@ -10,6 +10,7 @@ import { getAuthUser } from '@utils/getAuthUser.js';
 import * as adminService from '@services/admin.service.js';
 import * as auditService from '@services/audit.service.js';
 import * as settingsService from '@services/settings.service.js';
+import * as schedulerService from '@services/scheduler.service.js';
 import { uploadCategoryImage } from '@middleware/upload.js';
 import { ok, created, noContent } from '@utils/response.js';
 
@@ -1052,5 +1053,37 @@ router.get('/stats/orders-by-status', async (_req: Request, res: Response, next:
     next(err);
   }
 });
+
+// ─── Notification Scheduler ────────────────────────────────────────────────
+
+/**
+ * @openapi
+ * /admin/scheduler/restart:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Restart the notification scheduler with current settings
+ *     responses:
+ *       200:
+ *         description: Scheduler restarted
+ */
+router.post(
+  '/scheduler/restart',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await schedulerService.restartScheduler();
+      await auditService.logAction(
+        getAuthUser(req).userId,
+        'scheduler_restart',
+        'settings',
+        undefined,
+        result as unknown as Record<string, unknown>
+      );
+      ok(res, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 export default router;
