@@ -36,7 +36,7 @@ importers:
   apps/backend:
     dependencies:
       '@prisma/client':
-        specifier: ^6.6.0
+        specifier: 6.6.0
         version: 6.6.0(prisma@6.6.0(typescript@5.9.3))(typescript@5.9.3)
       '@types/multer':
         specifier: ^2.1.0
@@ -130,7 +130,7 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@25.5.0)
       prisma:
-        specifier: ^6.6.0
+        specifier: 6.6.0
         version: 6.6.0(typescript@5.9.3)
       supertest:
         specifier: ^7.1.0
