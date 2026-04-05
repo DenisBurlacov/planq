@@ -16,6 +16,9 @@ const DELIVERY_COSTS: Record<string, number> = {
   standard: 0,
   express: 14.99,
   nextDay: 24.99,
+  STANDARD: 0,
+  EXPRESS: 14.99,
+  NEXT_DAY: 24.99,
 };
 
 export const CheckoutSchema = z.object({
@@ -23,7 +26,16 @@ export const CheckoutSchema = z.object({
   paymentMethod: z.nativeEnum(PaymentMethod),
   promoCode: z.string().optional(),
   cardNumber: z.string().optional(),
-  deliveryMethod: z.enum(['standard', 'express', 'nextDay']).default('standard'),
+  deliveryMethod: z
+    .string()
+    .default('standard')
+    .transform(v =>
+      v.toLowerCase() === 'next_day'
+        ? 'nextDay'
+        : v.toLowerCase() === 'express'
+          ? 'express'
+          : 'standard'
+    ),
 });
 
 export type CheckoutInput = z.infer<typeof CheckoutSchema>;
