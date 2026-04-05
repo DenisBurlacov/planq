@@ -1,11 +1,13 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Heart, ShoppingCart, Star, ImageOff, Eye, ArrowLeftRight } from 'lucide-react';
+import { Heart, ShoppingCart, Star, Eye, ArrowLeftRight } from 'lucide-react';
 import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
 import { StockUrgencyBadge } from '@components/ui/StockUrgencyBadge';
+import { ProductImage } from '@components/ui/ProductImage';
+import { PriceDisplay } from '@components/ui/PriceDisplay';
 import { useCompareStore } from '@store/compare.store';
 import { useProductName } from '@hooks/useProductLocale';
 import type { Product } from '@appTypes/api';
@@ -33,7 +35,6 @@ export function ProductCard({
   const [modalOpen, setModalOpen] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [wishlistPending, setWishlistPending] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const { addProduct, removeProduct, hasProduct, productIds } = useCompareStore();
   const localizedName = useProductName(product);
 
@@ -115,15 +116,10 @@ export function ProductCard({
     }
   };
 
-  const hasImage = product.images.length > 0 && !imgError;
-  const price = product.salePrice ?? product.price;
+  const hasImage = product.images.length > 0;
   const isOnSale = product.salePrice !== null;
   const isOutOfStock = product.stock === 0;
   const isInCompare = hasProduct(product.id);
-  const discountPercent =
-    isOnSale && product.salePrice !== null
-      ? Math.round((1 - product.salePrice / product.price) * 100)
-      : 0;
 
   return (
     <>
@@ -165,19 +161,11 @@ export function ProductCard({
         )}
         {/* Image */}
         <div className="relative h-48 bg-[var(--bg-sidebar)] overflow-hidden">
-          {hasImage ? (
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              loading="lazy"
-              onError={() => setImgError(true)}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <ImageOff className="h-12 w-12 text-[var(--text-secondary)]" />
-            </div>
-          )}
+          <ProductImage
+            src={hasImage ? product.images[0] : undefined}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
           {isOnSale && (
             <div className="absolute top-2 left-2">
               <Badge variant="sale">{t('common:sale', { ns: 'common' })}</Badge>
@@ -270,31 +258,16 @@ export function ProductCard({
           </div>
 
           {/* Price */}
-          <div className="mt-2 flex items-center gap-2">
-            <span className="text-base font-bold text-[var(--text-primary)]">
-              €{price.toFixed(2)}
-            </span>
-            {isOnSale && (
-              <span className="text-sm text-[var(--text-secondary)] line-through">
-                €{product.price.toFixed(2)}
-              </span>
-            )}
+          <div className="mt-2">
+            <PriceDisplay
+              price={product.price}
+              salePrice={product.salePrice}
+              size="md"
+              showDiscount
+              showSave
+              data-testid="product-card"
+            />
           </div>
-
-          {/* Enhanced sale display */}
-          {isOnSale && (
-            <div className="mt-1 flex items-center gap-2">
-              <span
-                data-testid="product-card-discount-percent"
-                className="text-xs font-semibold text-red-500 bg-red-50 dark:bg-red-500/10 rounded px-1.5 py-0.5"
-              >
-                -{discountPercent}%
-              </span>
-              <span className="text-xs text-[var(--text-secondary)]">
-                Save €{(product.price - price).toFixed(2)}
-              </span>
-            </div>
-          )}
 
           {/* Stock urgency */}
           {!isOutOfStock && product.stock <= 5 && (

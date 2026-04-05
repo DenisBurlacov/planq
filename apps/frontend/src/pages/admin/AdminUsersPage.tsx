@@ -10,6 +10,8 @@ import { DataTable, type Column } from '@components/ui/DataTable';
 import { useToast } from '@components/ui/Toast';
 import { adminApi } from '@api/admin';
 import { useAuthStore } from '@store/auth.store';
+import { useConfirmModal } from '@hooks/useConfirmModal';
+import { usePagination } from '@hooks/usePagination';
 import type { AdminUser } from '@appTypes/api';
 
 export function AdminUsersPage() {
@@ -19,13 +21,13 @@ export function AdminUsersPage() {
   const currentUser = useAuthStore(s => s.user);
   const isManager = currentUser?.role === 'MANAGER';
 
-  const [page, setPage] = useState(1);
+  const { page, setPage } = usePagination();
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<string | undefined>();
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   // Block/unblock modal
-  const [blockTarget, setBlockTarget] = useState<AdminUser | null>(null);
+  const blockConfirm = useConfirmModal<AdminUser>();
   const [blockAction, setBlockAction] = useState<'block' | 'unblock'>('block');
 
   const { data, isLoading } = useQuery({
@@ -39,13 +41,13 @@ export function AdminUsersPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       toast('success', blockAction === 'block' ? t('users.blocked') : t('users.active'));
-      setBlockTarget(null);
+      blockConfirm.close();
     },
     onError: () => toast('error', t('common:errors.generic', { ns: 'common' })),
   });
 
   const openBlockModal = (user: AdminUser, action: 'block' | 'unblock') => {
-    setBlockTarget(user);
+    blockConfirm.open(user);
     setBlockAction(action);
   };
 
@@ -155,17 +157,17 @@ export function AdminUsersPage() {
 
       {/* Block/Unblock Confirmation Modal */}
       <Modal
-        open={!!blockTarget}
+        open={blockConfirm.isOpen}
         title={blockAction === 'block' ? t('users.blockUser') : t('users.unblockUser')}
         danger={blockAction === 'block'}
         onConfirm={() =>
-          blockTarget &&
+          blockConfirm.target &&
           toggleBlockMut.mutate({
-            id: blockTarget.id,
+            id: blockConfirm.target.id,
             blocked: blockAction === 'block',
           })
         }
-        onCancel={() => setBlockTarget(null)}
+        onCancel={blockConfirm.close}
       >
         {blockAction === 'block' ? t('users.blockConfirm') : t('users.unblockConfirm')}
       </Modal>

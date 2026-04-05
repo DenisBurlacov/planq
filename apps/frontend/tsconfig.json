@@ -16,7 +16,8 @@
       "@ws/*": ["src/ws/*"],
       "@locales/*": ["src/locales/*"],
       "@styles/*": ["src/styles/*"],
-      "@constants/*": ["src/constants/*"]
+      "@constants/*": ["src/constants/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"],

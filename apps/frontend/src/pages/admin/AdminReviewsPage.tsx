@@ -1,10 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Search, Check, X, Trash2 } from 'lucide-react';
 import { StarRating } from '@components/ui/StarRating';
 import { Modal } from '@components/ui/Modal';
 import { apiFetch } from '@api/client';
+import { useConfirmModal } from '@hooks/useConfirmModal';
 import type { PaginatedResponse } from '@appTypes/api';
 
 interface AdminReview {
@@ -23,7 +25,7 @@ export function AdminReviewsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const deleteConfirm = useConfirmModal<string>();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-reviews'],
@@ -67,14 +69,14 @@ export function AdminReviewsPage() {
   };
 
   const handleDelete = async () => {
-    if (!deleteId) return;
+    if (!deleteConfirm.target) return;
     try {
-      await apiFetch(`/api/v1/reviews/${deleteId}`, { method: 'DELETE' });
+      await apiFetch(`/api/v1/reviews/${deleteConfirm.target}`, { method: 'DELETE' });
       await qc.invalidateQueries({ queryKey: ['admin-reviews'] });
     } catch {
       /* ignore */
     }
-    setDeleteId(null);
+    deleteConfirm.close();
   };
 
   const inputCls =
@@ -220,7 +222,7 @@ export function AdminReviewsPage() {
                         )}
                         <button
                           data-testid={`admin-review-delete-${review.id}`}
-                          onClick={() => setDeleteId(review.id)}
+                          onClick={() => deleteConfirm.open(review.id)}
                           className="p-1.5 rounded hover:bg-[var(--bg-sidebar)] text-red-500"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -236,10 +238,10 @@ export function AdminReviewsPage() {
       </div>
 
       <Modal
-        open={!!deleteId}
+        open={deleteConfirm.isOpen}
         title={t('reviews.delete')}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
+        onCancel={deleteConfirm.close}
         confirmLabel={t('reviews.delete')}
         cancelLabel=""
       >

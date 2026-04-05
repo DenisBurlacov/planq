@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
-import { type ReactNode, useEffect, useRef, useId } from 'react';
+import { type ReactNode } from 'react';
 import { Button } from './Button.js';
+import { useModalAccessibility } from '@hooks/useModalAccessibility';
 
 interface ModalProps {
   open: boolean;
@@ -25,72 +26,7 @@ export function Modal({
   danger = false,
   loading = false,
 }: ModalProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const titleId = useId();
-
-  // Capture the element that triggered the modal and focus trap
-  useEffect(() => {
-    if (!open) return;
-
-    previousFocusRef.current = document.activeElement as HTMLElement;
-
-    // Focus first focusable element inside the modal
-    const panel = panelRef.current;
-    if (panel) {
-      const first = panel.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      first?.focus();
-    }
-
-    return () => {
-      // Restore focus on close
-      previousFocusRef.current?.focus();
-    };
-  }, [open]);
-
-  // Escape key handler
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCancel();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [open, onCancel]);
-
-  // Focus trap
-  useEffect(() => {
-    if (!open) return;
-    const panel = panelRef.current;
-    if (!panel) return;
-
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      const focusable = panel.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [open]);
+  const { panelRef, titleId } = useModalAccessibility({ open, onClose: onCancel });
 
   if (!open) return null;
 

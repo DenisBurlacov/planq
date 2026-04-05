@@ -17,6 +17,7 @@ export default defineConfig({
       '@locales': path.resolve(__dirname, 'src/locales'),
       '@styles': path.resolve(__dirname, 'src/styles'),
       '@constants': path.resolve(__dirname, 'src/constants'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
     },
   },
   server: {

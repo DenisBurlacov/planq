@@ -14,6 +14,8 @@ import { promotionsApi } from '@api/promotions';
 import { useCartStore } from '@store/cart.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
+import { useConfirmModal } from '@hooks/useConfirmModal';
+import { formatPrice } from '@utils/pricing';
 import { useEffect } from 'react';
 import type { CartItem } from '@appTypes/api';
 
@@ -28,7 +30,7 @@ export function CartPage() {
   const [promoDiscount, setPromoDiscount] = useState<number | null>(null);
   const [applyingPromo, setApplyingPromo] = useState(false);
   const [updatingItem, setUpdatingItem] = useState<string | null>(null);
-  const [removeConfirmId, setRemoveConfirmId] = useState<string | null>(null);
+  const removeConfirm = useConfirmModal<string>();
   const [orderedItems, setOrderedItems] = useState<CartItem[]>([]);
 
   const { data: cart, isLoading } = useQuery({
@@ -162,7 +164,7 @@ export function CartPage() {
                       </Link>
                       <button
                         data-testid="cart-item-remove"
-                        onClick={() => setRemoveConfirmId(item.productId)}
+                        onClick={() => removeConfirm.open(item.productId)}
                         disabled={updatingItem === item.productId}
                         className="ml-2 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
                       >
@@ -195,8 +197,7 @@ export function CartPage() {
                         </button>
                       </div>
                       <span className="font-bold text-[var(--text-primary)]">
-                        {'\u20AC'}
-                        {(price * item.quantity).toFixed(2)}
+                        {formatPrice(price * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -279,17 +280,17 @@ export function CartPage() {
       </div>
 
       <Modal
-        open={removeConfirmId !== null}
+        open={removeConfirm.isOpen}
         title={t('cart.removeConfirmTitle')}
         confirmLabel={t('cart.removeConfirmYes')}
         cancelLabel={t('cart.removeConfirmNo')}
         onConfirm={() => {
-          if (removeConfirmId) {
-            handleRemove(removeConfirmId);
-            setRemoveConfirmId(null);
+          if (removeConfirm.target) {
+            handleRemove(removeConfirm.target);
+            removeConfirm.close();
           }
         }}
-        onCancel={() => setRemoveConfirmId(null)}
+        onCancel={removeConfirm.close}
         danger
       >
         {t('cart.removeConfirmBody')}

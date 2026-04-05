@@ -7,6 +7,7 @@ import { Modal } from '@components/ui/Modal';
 import { useToast } from '@components/ui/Toast';
 import { productsApi } from '@api/products';
 import { apiFetch } from '@api/client';
+import { useConfirmModal } from '@hooks/useConfirmModal';
 import type { Category } from '@appTypes/api';
 
 interface CategoryInput {
@@ -23,8 +24,7 @@ export function AdminCategoriesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<CategoryInput>({ name: '', slug: '', description: '' });
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteName, setDeleteName] = useState('');
+  const deleteConfirm = useConfirmModal<Category>();
 
   const { data: categories, isLoading } = useQuery({
     queryKey: ['categories'],
@@ -69,14 +69,14 @@ export function AdminCategoriesPage() {
   };
 
   const handleDelete = async () => {
-    if (!deleteId) return;
+    if (!deleteConfirm.target) return;
     try {
-      await apiFetch(`/api/v1/admin/categories/${deleteId}`, { method: 'DELETE' });
+      await apiFetch(`/api/v1/admin/categories/${deleteConfirm.target.id}`, { method: 'DELETE' });
       await qc.invalidateQueries({ queryKey: ['categories'] });
     } catch {
       // ignore
     }
-    setDeleteId(null);
+    deleteConfirm.close();
   };
 
   const openEdit = (cat: Category) => {
@@ -172,10 +172,7 @@ export function AdminCategoriesPage() {
                       </button>
                       <button
                         data-testid={`admin-category-delete-${cat.id}`}
-                        onClick={() => {
-                          setDeleteId(cat.id);
-                          setDeleteName(cat.name);
-                        }}
+                        onClick={() => deleteConfirm.open(cat)}
                         className="p-1.5 rounded hover:bg-[var(--bg-sidebar)] text-red-500"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -251,10 +248,10 @@ export function AdminCategoriesPage() {
       )}
 
       <Modal
-        open={!!deleteId}
+        open={deleteConfirm.isOpen}
         title={t('categories.deleteCategory')}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
+        onCancel={deleteConfirm.close}
         confirmLabel={t('categories.deleteCategory')}
         cancelLabel=""
       >
@@ -262,7 +259,7 @@ export function AdminCategoriesPage() {
           data-testid="admin-category-delete-confirm"
           className="text-sm text-[var(--text-secondary)]"
         >
-          {t('categories.deleteConfirm', { name: deleteName })}
+          {t('categories.deleteConfirm', { name: deleteConfirm.target?.name ?? '' })}
         </p>
       </Modal>
     </div>

@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef, useId } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, ArrowRight, Minus, Plus } from 'lucide-react';
 import { StarRating } from '@components/ui/StarRating';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
+import { PriceDisplay } from '@components/ui/PriceDisplay';
+import { useModalAccessibility } from '@hooks/useModalAccessibility';
 import type { Product } from '@appTypes/api';
 
 interface QuickViewModalProps {
@@ -18,73 +20,12 @@ export function QuickViewModal({ product, open, onClose, onAddToCart }: QuickVie
   const { t } = useTranslation('catalog');
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const titleId = useId();
-
-  useEffect(() => {
-    if (open) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
-      setQuantity(1);
-      const panel = panelRef.current;
-      if (panel) {
-        const first = panel.querySelector<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        first?.focus();
-      }
-    } else {
-      previousFocusRef.current?.focus();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [open, onClose]);
-
-  // Focus trap
-  useEffect(() => {
-    if (!open) return;
-    const panel = panelRef.current;
-    if (!panel) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      const focusable = panel.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [open]);
+  const { panelRef, titleId } = useModalAccessibility({ open, onClose });
 
   if (!open || !product) return null;
 
-  const price = product.salePrice ?? product.price;
   const isOnSale = product.salePrice !== null;
   const isOutOfStock = product.stock === 0;
-  const discountPercent =
-    isOnSale && product.salePrice !== null
-      ? Math.round((1 - product.salePrice / product.price) * 100)
-      : 0;
 
   const handleAddToCart = async () => {
     setAdding(true);
@@ -156,16 +97,11 @@ export function QuickViewModal({ product, open, onClose, onAddToCart }: QuickVie
 
             {/* Price */}
             <div data-testid="quick-view-price" className="flex items-baseline gap-2 mt-3">
-              <span className="text-xl font-bold text-[var(--text-primary)]">
-                €{price.toFixed(2)}
-              </span>
+              <PriceDisplay price={product.price} salePrice={product.salePrice} size="lg" />
               {isOnSale && (
-                <>
-                  <span className="text-sm text-[var(--text-secondary)] line-through">
-                    €{product.price.toFixed(2)}
-                  </span>
-                  <Badge variant="sale">-{discountPercent}%</Badge>
-                </>
+                <Badge variant="sale">
+                  -{Math.round((1 - (product.salePrice ?? product.price) / product.price) * 100)}%
+                </Badge>
               )}
             </div>
 

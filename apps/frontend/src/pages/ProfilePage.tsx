@@ -23,6 +23,7 @@ import { twoFactorApi } from '@api/twoFactor';
 import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
+import { useConfirmModal } from '@hooks/useConfirmModal';
 
 const nameSchema = z.object({ name: z.string().min(2) });
 const pwSchema = z.object({
@@ -80,7 +81,7 @@ export function ProfilePage() {
   // Address state
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const [deleteAddress, setDeleteAddress] = useState<Address | null>(null);
+  const deleteAddressConfirm = useConfirmModal<Address>();
   const [addressForm, setAddressForm] = useState<AddressInput>({
     name: '',
     street: '',
@@ -97,7 +98,7 @@ export function ProfilePage() {
   const [webhookUrl, setWebhookUrl] = useState('');
   const [webhookEvents, setWebhookEvents] = useState<Set<string>>(new Set());
   const [savingWebhook, setSavingWebhook] = useState(false);
-  const [deleteWebhook, setDeleteWebhook] = useState<WebhookSubscription | null>(null);
+  const deleteWebhookConfirm = useConfirmModal<WebhookSubscription>();
   const [expandedDeliveries, setExpandedDeliveries] = useState<Set<string>>(new Set());
 
   // 2FA state
@@ -280,9 +281,9 @@ export function ProfilePage() {
   };
 
   const handleDeleteAddress = async () => {
-    if (!deleteAddress) return;
+    if (!deleteAddressConfirm.target) return;
     try {
-      await addressesApi.remove(deleteAddress.id);
+      await addressesApi.remove(deleteAddressConfirm.target.id);
       await refetchAddresses();
       toast('success', t('toast.addressDeleted'));
     } catch (err) {
@@ -291,7 +292,7 @@ export function ProfilePage() {
         err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
       );
     } finally {
-      setDeleteAddress(null);
+      deleteAddressConfirm.close();
     }
   };
 
@@ -343,9 +344,9 @@ export function ProfilePage() {
   };
 
   const handleDeleteWebhook = async () => {
-    if (!deleteWebhook) return;
+    if (!deleteWebhookConfirm.target) return;
     try {
-      await webhooksApi.remove(deleteWebhook.id);
+      await webhooksApi.remove(deleteWebhookConfirm.target.id);
       await refetchWebhooks();
       toast('success', t('webhooks.deleted'));
     } catch (err) {
@@ -354,7 +355,7 @@ export function ProfilePage() {
         err instanceof ApiException ? err.message : t('common:errors.generic', { ns: 'common' })
       );
     } finally {
-      setDeleteWebhook(null);
+      deleteWebhookConfirm.close();
     }
   };
 
@@ -844,7 +845,7 @@ export function ProfilePage() {
                       variant="ghost"
                       size="sm"
                       className="text-red-500"
-                      onClick={() => setDeleteAddress(addr)}
+                      onClick={() => deleteAddressConfirm.open(addr)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       {t('addresses.delete')}
@@ -967,19 +968,19 @@ export function ProfilePage() {
 
           {/* Delete confirmation */}
           <Modal
-            open={!!deleteAddress}
+            open={deleteAddressConfirm.isOpen}
             title={t('addresses.delete')}
             onConfirm={handleDeleteAddress}
-            onCancel={() => setDeleteAddress(null)}
+            onCancel={() => deleteAddressConfirm.close()}
             confirmLabel={t('addresses.delete')}
             cancelLabel={t('common:actions.cancel', { ns: 'common' })}
             danger
           >
             <p>
-              {t('addresses.form.name')}: {deleteAddress?.name}
+              {t('addresses.form.name')}: {deleteAddressConfirm.target?.name}
             </p>
             <p className="text-sm text-[var(--text-secondary)] mt-1">
-              {deleteAddress?.street}, {deleteAddress?.city}
+              {deleteAddressConfirm.target?.street}, {deleteAddressConfirm.target?.city}
             </p>
           </Modal>
         </div>
@@ -1068,7 +1069,7 @@ export function ProfilePage() {
                     </button>
                     <button
                       data-testid={`webhook-delete-${index}`}
-                      onClick={() => setDeleteWebhook(wh)}
+                      onClick={() => deleteWebhookConfirm.open(wh)}
                       className="text-xs text-red-500 hover:underline ml-auto flex items-center gap-1"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -1179,17 +1180,17 @@ export function ProfilePage() {
 
           {/* Delete Webhook Confirmation */}
           <Modal
-            open={!!deleteWebhook}
+            open={deleteWebhookConfirm.isOpen}
             title={t('webhooks.delete')}
             onConfirm={handleDeleteWebhook}
-            onCancel={() => setDeleteWebhook(null)}
+            onCancel={() => deleteWebhookConfirm.close()}
             confirmLabel={t('webhooks.delete')}
             cancelLabel={t('common:actions.cancel', { ns: 'common' })}
             danger
           >
             <p>{t('webhooks.deleteConfirm')}</p>
             <p className="text-sm text-[var(--text-secondary)] mt-1 font-mono">
-              {deleteWebhook?.url}
+              {deleteWebhookConfirm.target?.url}
             </p>
           </Modal>
         </div>
@@ -1207,7 +1208,7 @@ function PaymentMethodsTab() {
   const [cards, setCards] = useState<import('@api/cards').SavedCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
+  const deleteCardConfirm = useConfirmModal<string>();
   const [cardNumber, setCardNumber] = useState('');
   const [cardholderName, setCardholderName] = useState('');
   const [expMonth, setExpMonth] = useState(1);
@@ -1242,11 +1243,11 @@ function PaymentMethodsTab() {
   };
 
   const handleDelete = async () => {
-    if (!deleteCardId) return;
+    if (!deleteCardConfirm.target) return;
     const { cardsApi } = await import('@api/cards');
-    await cardsApi.delete(deleteCardId);
+    await cardsApi.delete(deleteCardConfirm.target);
     toast('success', t('toast.cardDeleted'));
-    setDeleteCardId(null);
+    deleteCardConfirm.close();
     await loadCards();
   };
 
@@ -1336,7 +1337,7 @@ function PaymentMethodsTab() {
                 )}
                 <button
                   data-testid={`card-delete-${card.id}`}
-                  onClick={() => setDeleteCardId(card.id)}
+                  onClick={() => deleteCardConfirm.open(card.id)}
                   className="p-1 text-red-500 hover:bg-red-50 rounded"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -1439,10 +1440,10 @@ function PaymentMethodsTab() {
 
       {/* Delete Card Confirmation */}
       <Modal
-        open={!!deleteCardId}
+        open={deleteCardConfirm.isOpen}
         title={t('paymentMethods.deleteCard')}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteCardId(null)}
+        onCancel={() => deleteCardConfirm.close()}
         confirmLabel={t('paymentMethods.deleteCard')}
         cancelLabel={t('common:actions.cancel', { ns: 'common' })}
         danger

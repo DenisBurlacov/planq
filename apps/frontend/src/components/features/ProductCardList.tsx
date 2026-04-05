@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingCart, Star, ImageOff, Eye, ArrowLeftRight } from 'lucide-react';
+import { Heart, ShoppingCart, Star, Eye, ArrowLeftRight } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@components/ui/Badge';
 import { Button } from '@components/ui/Button';
 import { AddToCartModal } from '@components/ui/AddToCartModal';
+import { ProductImage } from '@components/ui/ProductImage';
+import { PriceDisplay } from '@components/ui/PriceDisplay';
 import { useProductName, useProductDescription } from '@hooks/useProductLocale';
 import type { Product } from '@appTypes/api';
 
@@ -28,18 +30,12 @@ export function ProductCardList({
   const { t } = useTranslation('catalog');
   const [modalOpen, setModalOpen] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const localizedName = useProductName(product);
   const localizedDescription = useProductDescription(product);
 
-  const hasImage = product.images.length > 0 && !imgError;
-  const price = product.salePrice ?? product.price;
+  const hasImage = product.images.length > 0;
   const isOnSale = product.salePrice !== null;
   const isOutOfStock = product.stock === 0;
-  const discountPercent =
-    isOnSale && product.salePrice !== null
-      ? Math.round((1 - product.salePrice / product.price) * 100)
-      : 0;
 
   const handleModalConfirm = async (quantity: number) => {
     if (!onAddToCart) return;
@@ -65,19 +61,11 @@ export function ProductCardList({
       >
         {/* Image */}
         <div className="shrink-0 w-full sm:w-48 h-40 sm:h-36 relative">
-          {hasImage ? (
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              loading="lazy"
-              onError={() => setImgError(true)}
-              className="h-full w-full object-cover bg-[var(--bg-sidebar)]"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-[var(--bg-sidebar)]">
-              <ImageOff className="h-10 w-10 text-[var(--text-secondary)]" />
-            </div>
-          )}
+          <ProductImage
+            src={hasImage ? product.images[0] : undefined}
+            alt={product.name}
+            className="h-full w-full object-cover bg-[var(--bg-sidebar)]"
+          />
           {isOnSale && (
             <div className="absolute top-2 left-2">
               <Badge variant="sale">{t('common:sale', { ns: 'common' })}</Badge>
@@ -162,19 +150,12 @@ export function ProductCardList({
 
         {/* Right price column */}
         <div className="hidden sm:flex shrink-0 p-4 text-right flex-col justify-between">
-          <div>
-            <span className="text-base font-bold text-[var(--text-primary)]">
-              €{price.toFixed(2)}
-            </span>
-            {isOnSale && (
-              <>
-                <p className="text-sm text-[var(--text-secondary)] line-through">
-                  €{product.price.toFixed(2)}
-                </p>
-                <p className="text-xs font-semibold text-red-500">-{discountPercent}%</p>
-              </>
-            )}
-          </div>
+          <PriceDisplay
+            price={product.price}
+            salePrice={product.salePrice}
+            size="md"
+            showDiscount
+          />
         </div>
       </Link>
     </>

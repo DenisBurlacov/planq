@@ -2,12 +2,14 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
+import { ShoppingCart, Heart, Home, Tag } from 'lucide-react';
 import { StarRating } from '@components/ui/StarRating';
 import { useFeatureFlag } from '@hooks/useFeatureFlag';
 import { ImageCarousel } from '@components/ImageCarousel';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
+import { PriceDisplay } from '@components/ui/PriceDisplay';
+import { ProductImage } from '@components/ui/ProductImage';
 import { Skeleton } from '@components/ui/Skeleton';
 import { Breadcrumb } from '@components/ui/Breadcrumb';
 import { Accordion } from '@components/ui/Accordion';
@@ -454,9 +456,7 @@ export function ProductPage() {
               data-testid="product-image-main"
               className="relative rounded-xl overflow-hidden bg-[var(--bg-sidebar)] h-96 mb-3"
             >
-              <div className="flex h-full items-center justify-center">
-                <ImageOff className="h-16 w-16 text-[var(--text-secondary)]" />
-              </div>
+              <ProductImage src={undefined} alt={localizedName} />
             </div>
           )}
 
@@ -507,20 +507,14 @@ export function ProductPage() {
             </span>
           </div>
 
-          <div data-testid="product-price" className="flex items-baseline gap-3 mb-4">
-            <span className="text-3xl font-bold text-[var(--text-primary)]">
-              €{price.toFixed(2)}
-            </span>
-            {isOnSale && (
-              <span className="text-lg text-[var(--text-secondary)] line-through">
-                €{product.price.toFixed(2)}
-              </span>
-            )}
-            {isOnSale && (
-              <span className="text-sm font-medium text-red-500">
-                {t('product.saveAmount', { amount: `€${(product.price - price).toFixed(2)}` })}
-              </span>
-            )}
+          <div data-testid="product-price" className="mb-4">
+            <PriceDisplay
+              price={product.price + priceAdjustment}
+              salePrice={isOnSale ? price : null}
+              size="lg"
+              showSave
+              data-testid="product-price-display"
+            />
           </div>
 
           {/* Sale countdown */}

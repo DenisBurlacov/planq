@@ -1,6 +1,9 @@
-import { Minus, Plus, ShoppingCart, X, ImageOff } from 'lucide-react';
-import { useState, useEffect, useRef, useId } from 'react';
+import { Minus, Plus, ShoppingCart, X } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from './Button';
+import { ProductImage } from './ProductImage';
+import { useModalAccessibility } from '@hooks/useModalAccessibility';
+import { formatPrice } from '@utils/pricing';
 import type { Product } from '@appTypes/api';
 
 interface AddToCartModalProps {
@@ -19,67 +22,13 @@ export function AddToCartModal({
   onCancel,
 }: AddToCartModalProps) {
   const [quantity, setQuantity] = useState(1);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const titleId = useId();
 
-  // Focus management
-  useEffect(() => {
-    if (!open) return;
-    previousFocusRef.current = document.activeElement as HTMLElement;
-    const panel = panelRef.current;
-    if (panel) {
-      const first = panel.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      first?.focus();
-    }
-    return () => {
-      previousFocusRef.current?.focus();
-    };
-  }, [open]);
+  const handleCancel = () => {
+    setQuantity(1);
+    onCancel();
+  };
 
-  // Escape key
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setQuantity(1);
-        onCancel();
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [open, onCancel]);
-
-  // Focus trap
-  useEffect(() => {
-    if (!open) return;
-    const panel = panelRef.current;
-    if (!panel) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      const focusable = panel.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey) {
-        if (document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [open]);
+  const { panelRef, titleId } = useModalAccessibility({ open, onClose: handleCancel });
 
   if (!open) return null;
 
@@ -94,11 +43,6 @@ export function AddToCartModal({
   const handleConfirm = () => {
     onConfirm(quantity);
     setQuantity(1);
-  };
-
-  const handleCancel = () => {
-    setQuantity(1);
-    onCancel();
   };
 
   return (
@@ -127,17 +71,11 @@ export function AddToCartModal({
 
         {/* Image */}
         <div className="h-44 bg-[var(--bg-sidebar)] overflow-hidden">
-          {product.images.length > 0 ? (
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <ImageOff className="h-12 w-12 text-[var(--text-secondary)]" />
-            </div>
-          )}
+          <ProductImage
+            src={product.images.length > 0 ? product.images[0] : undefined}
+            alt={product.name}
+            className="h-full w-full object-cover"
+          />
         </div>
 
         {/* Content */}
@@ -153,11 +91,11 @@ export function AddToCartModal({
           {/* Unit price */}
           <div className="flex items-baseline gap-2 mb-4">
             <span className="text-sm text-[var(--text-secondary)]">
-              €{unitPrice.toFixed(2)} / шт.
+              {formatPrice(unitPrice)} / шт.
             </span>
             {isOnSale && (
               <span className="text-xs text-[var(--text-secondary)] line-through">
-                €{product.price.toFixed(2)}
+                {formatPrice(product.price)}
               </span>
             )}
           </div>
@@ -198,7 +136,7 @@ export function AddToCartModal({
               data-testid="modal-total-price"
               className="text-xl font-bold text-[var(--text-primary)]"
             >
-              €{total.toFixed(2)}
+              {formatPrice(total)}
             </span>
           </div>
 

@@ -14,6 +14,8 @@ import { adminApi, type AdminProductInput } from '@api/admin';
 import { uploadApi } from '@api/upload';
 import { productsApi } from '@api/products';
 import { useAuthStore } from '@store/auth.store';
+import { useConfirmModal } from '@hooks/useConfirmModal';
+import { usePagination } from '@hooks/usePagination';
 import type { Product } from '@appTypes/api';
 
 export function AdminProductsPage() {
@@ -23,7 +25,7 @@ export function AdminProductsPage() {
   const user = useAuthStore(s => s.user);
   const isManager = user?.role === 'MANAGER';
 
-  const [page, setPage] = useState(1);
+  const { page, setPage, reset: resetPage } = usePagination();
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [sortKey, setSortKey] = useState<string | undefined>();
@@ -37,7 +39,7 @@ export function AdminProductsPage() {
   // Modal state
   const [formOpen, setFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const deleteConfirm = useConfirmModal<Product>();
 
   // Form fields
   const [formName, setFormName] = useState('');
@@ -84,7 +86,7 @@ export function AdminProductsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
       toast('success', t('products.deleteProduct'));
-      setDeleteTarget(null);
+      deleteConfirm.close();
     },
     onError: () => toast('error', t('products.deleteProduct')),
   });
@@ -171,7 +173,7 @@ export function AdminProductsPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const handleImageUpload = async (files: File[]) => {
@@ -315,7 +317,7 @@ export function AdminProductsPage() {
               size="sm"
               className="text-red-500 hover:text-red-600"
               data-testid={`delete-product-${row.id}`}
-              onClick={() => setDeleteTarget(row)}
+              onClick={() => deleteConfirm.open(row)}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -374,7 +376,7 @@ export function AdminProductsPage() {
             checked={showDeleted}
             onChange={e => {
               setShowDeleted(e.target.checked);
-              setPage(1);
+              resetPage();
             }}
             className="rounded"
           />
@@ -539,13 +541,13 @@ export function AdminProductsPage() {
 
       {/* Delete Confirmation Modal */}
       <Modal
-        open={!!deleteTarget}
+        open={deleteConfirm.isOpen}
         title={t('products.deleteProduct')}
         danger
         confirmLabel={t('common:actions.delete', { ns: 'common' })}
         cancelLabel={t('common:actions.cancel', { ns: 'common' })}
-        onConfirm={() => deleteTarget && deleteMut.mutate(deleteTarget.id)}
-        onCancel={() => setDeleteTarget(null)}
+        onConfirm={() => deleteConfirm.target && deleteMut.mutate(deleteConfirm.target.id)}
+        onCancel={deleteConfirm.close}
       >
         {t('products.deleteConfirm')}
       </Modal>

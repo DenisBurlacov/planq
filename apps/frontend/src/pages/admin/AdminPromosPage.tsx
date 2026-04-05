@@ -7,6 +7,7 @@ import { Modal } from '@components/ui/Modal';
 import { Toggle } from '@components/ui/Toggle';
 import { useToast } from '@components/ui/Toast';
 import { apiFetch } from '@api/client';
+import { useConfirmModal } from '@hooks/useConfirmModal';
 import type { PromoCode, PaginatedResponse } from '@appTypes/api';
 
 interface PromoInput {
@@ -37,8 +38,7 @@ export function AdminPromosPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<PromoInput>(defaultInput);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteCode, setDeleteCode] = useState('');
+  const deleteConfirm = useConfirmModal<PromoCode & { maxUses?: number; usedCount?: number }>();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-promos'],
@@ -73,14 +73,14 @@ export function AdminPromosPage() {
   };
 
   const handleDelete = async () => {
-    if (!deleteId) return;
+    if (!deleteConfirm.target) return;
     try {
-      await apiFetch(`/api/v1/admin/promotions/${deleteId}`, { method: 'DELETE' });
+      await apiFetch(`/api/v1/admin/promotions/${deleteConfirm.target.id}`, { method: 'DELETE' });
       await qc.invalidateQueries({ queryKey: ['admin-promos'] });
     } catch {
       // ignore
     }
-    setDeleteId(null);
+    deleteConfirm.close();
   };
 
   const openEdit = (promo: PromoCode & { maxUses?: number }) => {
@@ -211,10 +211,7 @@ export function AdminPromosPage() {
                       </button>
                       <button
                         data-testid={`admin-promo-delete-${promo.id}`}
-                        onClick={() => {
-                          setDeleteId(promo.id);
-                          setDeleteCode(promo.code);
-                        }}
+                        onClick={() => deleteConfirm.open(promo)}
                         className="p-1.5 rounded hover:bg-[var(--bg-sidebar)] text-red-500"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -341,10 +338,10 @@ export function AdminPromosPage() {
 
       {/* Delete confirm */}
       <Modal
-        open={!!deleteId}
+        open={deleteConfirm.isOpen}
         title={t('promos.deletePromo')}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteId(null)}
+        onCancel={deleteConfirm.close}
         confirmLabel={t('promos.deletePromo')}
         cancelLabel=""
       >
@@ -352,7 +349,7 @@ export function AdminPromosPage() {
           data-testid="admin-promo-delete-confirm"
           className="text-sm text-[var(--text-secondary)]"
         >
-          {t('promos.deleteConfirm', { code: deleteCode })}
+          {t('promos.deleteConfirm', { code: deleteConfirm.target?.code ?? '' })}
         </p>
       </Modal>
     </div>
