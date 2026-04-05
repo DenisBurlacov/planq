@@ -2,7 +2,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Star, ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
+import { ShoppingCart, Heart, ImageOff, Home, Tag } from 'lucide-react';
+import { StarRating } from '@components/ui/StarRating';
 import { useFeatureFlag } from '@hooks/useFeatureFlag';
 import { ImageCarousel } from '@components/ImageCarousel';
 import { Button } from '@components/ui/Button';
@@ -500,14 +501,7 @@ export function ProductPage() {
           </h1>
 
           <div data-testid="product-rating" className="flex items-center gap-2 mb-4">
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${i < Math.round(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                />
-              ))}
-            </div>
+            <StarRating value={product.rating} size="md" />
             <span className="text-sm text-[var(--text-secondary)]">
               {product.rating.toFixed(1)} · {t('product.reviews', { count: product.reviewCount })}
             </span>
@@ -742,19 +736,14 @@ export function ProductPage() {
             <p className="text-sm font-medium text-[var(--text-primary)] mb-3">
               {t('product.writeReview')}
             </p>
-            <div data-testid="review-stars" className="flex gap-1 mb-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  data-testid={`star-${i + 1}`}
-                  onClick={() => setReviewRating(i + 1)}
-                >
-                  <Star
-                    className={`h-6 w-6 ${i < reviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                  />
-                </button>
-              ))}
+            <div className="mb-3">
+              <StarRating
+                value={reviewRating}
+                size="lg"
+                interactive
+                onChange={setReviewRating}
+                data-testid="review-stars"
+              />
             </div>
             <textarea
               data-testid="review-comment"
@@ -842,14 +831,7 @@ export function ProductPage() {
                     {review.user.name}
                   </span>
                 </div>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-3.5 w-3.5 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                    />
-                  ))}
-                </div>
+                <StarRating value={review.rating} size="sm" />
               </div>
               {review.comment && (
                 <p className="text-sm text-[var(--text-secondary)]">{review.comment}</p>

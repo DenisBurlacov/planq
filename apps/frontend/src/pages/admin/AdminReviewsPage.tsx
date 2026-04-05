@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Search, Check, X, Trash2, Star } from 'lucide-react';
+import { Search, Check, X, Trash2 } from 'lucide-react';
+import { StarRating } from '@components/ui/StarRating';
 import { Modal } from '@components/ui/Modal';
 import { apiFetch } from '@api/client';
 import type { PaginatedResponse } from '@appTypes/api';
@@ -188,14 +189,7 @@ export function AdminReviewsPage() {
                     </td>
                     <td className="px-4 py-3 text-[var(--text-secondary)]">{review.user.name}</td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-3.5 w-3.5 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                          />
-                        ))}
-                      </div>
+                      <StarRating value={review.rating} size="sm" />
                     </td>
                     <td className="px-4 py-3 text-[var(--text-secondary)] truncate max-w-xs">
                       {review.comment ?? '—'}

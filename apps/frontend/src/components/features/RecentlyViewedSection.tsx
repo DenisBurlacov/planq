@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { productsApi } from '@api/products';
-import { Star, ImageOff } from 'lucide-react';
+import { ImageOff } from 'lucide-react';
+import { StarRating } from '@components/ui/StarRating';
 import type { Product } from '@appTypes/api';
 
 const STORAGE_KEY = 'planq_recently_viewed';
@@ -81,13 +82,8 @@ export function RecentlyViewedSection({ currentProductId }: RecentlyViewedSectio
                 <h3 className="text-sm font-medium text-[var(--text-primary)] line-clamp-1">
                   {product.name}
                 </h3>
-                <div className="flex items-center gap-1 mt-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-3 w-3 ${i < Math.round(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                    />
-                  ))}
+                <div className="mt-1">
+                  <StarRating value={product.rating} size="xs" />
                 </div>
                 <p className="text-sm font-bold text-[var(--text-primary)] mt-1">
                   €{price.toFixed(2)}

@@ -7,11 +7,11 @@ import {
   SlidersHorizontal,
   ArrowLeftRight,
   X,
-  Star,
   ChevronDown,
   Trash2,
   Save,
 } from 'lucide-react';
+import { StarRating } from '@components/ui/StarRating';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardList } from '@components/features/ProductCardList';
 import { QuickViewModal } from '@components/features/QuickViewModal';
@@ -770,32 +770,13 @@ export function CatalogPage() {
                 <label className="text-[11px] font-medium text-[var(--text-secondary)] uppercase tracking-wide block mb-1">
                   {t('filters.rating')}
                 </label>
-                <div data-testid="filter-rating" className="flex items-center gap-0.5">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <button
-                      key={star}
-                      type="button"
-                      data-testid={`filter-star-${star}`}
-                      aria-label={t('filters.starAria', { count: star })}
-                      onClick={() =>
-                        setQuery(q => {
-                          const isFilled = q.rating !== undefined && star <= q.rating;
-                          const newRating = isFilled ? (star - 1 > 0 ? star - 1 : undefined) : star;
-                          return { ...q, rating: newRating, page: 1 };
-                        })
-                      }
-                      className="p-0.5 transition-colors"
-                    >
-                      <Star
-                        className={`h-5 w-5 ${
-                          query.rating && star <= query.rating
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'fill-none text-[var(--text-secondary)] hover:text-amber-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
+                <StarRating
+                  value={query.rating ?? 0}
+                  size="lg"
+                  interactive
+                  onChange={v => setQuery(q => ({ ...q, rating: v > 0 ? v : undefined, page: 1 }))}
+                  data-testid="filter-rating"
+                />
               </div>
             </div>
 

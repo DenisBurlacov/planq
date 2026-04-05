@@ -5,10 +5,10 @@ import {
   ShieldCheck,
   RefreshCw,
   Headphones,
-  Star,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { StarRating } from '@components/ui/StarRating';
 import { CountdownTimer } from '@components/ui/CountdownTimer';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useCallback, useState } from 'react';
@@ -504,13 +504,8 @@ function TestimonialsSection({
             data-testid={`testimonial-card-${testimonial.id}`}
             className="snap-start shrink-0 w-[85vw] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6"
           >
-            <div className="flex gap-0.5 mb-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${i < testimonial.rating ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                />
-              ))}
+            <div className="mb-4">
+              <StarRating value={testimonial.rating} size="md" />
             </div>
             <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed mb-4">
               &ldquo;{t(testimonial.quoteKey.replace('catalog:', ''))}&rdquo;

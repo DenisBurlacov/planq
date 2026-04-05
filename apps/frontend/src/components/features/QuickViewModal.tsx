@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useId } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X, Star, ArrowRight, Minus, Plus } from 'lucide-react';
+import { X, ArrowRight, Minus, Plus } from 'lucide-react';
+import { StarRating } from '@components/ui/StarRating';
 import { Button } from '@components/ui/Button';
 import { Badge } from '@components/ui/Badge';
 import type { Product } from '@appTypes/api';
@@ -146,12 +147,7 @@ export function QuickViewModal({ product, open, onClose, onAddToCart }: QuickVie
 
             {/* Rating */}
             <div className="flex items-center gap-1 mt-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-3.5 w-3.5 ${i < Math.round(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-[var(--border)]'}`}
-                />
-              ))}
+              <StarRating value={product.rating} size="sm" />
               <span className="text-xs text-[var(--text-secondary)] ml-1">
                 ({product.rating.toFixed(1)}) - {product.reviewCount}{' '}
                 {t('product.reviews', { count: product.reviewCount })}
