@@ -25,6 +25,15 @@ jest.mock('@utils/prisma.js', () => ({
       update: jest.fn(),
       count: jest.fn(),
     },
+    webhookSubscription: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
+    webhookDelivery: {
+      create: jest.fn(),
+    },
+    auditLog: {
+      create: jest.fn(),
+    },
   },
 }));
 
