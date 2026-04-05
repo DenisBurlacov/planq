@@ -459,14 +459,18 @@ router.put(
  *       200:
  *         description: Paginated user list
  */
-router.get('/users', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { page, limit, search } = adminService.AdminPaginationSchema.parse(req.query);
-    ok(res, await adminService.listUsers(page, limit, search));
-  } catch (err) {
-    next(err);
+router.get(
+  '/users',
+  managerRestrictions,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { page, limit, search } = adminService.AdminPaginationSchema.parse(req.query);
+      ok(res, await adminService.listUsers(page, limit, search));
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 /**
  * @openapi
@@ -925,13 +929,17 @@ router.delete('/reviews/:id', async (req: Request, res: Response, next: NextFunc
  *       200:
  *         description: List of key-value settings
  */
-router.get('/settings', async (_req: Request, res: Response, next: NextFunction) => {
-  try {
-    ok(res, await settingsService.listSettings());
-  } catch (err) {
-    next(err);
+router.get(
+  '/settings',
+  managerRestrictions,
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      ok(res, await settingsService.listSettings());
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 /**
  * @openapi
