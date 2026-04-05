@@ -250,7 +250,7 @@ export function Footer() {
               {t('footer.newsletter.alreadySubscribed')}
             </p>
           ) : (
-            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
+            <form onSubmit={handleNewsletterSubmit} className="flex items-start gap-2">
               <div>
                 <input
                   data-testid="footer-newsletter-email"
