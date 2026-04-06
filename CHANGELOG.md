@@ -8,27 +8,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+_Nothing yet._
+
+---
+
+## [2.0.0] — 2026-04-04
+
+Major release. Admin panel fully built out, 3 user roles, product variants, blog, static pages, compare, notifications, webhooks, feature flags, A/B testing, onboarding tour, keyboard shortcuts, and significantly expanded test infrastructure.
+
 ### Added
 
+- **Admin panel** — 10 pages: Dashboard, Products CRUD, Orders, Users, Promos, Categories, Reviews, Stats/Analytics, Settings, Audit log
+- **3 user roles** — USER, MANAGER, ADMIN with granular permissions; `managerRestrictions` middleware blocks destructive operations for MANAGER
+- **Product variants** — `ProductVariant` model with color, size, stock, price adjustment; 101 products, 54 reviews in seed
 - **Blog system** — `BlogArticle` model, `/api/v1/blog` endpoints, `BlogPage` and `BlogArticlePage` on frontend, 6 seed articles with cover images
+- **Static pages** — About, FAQ, Shipping, Returns, Privacy Policy, Terms of Service with `StaticPageLayout`
 - **Contact form** — `ContactMessage` model, `/api/v1/contact` endpoint, `ContactPage` on frontend
-- **Newsletter** — `NewsletterSubscriber` model, `/api/v1/newsletter` subscribe/unsubscribe endpoints
-- **Two-factor authentication (2FA)** — TOTP-based via `/api/v1/auth/2fa` (setup, verify, disable), `twoFactorEnabled` and `twoFactorSecret` fields on User model
-- **Captcha** — `/api/v1/auth/captcha` generate and verify endpoints
-- **Email verification** — `EmailVerificationToken` model, `emailVerified` field on User, `VerifyEmailPage` on frontend
-- **Saved payment cards** — `SavedCard` model, `/api/v1/cards` CRUD endpoints
+- **Support page** — `/support` with email, chat, and business hours contact cards
+- **Compare page** — side-by-side comparison of up to 4 products, `CompareButton` component, `compare.store.ts`
+- **Saved payment cards** — `SavedCard` model, `/api/v1/cards` CRUD (max 5 per user, with Luhn validation and expiry check)
 - **Addresses** — `Address` model, `/api/v1/addresses` CRUD with default address support
-- **Notifications** — `Notification` model, in-app notification system, `NotificationDropdown` component, `/api/v1/notifications` endpoints, notification preferences on profile
-- **Webhooks** — `WebhookSubscription` + `WebhookDelivery` models, `/api/v1/webhooks` CRUD with delivery tracking
-- **Audit logging** — `AuditLog` model, all admin actions logged, `/api/v1/admin/audit` endpoint, `AdminAuditPage` on frontend
-- **Feature flags** — `StoreSetting` model with `ff_` prefix, `/api/v1/feature-flags` public endpoint, `/api/v1/admin/feature-flags` admin management, `useFeatureFlag()` hook, `featureFlags.store.ts`
+- **Notifications** — `Notification` model, in-app system, `NotificationDropdown` component, notification preferences on profile, scheduled notifications via cron
+- **Real-time notifications** — WebSocket `notification.new` event
+- **Email verification** — `EmailVerificationToken` model, `emailVerified` field on User, `VerifyEmailPage`
+- **Two-factor authentication (2FA)** — TOTP-based via `/api/v1/auth/2fa` (setup, verify, disable) — mock implementation
+- **Captcha** — `/api/v1/auth/captcha` generate and verify — mock implementation
+- **Social login** — OAuth mock endpoints for Google/GitHub
+- **Cookie consent** — banner component with accept/decline
+- **Session expired modal** — shown on 401 when refresh token fails
+- **Feature flags** — `StoreSetting` with `ff_` prefix, admin toggle, `useFeatureFlag()` hook, `featureFlags.store.ts`
+- **A/B testing** — variant assignment via feature flags
+- **Flaky QA zone** — intentionally flaky endpoints for QA resilience testing
+- **File upload** — avatar, product images, review photos via Multer middleware
+- **Webhooks** — `WebhookSubscription` + `WebhookDelivery` models, `/api/v1/webhooks` CRUD with delivery log
 - **Content negotiation** — XML response support via `Accept: application/xml` header on all GET endpoints
-- **Product variants** — `ProductVariant` model with color, size, stock, price adjustment
-- **Stock notifications** — `StockNotification` model, notify-when-in-stock feature, `NotifyWhenInStock` component
+- **Order tracking** — `trackingEvents` JSON field, `OrderTrackingTimeline` component, cancellation reasons, delivery method & cost, status-dependent panel
 - **Product specs** — JSON `specs` field on Product model, `SpecsTable` component
-- **Product comparison** — `ComparePage`, `CompareButton` component, `compare.store.ts`
-- **Order tracking** — `trackingEvents` JSON field, `OrderTrackingTimeline` component, cancellation reasons, delivery method & cost
-- **Review images** — `images[]` field on Review model
+- **Stock notifications** — `StockNotification` model, notify-when-in-stock feature
+- **Countdown timers** — for sale products and flash deals
+- **Stock urgency badges** — low-stock indicator on product cards
+- **Rating breakdown** — star distribution chart on product page
+- **Photo reviews** — `images[]` field on Review model, image upload in review form
+- **Share product** — modal with copy-link, social share buttons
+- **Social media modals** — in footer for social links
+- **Keyboard shortcuts** — `Ctrl+K` for search, `?` for shortcut help overlay
+- **Onboarding tour** — guided walkthrough for new users
 - **Product localization** — `nameRu`, `descriptionRu` on Product, `nameRu` on Category, `useProductLocale` hook
 - **Admin categories CRUD** — `/api/v1/admin/categories` with image upload, `AdminCategoriesPage`
 - **Admin promo codes CRUD** — `/api/v1/admin/promos` with create/update/delete, `AdminPromosPage`
@@ -38,38 +62,60 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Admin bulk operations** — bulk delete products, bulk update order status, CSV order export
 - **Admin product image upload** — multipart upload via `/api/v1/admin/products/:id/images`
 - **Admin product restore** — restore soft-deleted products via `/api/v1/admin/products/:id/restore`
-- **Manager role** — `MANAGER` added to `Role` enum, `managerRestrictions` middleware restricts destructive admin operations to ADMIN only
-- **Real-time notifications** — `/api/v1/notifications` with WebSocket `notification.new` event
+- **Audit logging** — `AuditLog` model, all admin actions logged, `/api/v1/admin/audit` endpoint, `AdminAuditPage`
+- **Newsletter** — `NewsletterSubscriber` model, `/api/v1/newsletter` subscribe/unsubscribe
 - **MegaMenu** — dropdown navigation component
-- **Static pages** — About, FAQ, Shipping, Returns, Privacy Policy, Terms of Service with `StaticPageLayout`
 - **Checkout flow pages** — `CheckoutProcessingPage`, `CheckoutSuccessPage`, `CheckoutFailedPage`
 - **Error pages** — `ForbiddenPage`, `ServerErrorPage`, `RateLimitedPage`
 - **UI components** — AddToCartModal, BackButton, CopyButton, CountdownTimer, DragList, EmptyState, FileUploadZone, InfiniteScroll, PageLoadingFallback, RangeSlider, ScrollToTop, SearchableSelect, SearchAutocomplete, Stepper, StockUrgencyBadge, Toggle, Tooltip, ViewToggle
 - **Feature components** — CategoryBar, MobileFilterModal, OrderTrackingTimeline, ProductCardList, QuickViewModal, RecentlyViewedSection, RelatedProductsSection, ShareProduct
 - **ErrorBoundary** and **OfflineBanner** global components
 - **Additional frontend API modules** — addresses, blog, cards, contact, featureFlags, newsletter, notifications, oauth, twoFactor, upload, webhooks
-- **Seed expanded** — 101 products (was 62), 6 users (was 4), 6 blog articles, product variants, store settings
+- **Seed expanded** — 101 products (was 62), 6 users (was 4), 54 reviews, 6 blog articles, product variants, store settings
 - **i18n namespace: about** — translations for About page
 - **Winston logging** — structured logging on backend
 - **Helmet** — HTTP security headers
 - **Compression** — gzip response compression
-- **Multer** — file upload middleware for product and category images
+- **k6 performance scripts** — load testing for key API endpoints
+- **Playwright visual regression** — screenshot comparison tests
+- **Test data factory** — programmatic test data generation
+- **Scoped API reset** — test-only endpoint to reset specific data domains
+- **Order auto-progress** — test endpoint to advance order status for E2E flows
 - **`docker-compose.test.yml`** — separate compose for test environment
 - **`scripts/`** — `download-images.sh`, `generate-placeholders.ts`
 
-### Changed
+### Improved
 
-- **Roles** — expanded from 2 (USER/ADMIN) to 3 (USER/MANAGER/ADMIN)
-- **CartItem** — unique constraint now includes `variantId` for variant support
-- **Zustand stores** — expanded from 3 (auth, cart, theme) to 6 (+ compare, notifications, featureFlags)
-- **Frontend routing** — all routes now use `React.lazy` + `Suspense` for code splitting
-- **Seed data** — 101 products across 10 categories (was 62)
+- **Category pill bar** — horizontal scrollable pill navigation for categories
+- **Catalog filters** — material, color, style, rating, saved filters in addition to category/price/sale/stock
+- **Multi-step checkout** — 3 steps (address, payment, review) with delivery options and test card numbers
+- **Search** — autocomplete dropdown with product suggestions and clear button
+- **Grid/list/load-more** — view mode toggle and infinite scroll on catalog page
+- **Unsaved changes detection** — notifications and settings pages track dirty state with warning modals
+- **Cart badge** — syncs from API on page load (Layout.tsx), not just in-memory
+- **Admin-only navigation** — ADMIN role sees only admin panel, no store links in navbar
+- **Date range validation** — `DateRangeFilter` component enforces from-before-to with `max`/`min` attributes
+- **Password visibility toggle** — `Input` component shows eye icon on password fields
+
+### Refactored
+
+- **Shared components** extracted — `StarRating`, `PriceDisplay`, `ProductImage`, `DateRangeFilter`
+- **Shared hooks** extracted — `useAddToCart`, `useConfirmModal`, `useModalAccessibility`, `usePagination`, `useDebounce`
+- **Shared utilities** — `pricing.ts` for price calculations, `validation.ts` for form validation with XSS/SQL injection checks
+- **All API modules** now use real `apiFetch` — removed all localStorage mocks and setTimeout fakes
 
 ### Fixed
 
-- **Support page** — new `/support` page with email, chat, and business hours contact cards
-- **Password visibility toggle** — `Input` component shows eye icon to toggle password visibility on `type="password"` fields
-- **Footer support link** — footer now links to `/support` page
+- **Price filter overlap** — min and max sliders no longer overlap each other
+- **Case-insensitive filters** — style, material, and color filters now work regardless of case
+- **Addresses API path** — frontend path corrected to match backend mount point (`/api/v1/addresses`)
+- **Webhook `updatedAt`** — added missing column to webhook delivery model
+- **Delivery method case mismatch** — normalized delivery method values between frontend and backend
+- **Manager restrictions** — users list, settings, and audit endpoints now properly blocked for MANAGER role
+- **Cart cache invalidation** — `['cart']` query invalidated after `cartApi.add` call
+- **Page fade transition removed** — caused flickering and broke E2E tests
+- **30+ i18n fixes** — replaced hardcoded English strings with `t()` calls across all pages
+- **6 dead components removed** — unused components cleaned up from the codebase
 - **Footer logo** — matched with navbar SVG icon (was using a different icon)
 - **Wishlist API** — frontend adapted to paginated response format from backend
 - **Docker: frontend VITE_API_URL** — fixed for Docker environment using nginx proxy
@@ -79,6 +125,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Docker: backend Dockerfile** — install prod deps in production stage
 - **Docker: Prisma generate** — added `prisma generate` before backend build
 - **CI: Playwright** — added `@playwright/test` dependency, fixed lowercase Docker tags
+
+### Changed
+
+- **Roles** — expanded from 2 (USER/ADMIN) to 3 (USER/MANAGER/ADMIN)
+- **CartItem** — unique constraint now includes `variantId` for variant support
+- **Zustand stores** — expanded from 3 (auth, cart, theme) to 6 (+ compare, notifications, featureFlags)
+- **Frontend routing** — all routes now use `React.lazy` + `Suspense` for code splitting
+- **Seed data** — 101 products across 10 categories (was 62), 54 reviews, 6 blog articles
 
 ---
 

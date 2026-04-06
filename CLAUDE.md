@@ -73,10 +73,10 @@ docker compose --profile monitoring up         # With Grafana/Loki
 
 ### Component Reuse
 
-- **Any UI pattern used more than once MUST be extracted** into a shared component. Examples: `StarRating`, `PriceDisplay`, `ProductImage`, `DateRangeFilter`, `EmptyState`.
+- **Any UI pattern used more than once MUST be extracted** into a shared component. Examples: `StarRating`, `PriceDisplay`, `ProductImage`, `DateRangeFilter`, `EmptyState`, `CountdownTimer`, `StockUrgencyBadge`.
 - **Shared components** go in `src/components/ui/` (generic) or `src/components/features/` (domain-specific).
-- **Shared hooks**: `useConfirmModal`, `useModalAccessibility`, `usePagination`, `useDebounce`, `useFeatureFlag`, `useProductLocale`.
-- **Shared utils**: `src/utils/pricing.ts` for price calculations.
+- **Shared hooks**: `useAddToCart`, `useConfirmModal`, `useModalAccessibility`, `usePagination`, `useDebounce`, `useFeatureFlag`, `useProductLocale`.
+- **Shared utils**: `src/utils/pricing.ts` for price calculations, `src/utils/validation.ts` for form validation (XSS/SQL injection checks).
 
 ### Admin Panel
 
@@ -102,6 +102,18 @@ docker compose --profile monitoring up         # With Grafana/Loki
 - ALL user-visible text via `t()` with correct namespace prefix (`common:`, `catalog:`, etc.).
 - Add keys to BOTH `en` and `ru` locale files.
 - Cross-namespace: use `t('common:actions.cancel')` not `t('actions.cancel')` from non-common namespace.
+
+### Cart
+
+- **After `cartApi.add`, always invalidate `['cart']` query** — use the `useAddToCart` hook which handles this automatically.
+
+### Validation
+
+- **All forms must have client-side validation including XSS/SQL injection checks** — use `utils/validation.ts` for sanitization and pattern checks.
+
+### Transitions
+
+- **No page fade transitions** — causes flickering and breaks E2E tests. Removed in 2.0.0; do not re-add.
 
 ### Other
 
