@@ -18,6 +18,22 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: Cart with items and total
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: d1e2f3a4-b5c6-7890-defg-ab1234567890
+ *               userId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *               items:
+ *                 - id: c1d2e3f4-a5b6-7890-cdef-234567890123
+ *                   productId: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *                   quantity: 2
+ *                   product:
+ *                     name: Nordic Sofa
+ *                     price: 899.99
+ *                     image: "https://example.com/sofa.jpg"
+ *                     stock: 15
+ *               total: 1799.98
+ *               itemCount: 2
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -43,9 +59,28 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  *             properties:
  *               productId: { type: string }
  *               quantity: { type: integer, default: 1 }
+ *           example:
+ *             productId: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *             quantity: 2
  *     responses:
  *       200:
  *         description: Item added
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: d1e2f3a4-b5c6-7890-defg-ab1234567890
+ *               userId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *               items:
+ *                 - id: c1d2e3f4-a5b6-7890-cdef-234567890123
+ *                   productId: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *                   quantity: 2
+ *                   product:
+ *                     name: Nordic Sofa
+ *                     price: 899.99
+ *                     image: "https://example.com/sofa.jpg"
+ *                     stock: 15
+ *               total: 1799.98
+ *               itemCount: 2
  */
 router.post(
   '/',

@@ -75,9 +75,30 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
  *               promoCode: { type: string }
  *               cardNumber: { type: string }
  *               deliveryMethod: { type: string, enum: [standard, express, nextDay], default: standard }
+ *           example:
+ *             shippingAddress: 123 Test St, Apt 4B, New York, NY 10001
+ *             paymentMethod: CARD
+ *             cardNumber: "4242424242424242"
+ *             deliveryMethod: STANDARD
  *     responses:
  *       201:
  *         description: Order created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: e1f2a3b4-c5d6-7890-efab-cd1234567890
+ *               userId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *               status: PENDING
+ *               totalAmount: 959.98
+ *               shippingAddress: 123 Test St, Apt 4B, New York, NY 10001
+ *               paymentMethod: CARD
+ *               deliveryMethod: STANDARD
+ *               items:
+ *                 - id: f1a2b3c4-d5e6-7890-abcd-ef2345678901
+ *                   productId: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *                   quantity: 2
+ *                   priceAtOrder: 479.99
+ *               createdAt: "2026-04-04T12:00:00.000Z"
  */
 router.post(
   '/checkout',
@@ -112,9 +133,19 @@ router.post(
  *             required: [reason]
  *             properties:
  *               reason: { type: string, minLength: 1 }
+ *           example:
+ *             reason: Changed mind
  *     responses:
  *       200:
  *         description: Order cancelled (wallet refunded if applicable)
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: e1f2a3b4-c5d6-7890-efab-cd1234567890
+ *               status: CANCELLED
+ *               cancellationReason: Changed mind
+ *               totalAmount: 959.98
+ *               refunded: true
  *       400:
  *         description: Order cannot be cancelled
  *       404:

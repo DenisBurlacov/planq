@@ -37,6 +37,35 @@ const SuggestSchema = z.object({
  *     responses:
  *       200:
  *         description: Paginated list of products
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *                   name: Nordic Sofa
+ *                   slug: nordic-sofa
+ *                   price: 899.99
+ *                   salePrice: null
+ *                   stock: 15
+ *                   images: ["https://example.com/sofa.jpg"]
+ *                   category:
+ *                     id: c1d2e3f4-a5b6-7890-cdef-123456789012
+ *                     name: Living Room
+ *                 - id: a2b3c4d5-e6f7-8901-abcd-234567890123
+ *                   name: Modern Table Lamp
+ *                   slug: modern-table-lamp
+ *                   price: 59.99
+ *                   salePrice: 44.99
+ *                   stock: 42
+ *                   images: ["https://example.com/lamp.jpg"]
+ *                   category:
+ *                     id: d2e3f4a5-b6c7-8901-defg-345678901234
+ *                     name: Lighting
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 48
+ *                 totalPages: 3
  */
 router.get('/', getProductsHandler);
 
@@ -52,6 +81,17 @@ router.get('/', getProductsHandler);
  *     responses:
  *       200:
  *         description: Top 5 matching products
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *                 name: Nordic Sofa
+ *                 price: 899.99
+ *                 image: "https://example.com/sofa.jpg"
+ *               - id: a2b3c4d5-e6f7-8901-abcd-234567890123
+ *                 name: Modern Sofa Set
+ *                 price: 1299.99
+ *                 image: "https://example.com/sofa-set.jpg"
  */
 router.get('/suggest', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -74,6 +114,23 @@ router.get('/suggest', async (req: Request, res: Response, next: NextFunction) =
  *     responses:
  *       200:
  *         description: Product details
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *               name: Nordic Sofa
+ *               slug: nordic-sofa
+ *               description: A comfortable modern sofa with Scandinavian design
+ *               price: 899.99
+ *               salePrice: null
+ *               stock: 15
+ *               images: ["https://example.com/sofa.jpg", "https://example.com/sofa-2.jpg"]
+ *               rating: 4.5
+ *               reviewCount: 12
+ *               category:
+ *                 id: c1d2e3f4-a5b6-7890-cdef-123456789012
+ *                 name: Living Room
+ *               createdAt: "2025-01-15T10:30:00.000Z"
  *       404:
  *         description: Product not found
  */

@@ -18,6 +18,23 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: List of saved cards
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                 last4: "4242"
+ *                 brand: VISA
+ *                 cardholderName: Alice Johnson
+ *                 expMonth: 12
+ *                 expYear: 2028
+ *                 isDefault: true
+ *               - id: b2c3d4e5-f6a7-8901-bcde-f23456789012
+ *                 last4: "1234"
+ *                 brand: MASTERCARD
+ *                 cardholderName: Alice Johnson
+ *                 expMonth: 6
+ *                 expYear: 2027
+ *                 isDefault: false
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -45,9 +62,24 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  *               cardholderName: { type: string }
  *               expMonth: { type: integer }
  *               expYear: { type: integer }
+ *           example:
+ *             cardNumber: "4242424242424242"
+ *             cardholderName: John Doe
+ *             expMonth: 12
+ *             expYear: 2028
  *     responses:
  *       201:
  *         description: Card saved (only last4 and brand stored)
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *               last4: "4242"
+ *               brand: VISA
+ *               cardholderName: John Doe
+ *               expMonth: 12
+ *               expYear: 2028
+ *               isDefault: false
  *       400:
  *         description: Max cards limit reached
  */

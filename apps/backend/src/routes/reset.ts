@@ -67,9 +67,26 @@ const GenerateSchema = z.object({
  *                 items:
  *                   type: string
  *                   enum: [orders, cart, wishlist, reviews, notifications, addresses]
+ *           example:
+ *             scope:
+ *               - orders
+ *               - cart
  *     responses:
  *       200:
  *         description: Database reset successfully
+ *         content:
+ *           application/json:
+ *             examples:
+ *               fullReset:
+ *                 summary: Full reset (no scope)
+ *                 value:
+ *                   status: ok
+ *                   message: Database reset to seed state
+ *               scopedReset:
+ *                 summary: Scoped reset
+ *                 value:
+ *                   reset: [orders, cart]
+ *                   skipped: []
  *       401:
  *         description: Invalid reset token
  */
@@ -237,9 +254,22 @@ function slugify(str: string): string {
  *               products: { type: integer, minimum: 0, maximum: 500 }
  *               orders: { type: integer, minimum: 0, maximum: 200 }
  *               reviews: { type: integer, minimum: 0, maximum: 500 }
+ *           example:
+ *             users: 5
+ *             products: 10
+ *             orders: 20
+ *             reviews: 15
  *     responses:
  *       200:
  *         description: Test data generated
+ *         content:
+ *           application/json:
+ *             example:
+ *               created:
+ *                 users: 5
+ *                 products: 10
+ *                 orders: 20
+ *                 reviews: 15
  *       401:
  *         description: Invalid reset token
  */
@@ -455,6 +485,13 @@ router.post('/trigger-ws', (req: Request, res: Response, next: NextFunction) => 
  *     summary: Auto-progress order through statuses (PENDING → PROCESSING → SHIPPED → DELIVERED)
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     security: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Reset-Token
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       content:
  *         application/json:
@@ -462,9 +499,25 @@ router.post('/trigger-ws', (req: Request, res: Response, next: NextFunction) => 
  *             type: object
  *             properties:
  *               intervalSeconds: { type: number, default: 10 }
+ *           example:
+ *             intervalSeconds: 10
  *     responses:
  *       200:
  *         description: Auto-progress started
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: started
+ *               orderId: e1f2a3b4-c5d6-7890-efab-cd1234567890
+ *               currentStatus: PENDING
+ *               intervalSeconds: 10
+ *               schedule:
+ *                 - status: PROCESSING
+ *                   inSeconds: 10
+ *                 - status: SHIPPED
+ *                   inSeconds: 20
+ *                 - status: DELIVERED
+ *                   inSeconds: 30
  */
 const AutoProgressSchema = z.object({
   intervalSeconds: z.coerce.number().min(3).max(120).default(8),

@@ -52,9 +52,24 @@ const loginLimiter = rateLimit({
  *               email: { type: string, format: email }
  *               password: { type: string, minLength: 8 }
  *               name: { type: string }
+ *           example:
+ *             name: John
+ *             email: john@example.com
+ *             password: Password1!
  *     responses:
  *       201:
  *         description: User created
+ *         content:
+ *           application/json:
+ *             example:
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               refreshToken: d4f8e2a1-b3c7-4e5f-9a1b-2c3d4e5f6a7b
+ *               user:
+ *                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                 email: john@example.com
+ *                 name: John
+ *                 emailVerified: false
+ *               verificationToken: f47ac10b-58cc-4372-a567-0e02b2c3d479
  *       409:
  *         description: Email already registered
  */
@@ -77,9 +92,23 @@ router.post('/register', validate(RegisterSchema), registerHandler);
  *             properties:
  *               email: { type: string, format: email }
  *               password: { type: string }
+ *           example:
+ *             email: alice@example.com
+ *             password: Password1!
  *     responses:
  *       200:
  *         description: Login successful, returns accessToken + refreshToken
+ *         content:
+ *           application/json:
+ *             example:
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               refreshToken: d4f8e2a1-b3c7-4e5f-9a1b-2c3d4e5f6a7b
+ *               user:
+ *                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                 email: alice@example.com
+ *                 name: Alice Johnson
+ *                 emailVerified: true
+ *                 role: USER
  *       401:
  *         description: Invalid credentials
  *       403:
@@ -148,9 +177,16 @@ router.post('/logout', validate(RefreshSchema), logoutHandler);
  *             required: [email]
  *             properties:
  *               email: { type: string, format: email }
+ *           example:
+ *             email: alice@example.com
  *     responses:
  *       200:
  *         description: Reset token created (token included in dev/test env)
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Password reset link sent
+ *               token: f47ac10b-58cc-4372-a567-0e02b2c3d479
  */
 router.post(
   '/forgot-password',
