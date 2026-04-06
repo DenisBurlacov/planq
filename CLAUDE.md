@@ -115,6 +115,16 @@ docker compose --profile monitoring up         # With Grafana/Loki
 
 - **No page fade transitions** — causes flickering and breaks E2E tests. Removed in 2.0.0; do not re-add.
 
+### Order Auto-Progress (Test Endpoint)
+
+- **Endpoint**: `POST /api/test/orders/:id/auto-progress` (protected by X-Reset-Token header)
+- **Default interval**: 8 seconds between status transitions
+- **Chain**: PENDING → PROCESSING (8s) → SHIPPED (16s) → DELIVERED (24s)
+- **Total time**: ~24 seconds — fits within Playwright's default 30s timeout
+- **WS broadcast**: `order.status.updated` event sent on each transition
+- **Stop**: `DELETE /api/test/orders/:id/auto-progress`
+- **Configurable**: `{ "intervalSeconds": 8 }` in request body (min 3, max 120)
+
 ### Other
 
 - **Commits**: no `Co-Authored-By` lines.

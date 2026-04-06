@@ -467,7 +467,7 @@ router.post('/trigger-ws', (req: Request, res: Response, next: NextFunction) => 
  *         description: Auto-progress started
  */
 const AutoProgressSchema = z.object({
-  intervalSeconds: z.coerce.number().min(3).max(120).default(10),
+  intervalSeconds: z.coerce.number().min(3).max(120).default(8),
 });
 
 const PROGRESS_CHAIN: Array<'PROCESSING' | 'SHIPPED' | 'DELIVERED'> = [
