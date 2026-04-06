@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { BLOG_ARTICLES, type BlogArticle } from '@constants/blogArticles';
+import { blogApi, type BlogArticle } from '@api/blog';
+import { Skeleton } from '@components/ui/Skeleton';
 
-type CategoryFilter = 'all' | BlogArticle['category'];
+type CategoryFilter = 'all' | string;
 
 export function BlogPage() {
   const { t } = useTranslation('pages');
   const [filter, setFilter] = useState<CategoryFilter>('all');
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['blog', filter],
+    queryFn: () => blogApi.list(filter !== 'all' ? filter : undefined),
+  });
+
+  const articles: BlogArticle[] = data?.items ?? [];
 
   const filters: { key: CategoryFilter; label: string; testId: string }[] = [
     { key: 'all', label: t('blog.filterAll'), testId: 'blog-filter-all' },
@@ -20,9 +29,6 @@ export function BlogPage() {
       testId: 'blog-filter-sustainability',
     },
   ];
-
-  const articles =
-    filter === 'all' ? BLOG_ARTICLES : BLOG_ARTICLES.filter(a => a.category === filter);
 
   return (
     <div data-testid="blog-page">
@@ -50,7 +56,13 @@ export function BlogPage() {
       </div>
 
       {/* Articles grid */}
-      {articles.length === 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-72 rounded-xl" />
+          ))}
+        </div>
+      ) : articles.length === 0 ? (
         <p className="text-center text-[var(--text-secondary)] py-12">{t('blog.noArticles')}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,32 +73,34 @@ export function BlogPage() {
               data-testid={`blog-card-${article.slug}`}
               className="group rounded-xl border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
-              <img
-                data-testid={`blog-card-image-${article.slug}`}
-                src={article.image}
-                alt=""
-                className="aspect-video object-cover w-full"
-              />
+              {article.coverImage && (
+                <img
+                  data-testid={`blog-card-image-${article.slug}`}
+                  src={article.coverImage}
+                  alt=""
+                  className="aspect-video object-cover w-full"
+                />
+              )}
               <div className="p-4">
                 <span className="text-xs font-medium uppercase tracking-wide text-accent bg-accent/10 px-2 py-0.5 rounded">
-                  {t(article.categoryKey.replace('pages:', ''))}
+                  {article.category}
                 </span>
                 <h3
                   data-testid={`blog-card-title-${article.slug}`}
                   className="text-lg font-semibold text-[var(--text-primary)] line-clamp-2 group-hover:text-accent transition-colors mt-2"
                 >
-                  {t(article.titleKey.replace('pages:', ''))}
+                  {article.title}
                 </h3>
                 <p
                   data-testid={`blog-card-excerpt-${article.slug}`}
                   className="text-sm text-[var(--text-secondary)] line-clamp-2 mt-1"
                 >
-                  {t(article.excerptKey.replace('pages:', ''))}
+                  {article.excerpt}
                 </p>
                 <div className="flex items-center justify-between mt-3">
                   <span className="text-xs text-[var(--text-secondary)]">
-                    {new Date(article.date).toLocaleDateString()} &middot;{' '}
-                    {t('blog.minRead', { minutes: article.readMinutes })}
+                    {new Date(article.publishedAt).toLocaleDateString()} &middot;{' '}
+                    {article.authorName}
                   </span>
                   <span
                     data-testid={`blog-card-readmore-${article.slug}`}
