@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronRight,
   Search,
+  Trophy,
 } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -274,11 +275,6 @@ export function Navbar() {
                 >
                   {t('nav.newArrivals')}
                 </Link>
-                {accessToken && (
-                  <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
-                    {t('nav.orders')}
-                  </Link>
-                )}
                 {/* Blog with dropdown */}
                 <div
                   className="relative"
@@ -313,6 +309,19 @@ export function Navbar() {
                   )}
                 </div>
 
+                <Link
+                  data-testid="nav-challenges"
+                  to="/challenges"
+                  className={`flex items-center gap-1 ${navLinkClass('/challenges')}`}
+                >
+                  <Trophy className="h-4 w-4" />
+                  {t('nav.challenges')}
+                </Link>
+                {accessToken && (
+                  <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
+                    {t('nav.orders')}
+                  </Link>
+                )}
                 {isAdmin && (
                   <Link
                     data-testid="nav-admin"
@@ -727,6 +736,16 @@ export function Navbar() {
                 ))}
               </div>
             </div>
+            <Link
+              to="/challenges"
+              data-testid="mobile-menu-challenges"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-1 px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              style={{ minHeight: '44px' }}
+            >
+              <Trophy className="h-4 w-4" />
+              {t('nav.challenges')}
+            </Link>
             {isAdmin && (
               <Link
                 to="/admin"

@@ -81,6 +81,9 @@ const ForbiddenPage = lazy(() =>
 const RateLimitedPage = lazy(() =>
   import('@pages/RateLimitedPage').then(m => ({ default: m.RateLimitedPage }))
 );
+const ChallengesPage = lazy(() =>
+  import('@pages/ChallengesPage').then(m => ({ default: m.ChallengesPage }))
+);
 const BlogPage = lazy(() => import('@pages/BlogPage').then(m => ({ default: m.BlogPage })));
 const BlogArticlePage = lazy(() =>
   import('@pages/BlogArticlePage').then(m => ({ default: m.BlogArticlePage }))
@@ -209,6 +212,7 @@ export default function App() {
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/compare" element={<ComparePage />} />
                   <Route path="/support" element={<SupportPage />} />
+                  <Route path="/challenges" element={<ChallengesPage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/:slug" element={<BlogArticlePage />} />
                   <Route path="/faq" element={<FaqPage />} />

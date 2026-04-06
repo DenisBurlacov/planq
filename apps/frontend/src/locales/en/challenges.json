@@ -1,0 +1,324 @@
+{
+  "page": {
+    "title": "QA Challenges",
+    "subtitle": "Complete test cases to earn badges and level up your QA automation skills",
+    "overallProgress": "Overall: {{done}}/{{total}} challenges completed",
+    "badges": "Badges",
+    "noBadges": "Complete challenges to earn badges!",
+    "filters": {
+      "all": "All",
+      "junior": "Junior",
+      "middle": "Middle",
+      "senior": "Senior",
+      "ui": "UI",
+      "api": "API",
+      "e2e": "E2E"
+    },
+    "progress": "{{done}}/{{total}} completed",
+    "showHint": "Show hint",
+    "hideHint": "Hide hint",
+    "badgeTier": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum"
+    }
+  },
+  "j-01": {
+    "title": "Login with valid credentials",
+    "description": "Open the login page, enter a valid email and password, submit the form. Verify you are redirected to the home page and the user menu appears.",
+    "hint": "Use the pre-seeded user: user@planq.dev / password123"
+  },
+  "j-02": {
+    "title": "Login with invalid credentials",
+    "description": "Attempt to log in with a wrong password. Verify an error message is displayed and you remain on the login page.",
+    "hint": "Check for the data-testid='login-error' element."
+  },
+  "j-03": {
+    "title": "Register a new user",
+    "description": "Fill out the registration form with a unique email, name, and password. Submit and verify the account is created successfully."
+  },
+  "j-04": {
+    "title": "Switch language EN to RU",
+    "description": "Click the language toggle in the navbar. Verify that the UI text changes to Russian (e.g., 'Catalog' becomes 'Каталог').",
+    "hint": "Look for data-testid='lang-toggle'."
+  },
+  "j-05": {
+    "title": "Toggle dark/light theme",
+    "description": "Click the theme toggle button. Verify the page switches between dark and light mode by checking the background color or the 'dark' class on <html>.",
+    "hint": "The toggle may be behind a feature flag. Check data-testid='theme-toggle'."
+  },
+  "j-06": {
+    "title": "Search for a product by name",
+    "description": "Use the search bar (Ctrl+K) to search for a product. Verify the search results dropdown shows matching products."
+  },
+  "j-07": {
+    "title": "Filter products by category",
+    "description": "On the catalog page, click a category pill. Verify the product list updates to show only products from that category."
+  },
+  "j-08": {
+    "title": "Sort products by price ascending",
+    "description": "On the catalog page, select 'Price: Low to High' sort option. Verify the products are reordered with the cheapest first."
+  },
+  "j-09": {
+    "title": "Add product to cart",
+    "description": "Click 'Add to Cart' on any product. Verify the cart badge counter in the navbar increments.",
+    "hint": "Check data-testid='cart-badge' for the counter value."
+  },
+  "j-10": {
+    "title": "Remove product from cart",
+    "description": "Navigate to the cart page, remove an item. Verify the item disappears and totals update."
+  },
+  "j-11": {
+    "title": "Add product to wishlist",
+    "description": "Click the heart icon on a product card to add it to your wishlist. Navigate to /wishlist and verify the product appears."
+  },
+  "j-12": {
+    "title": "Navigate breadcrumbs",
+    "description": "Open a product detail page. Verify breadcrumbs show 'Home > Catalog > Product Name'. Click 'Catalog' and verify navigation."
+  },
+  "j-13": {
+    "title": "Open and close a modal",
+    "description": "Trigger a modal (e.g., Quick View on a product card). Verify it opens with product details. Close it via the X button or clicking outside."
+  },
+  "j-14": {
+    "title": "Verify product card content",
+    "description": "On the catalog page, verify each product card displays: product name, price, rating stars, and an image."
+  },
+  "j-15": {
+    "title": "Verify empty wishlist state",
+    "description": "Navigate to /wishlist with no saved items. Verify the empty state message is displayed."
+  },
+  "j-16": {
+    "title": "GET /health returns 200",
+    "description": "Send a GET request to /api/health. Verify the response status is 200 and the body contains a status field."
+  },
+  "j-17": {
+    "title": "GET /products returns paginated list",
+    "description": "Send GET /api/products. Verify the response contains 'items' array and pagination metadata (total, page, limit)."
+  },
+  "j-18": {
+    "title": "GET /products/:id returns product details",
+    "description": "Send GET /api/products/{id} with a valid product ID. Verify the response includes name, price, description, and images."
+  },
+  "j-19": {
+    "title": "GET /categories returns array",
+    "description": "Send GET /api/categories. Verify the response is an array of category objects with id, name, and slug fields."
+  },
+  "j-20": {
+    "title": "POST /auth/login with valid credentials",
+    "description": "Send POST /api/auth/login with valid email and password. Verify the response contains accessToken and refreshToken.",
+    "hint": "Use Content-Type: application/json."
+  },
+  "j-21": {
+    "title": "POST /auth/login with wrong password",
+    "description": "Send POST /api/auth/login with a wrong password. Verify the response status is 401 and contains an error message."
+  },
+  "j-22": {
+    "title": "GET /profile without token returns 401",
+    "description": "Send GET /api/profile without an Authorization header. Verify the response status is 401 Unauthorized."
+  },
+  "j-23": {
+    "title": "GET /products with search query",
+    "description": "Send GET /api/products?search=sofa. Verify the returned items contain products matching the search term."
+  },
+  "j-24": {
+    "title": "POST /cart without auth returns 401",
+    "description": "Send POST /api/cart without an Authorization header. Verify the response status is 401."
+  },
+  "j-25": {
+    "title": "GET /api-docs loads Swagger",
+    "description": "Send GET /api/api-docs or open it in a browser. Verify the Swagger UI loads and shows available endpoints."
+  },
+  "m-01": {
+    "title": "Complete full checkout flow",
+    "description": "Add a product to cart, proceed to checkout, fill in shipping and payment details, place the order. Verify order confirmation page appears.",
+    "hint": "Use test card 4242 4242 4242 4242."
+  },
+  "m-02": {
+    "title": "Apply promo code in cart",
+    "description": "Add items to cart, enter promo code SAVE10, apply it. Verify the discount is reflected in the total price.",
+    "hint": "The promo code field is on the cart page."
+  },
+  "m-03": {
+    "title": "Use price range filter",
+    "description": "On the catalog page, set a min and max price filter. Verify only products within that price range are displayed."
+  },
+  "m-04": {
+    "title": "Test star rating filter",
+    "description": "On the catalog page, click 3 stars in the rating filter. Verify only products with 3+ star ratings are shown."
+  },
+  "m-05": {
+    "title": "Verify active filter chips",
+    "description": "Apply multiple filters on the catalog page. Verify filter chips appear above the product list. Click X on a chip to remove it and verify the filter is removed."
+  },
+  "m-06": {
+    "title": "Upload avatar in profile",
+    "description": "Navigate to profile settings, upload a new avatar image. Verify the avatar preview updates and persists after page reload."
+  },
+  "m-07": {
+    "title": "Change notification preferences",
+    "description": "In profile settings, toggle notification preferences (email, push). Save changes and verify they persist after page reload."
+  },
+  "m-08": {
+    "title": "Verify unsaved changes warning",
+    "description": "Edit profile information but don't save. Try to navigate away. Verify a warning dialog appears about unsaved changes."
+  },
+  "m-09": {
+    "title": "Verify card validation errors",
+    "description": "In checkout, try submitting with: empty card number, past expiry date, Cyrillic cardholder name. Verify each shows appropriate validation errors."
+  },
+  "m-10": {
+    "title": "Test grid/list view toggle",
+    "description": "On the catalog page, toggle between grid and list view. Verify the layout changes and product information is still complete."
+  },
+  "m-11": {
+    "title": "POST /auth/register verify emailVerified",
+    "description": "Send POST /api/auth/register with new user data. Verify the response includes emailVerified: false."
+  },
+  "m-12": {
+    "title": "Successful checkout via API",
+    "description": "Send POST /api/orders/checkout with test card 4242424242424242. Verify the response status is success and order object is returned.",
+    "hint": "You need a valid auth token and items in the cart first."
+  },
+  "m-13": {
+    "title": "Declined card checkout via API",
+    "description": "Send POST /api/orders/checkout with card 4000000000000002. Verify the response indicates payment was declined."
+  },
+  "m-14": {
+    "title": "Filter products by specs via API",
+    "description": "Send GET /api/products?material=wood&color=natural. Verify the returned products match the specified material and color."
+  },
+  "m-15": {
+    "title": "PUT /addresses/:id update address",
+    "description": "Send PUT /api/addresses/{id} with updated address fields. Verify the response contains the updated address."
+  },
+  "m-16": {
+    "title": "DELETE /cards/:id remove saved card",
+    "description": "Send DELETE /api/cards/{id} to remove a saved payment card. Verify 200 response and the card no longer appears in GET /cards."
+  },
+  "m-17": {
+    "title": "GET /admin/stats as USER returns 403",
+    "description": "Authenticate as a regular USER, then send GET /api/admin/stats. Verify the response status is 403 Forbidden."
+  },
+  "m-18": {
+    "title": "GET /admin/users as MANAGER returns 403",
+    "description": "Authenticate as a MANAGER role, then send GET /api/admin/users. Verify the response status is 403 Forbidden.",
+    "hint": "Manager can access some admin routes but not user management."
+  },
+  "m-19": {
+    "title": "Full registration to order E2E flow",
+    "description": "Register a new user, verify email, log in, add a product to cart, complete checkout, view the order in order history. Verify the entire flow end-to-end."
+  },
+  "m-20": {
+    "title": "Compare products feature",
+    "description": "Add 3 products to the comparison list. Navigate to /compare and verify the comparison table shows all 3 products with their attributes side by side."
+  },
+  "m-21": {
+    "title": "Cancel order and verify refund",
+    "description": "Place an order, then cancel it. Verify the order status changes to 'Cancelled' and the wallet balance is credited with the refund amount."
+  },
+  "m-22": {
+    "title": "Forgot password flow",
+    "description": "Navigate to forgot password page, enter a valid email, submit. Verify success message. Try with an invalid email and verify the error.",
+    "hint": "Check /forgot-password page."
+  },
+  "m-23": {
+    "title": "Admin login redirects to /admin",
+    "description": "Log in with admin credentials. Verify you are redirected to /admin dashboard and the store navigation links are not shown."
+  },
+  "m-24": {
+    "title": "Cookie consent accept/decline",
+    "description": "Visit the site in a fresh session. Verify the cookie consent banner appears. Click Accept and verify the banner disappears. Test Decline as well.",
+    "hint": "Clear localStorage to see the banner again."
+  },
+  "m-25": {
+    "title": "Keyboard shortcut Ctrl+K focuses search",
+    "description": "Press Ctrl+K (or Cmd+K on Mac) anywhere on the site. Verify the search input opens and receives focus."
+  },
+  "s-01": {
+    "title": "Complete CAPTCHA mock challenge",
+    "description": "Trigger the CAPTCHA mock on the login page (after failed attempts). Complete the image grid challenge. Verify you can proceed with login after solving it."
+  },
+  "s-02": {
+    "title": "Enable and use 2FA",
+    "description": "In profile settings, enable two-factor authentication. Log out and log back in. Verify you are prompted for a 2FA code and can log in with it."
+  },
+  "s-03": {
+    "title": "Verify notification scheduler via WebSocket",
+    "description": "Enable scheduled notifications in admin settings. Subscribe to WebSocket events. Wait for the scheduled event and verify you receive the notification.",
+    "hint": "The scheduler interval can be configured in admin settings."
+  },
+  "s-04": {
+    "title": "Drag-and-drop reorder in cart",
+    "description": "Add multiple items to cart. Drag and drop items to reorder them. Verify the new order persists after page refresh."
+  },
+  "s-05": {
+    "title": "Verify countdown timer on sale products",
+    "description": "Find a product with an active sale countdown. Verify the timer ticks down every second. Wait for at least 10 seconds and confirm the displayed time decreased."
+  },
+  "s-06": {
+    "title": "Test session expired modal",
+    "description": "Log in, then wait for the access token to expire (or manually clear it). Perform an action that requires auth. Verify the 'Session Expired' modal appears.",
+    "hint": "You can speed this up by modifying the token expiry in dev tools."
+  },
+  "s-07": {
+    "title": "Verify social login modals",
+    "description": "On the login page, click each social login button (Google, GitHub, etc.). Verify each opens a modal or popup with the correct provider content."
+  },
+  "s-08": {
+    "title": "Auto-progress order status via API",
+    "description": "Create an order, then POST /api/test/orders/{id}/auto-progress. Subscribe to WebSocket and verify you receive status change events for each transition (processing → shipped → delivered)."
+  },
+  "s-09": {
+    "title": "Content negotiation with XML",
+    "description": "Send GET /api/products with Accept: application/xml header. Verify the response content type and format differs from the default JSON response."
+  },
+  "s-10": {
+    "title": "Scoped test data reset",
+    "description": "Send POST /api/test/reset with a body specifying scope: 'orders'. Verify only orders are reset while products and users remain intact."
+  },
+  "s-11": {
+    "title": "Generate test data via API",
+    "description": "Send POST /api/test/generate with parameters for the type and quantity of data to create. Verify the specified test data is generated in the database."
+  },
+  "s-12": {
+    "title": "Rate limiting on forgot-password",
+    "description": "Send 11 consecutive POST requests to /api/auth/forgot-password with the same email. Verify the 11th request returns 429 Too Many Requests.",
+    "hint": "Send requests rapidly without delays between them."
+  },
+  "s-13": {
+    "title": "Verify admin audit log",
+    "description": "Perform admin actions (edit product, change user role). Then GET /api/admin/audit. Verify the audit log contains entries for each action."
+  },
+  "s-14": {
+    "title": "Toggle feature flag via API",
+    "description": "Send PUT /api/admin/feature-flags/{key} to toggle a feature flag. Verify the flag state changes and the corresponding UI feature is affected."
+  },
+  "s-15": {
+    "title": "Webhook subscription and delivery",
+    "description": "Create a webhook subscription via the API. Trigger the subscribed event. Verify the webhook delivery log shows the event was sent."
+  },
+  "s-16": {
+    "title": "Full order lifecycle E2E",
+    "description": "Place an order, trigger auto-progress, and verify the tracking timeline UI updates in real-time for each status change (processing, shipped, delivered)."
+  },
+  "s-17": {
+    "title": "A/B variant with feature flag",
+    "description": "Enable a feature flag that controls an A/B test variant (e.g., hero banner). Verify the UI changes to show the alternative variant.",
+    "hint": "Use the admin panel to toggle the feature flag."
+  },
+  "s-18": {
+    "title": "Flaky elements zone — delayed button",
+    "description": "Find the flaky elements testing zone. Locate the button that appears after a random delay. Write a test that reliably waits for it and clicks it.",
+    "hint": "Use explicit waits, not fixed sleep."
+  },
+  "s-19": {
+    "title": "Multi-role authorization test",
+    "description": "Log in as a regular USER and attempt to access admin API endpoints (verify 403). Then log in as ADMIN and access the same endpoints (verify 200)."
+  },
+  "s-20": {
+    "title": "WebSocket reconnection test",
+    "description": "Establish a WebSocket connection, then force a disconnect (e.g., disable network briefly). Verify the client automatically reconnects and resumes receiving events."
+  }
+}

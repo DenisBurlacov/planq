@@ -8,6 +8,7 @@ import enProfile from '@locales/en/profile.json';
 import enAdmin from '@locales/en/admin.json';
 import enAbout from '@locales/en/about.json';
 import enPages from '@locales/en/pages.json';
+import enChallenges from '@locales/en/challenges.json';
 
 import ruCommon from '@locales/ru/common.json';
 import ruCatalog from '@locales/ru/catalog.json';
@@ -16,6 +17,7 @@ import ruProfile from '@locales/ru/profile.json';
 import ruAdmin from '@locales/ru/admin.json';
 import ruAbout from '@locales/ru/about.json';
 import ruPages from '@locales/ru/pages.json';
+import ruChallenges from '@locales/ru/challenges.json';
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -27,6 +29,7 @@ i18n.use(initReactI18next).init({
       admin: enAdmin,
       about: enAbout,
       pages: enPages,
+      challenges: enChallenges,
     },
     ru: {
       common: ruCommon,
@@ -36,6 +39,7 @@ i18n.use(initReactI18next).init({
       admin: ruAdmin,
       about: ruAbout,
       pages: ruPages,
+      challenges: ruChallenges,
     },
   },
   lng: import.meta.env.VITE_DEFAULT_LOCALE || 'en',
