@@ -107,6 +107,30 @@ router.post(
  *     summary: Update item quantity (0 = remove)
  *     parameters:
  *       - { in: path, name: productId, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             quantity: 3
+ *     responses:
+ *       200:
+ *         description: Cart updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: d1e2f3a4-b5c6-7890-defg-ab1234567890
+ *               items:
+ *                 - id: c1d2e3f4-a5b6-7890-cdef-234567890123
+ *                   productId: b1c2d3e4-f5a6-7890-bcde-f12345678901
+ *                   quantity: 3
+ *                   product:
+ *                     name: Nordic Sofa
+ *                     price: 899.99
+ *               total: 2699.97
+ *               itemCount: 3
+ *       204:
+ *         description: Item removed (quantity set to 0)
  */
 router.patch(
   '/:productId',
@@ -137,6 +161,9 @@ router.patch(
  *     summary: Remove item from cart
  *     parameters:
  *       - { in: path, name: productId, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Item removed from cart
  */
 router.delete('/:productId', async (req: Request, res: Response, next: NextFunction) => {
   try {

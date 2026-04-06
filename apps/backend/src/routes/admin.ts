@@ -34,6 +34,27 @@ router.use(adminAuth);
  *     responses:
  *       200:
  *         description: Paginated product list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *                   name: Nordic Sofa
+ *                   slug: nordic-sofa
+ *                   price: 899.99
+ *                   stock: 15
+ *                   deletedAt: null
+ *                 - id: a2b3c4d5-e6f7-8901-abcd-234567890123
+ *                   name: Modern Table Lamp
+ *                   slug: modern-table-lamp
+ *                   price: 59.99
+ *                   stock: 42
+ *                   deletedAt: null
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 48
+ *                 totalPages: 3
  *       403:
  *         description: Admin access required
  */
@@ -70,9 +91,28 @@ router.get('/products', async (req: Request, res: Response, next: NextFunction) 
  *               stock: { type: integer }
  *               categoryId: { type: string }
  *               images: { type: array, items: { type: string } }
+ *           example:
+ *             name: Scandinavian Bookshelf
+ *             slug: scandinavian-bookshelf
+ *             description: A minimalist bookshelf with oak finish
+ *             price: 249.99
+ *             salePrice: null
+ *             stock: 30
+ *             categoryId: c1d2e3f4-a5b6-7890-cdef-123456789012
+ *             images: ["https://example.com/bookshelf.jpg"]
  *     responses:
  *       201:
  *         description: Product created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: b3c4d5e6-f7a8-9012-cdef-345678901234
+ *               name: Scandinavian Bookshelf
+ *               slug: scandinavian-bookshelf
+ *               description: A minimalist bookshelf with oak finish
+ *               price: 249.99
+ *               stock: 30
+ *               createdAt: "2025-03-15T10:00:00.000Z"
  *       403:
  *         description: Admin access required
  */
@@ -120,9 +160,21 @@ router.post(
  *               stock: { type: integer }
  *               categoryId: { type: string }
  *               images: { type: array, items: { type: string } }
+ *           example:
+ *             name: Scandinavian Bookshelf v2
+ *             price: 229.99
+ *             stock: 25
  *     responses:
  *       200:
  *         description: Product updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               name: Scandinavian Bookshelf v2
+ *               price: 229.99
+ *               stock: 25
+ *               updatedAt: "2025-03-15T11:00:00.000Z"
  *       404:
  *         description: Product not found
  */
@@ -193,6 +245,12 @@ router.delete(
  *     responses:
  *       200:
  *         description: Product restored
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               name: Nordic Sofa
+ *               deletedAt: null
  *       404:
  *         description: Product not found
  */
@@ -232,6 +290,15 @@ router.put('/products/:id/restore', async (req: Request, res: Response, next: Ne
  *     responses:
  *       200:
  *         description: Images uploaded and appended
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               name: Nordic Sofa
+ *               images:
+ *                 - "/uploads/products/sofa1.jpg"
+ *                 - "/uploads/products/sofa2.jpg"
+ *                 - "/uploads/products/sofa3.jpg"
  *       404:
  *         description: Product not found
  */
@@ -276,9 +343,17 @@ router.post(
  *             required: [ids]
  *             properties:
  *               ids: { type: array, items: { type: string } }
+ *           example:
+ *             ids:
+ *               - 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               - a2b3c4d5-e6f7-8901-abcd-234567890123
  *     responses:
  *       200:
  *         description: Products deleted
+ *         content:
+ *           application/json:
+ *             example:
+ *               deleted: 2
  */
 router.delete(
   '/products/bulk',
@@ -319,6 +394,22 @@ router.delete(
  *     responses:
  *       200:
  *         description: Paginated order list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: 0515506f-b168-4841-826e-54d588ec6b32
+ *                   status: PROCESSING
+ *                   total: 899.99
+ *                   user:
+ *                     email: alice@example.com
+ *                     name: Alice Johnson
+ *                   createdAt: "2025-03-10T09:00:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 156
+ *                 totalPages: 8
  */
 router.get('/orders', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -344,6 +435,7 @@ router.get('/orders', async (req: Request, res: Response, next: NextFunction) =>
  *         content:
  *           text/csv:
  *             schema: { type: string }
+ *             example: "id,status,total,userEmail,createdAt\n0515506f-b168-4841-826e-54d588ec6b32,PROCESSING,899.99,alice@example.com,2025-03-10T09:00:00.000Z"
  */
 router.get('/orders/export', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -373,9 +465,17 @@ router.get('/orders/export', async (_req: Request, res: Response, next: NextFunc
  *             required: [status]
  *             properties:
  *               status: { type: string, enum: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED] }
+ *           example:
+ *             status: SHIPPED
  *     responses:
  *       200:
  *         description: Order status updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 0515506f-b168-4841-826e-54d588ec6b32
+ *               status: SHIPPED
+ *               updatedAt: "2025-03-15T14:00:00.000Z"
  *       400:
  *         description: Invalid status transition
  *       404:
@@ -418,9 +518,19 @@ router.put(
  *             properties:
  *               ids: { type: array, items: { type: string } }
  *               status: { type: string, enum: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED] }
+ *           example:
+ *             ids:
+ *               - 0515506f-b168-4841-826e-54d588ec6b32
+ *               - b2c3d4e5-f6a7-8901-bcde-234567890123
+ *             status: SHIPPED
  *     responses:
  *       200:
  *         description: Bulk update results
+ *         content:
+ *           application/json:
+ *             example:
+ *               updated: 2
+ *               failed: 0
  */
 router.put(
   '/orders/bulk/status',
@@ -458,6 +568,21 @@ router.put(
  *     responses:
  *       200:
  *         description: Paginated user list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                   email: alice@example.com
+ *                   name: Alice Johnson
+ *                   role: USER
+ *                   isBlocked: false
+ *                   createdAt: "2025-01-10T08:00:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 342
+ *                 totalPages: 18
  */
 router.get(
   '/users',
@@ -483,6 +608,13 @@ router.get(
  *     responses:
  *       200:
  *         description: User block status toggled
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *               email: alice@example.com
+ *               name: Alice Johnson
+ *               isBlocked: true
  *       400:
  *         description: Cannot block admin user
  *       404:
@@ -525,6 +657,22 @@ router.put(
  *     responses:
  *       200:
  *         description: Paginated audit log list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: au1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                   action: product_create
+ *                   entityType: product
+ *                   entityId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *                   userId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                   details: { name: "Nordic Sofa" }
+ *                   createdAt: "2025-03-15T10:00:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 89
+ *                 totalPages: 5
  */
 router.get(
   '/audit',
@@ -556,6 +704,23 @@ router.get(
  *     responses:
  *       200:
  *         description: Paginated promo codes list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: p1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                   code: SAVE10
+ *                   discountPercent: 10
+ *                   validFrom: "2025-01-01T00:00:00.000Z"
+ *                   validUntil: "2025-12-31T23:59:59.000Z"
+ *                   maxUses: 1000
+ *                   usedCount: 142
+ *                   isActive: true
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 5
+ *                 totalPages: 1
  */
 router.get('/promos', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -587,9 +752,29 @@ router.get('/promos', async (req: Request, res: Response, next: NextFunction) =>
  *               minOrderAmount: { type: number, nullable: true }
  *               maxUses: { type: integer }
  *               isActive: { type: boolean }
+ *           example:
+ *             code: SAVE10
+ *             discountPercent: 10
+ *             validFrom: "2025-01-01T00:00:00.000Z"
+ *             validUntil: "2025-12-31T23:59:59.000Z"
+ *             minOrderAmount: 50.00
+ *             maxUses: 1000
+ *             isActive: true
  *     responses:
  *       201:
  *         description: Promo code created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: p1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               code: SAVE10
+ *               discountPercent: 10
+ *               validFrom: "2025-01-01T00:00:00.000Z"
+ *               validUntil: "2025-12-31T23:59:59.000Z"
+ *               minOrderAmount: 50.00
+ *               maxUses: 1000
+ *               isActive: true
+ *               createdAt: "2025-03-15T10:00:00.000Z"
  */
 router.post(
   '/promos',
@@ -616,9 +801,24 @@ router.post(
  *     summary: Update a promo code
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             discountPercent: 15
+ *             maxUses: 2000
  *     responses:
  *       200:
  *         description: Promo code updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: p1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               code: SAVE10
+ *               discountPercent: 15
+ *               maxUses: 2000
+ *               updatedAt: "2025-03-15T12:00:00.000Z"
  */
 router.put(
   '/promos/:id',
@@ -690,6 +890,20 @@ router.delete(
  *     responses:
  *       200:
  *         description: Paginated categories list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: c1d2e3f4-a5b6-7890-cdef-123456789012
+ *                   name: Living Room
+ *                   slug: living-room
+ *                   image: "/uploads/categories/living-room.jpg"
+ *                   productCount: 24
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 8
+ *                 totalPages: 1
  */
 router.get('/categories', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -717,9 +931,21 @@ router.get('/categories', async (req: Request, res: Response, next: NextFunction
  *               name: { type: string }
  *               slug: { type: string }
  *               image: { type: string, nullable: true }
+ *           example:
+ *             name: Outdoor
+ *             slug: outdoor
+ *             image: null
  *     responses:
  *       201:
  *         description: Category created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: e3f4a5b6-c7d8-9012-efgh-456789012345
+ *               name: Outdoor
+ *               slug: outdoor
+ *               image: null
+ *               createdAt: "2025-03-15T10:00:00.000Z"
  */
 router.post(
   '/categories',
@@ -752,9 +978,23 @@ router.post(
  *     summary: Update a category
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             name: Outdoor Furniture
+ *             slug: outdoor-furniture
  *     responses:
  *       200:
  *         description: Category updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: e3f4a5b6-c7d8-9012-efgh-456789012345
+ *               name: Outdoor Furniture
+ *               slug: outdoor-furniture
+ *               image: null
  */
 router.put(
   '/categories/:id',
@@ -834,6 +1074,13 @@ router.delete(
  *     responses:
  *       200:
  *         description: Category image uploaded
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: c1d2e3f4-a5b6-7890-cdef-123456789012
+ *               name: Living Room
+ *               slug: living-room
+ *               image: "/uploads/categories/living-room-abc123.jpg"
  */
 router.post(
   '/categories/:id/image',
@@ -878,6 +1125,26 @@ router.post(
  *     responses:
  *       200:
  *         description: Paginated reviews list
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: r1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                   rating: 5
+ *                   comment: "Excellent quality!"
+ *                   user:
+ *                     id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                     email: alice@example.com
+ *                     name: Alice Johnson
+ *                   product:
+ *                     id: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *                     name: Nordic Sofa
+ *                   createdAt: "2025-02-20T14:30:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 67
+ *                 totalPages: 4
  */
 router.get('/reviews', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -928,6 +1195,17 @@ router.delete('/reviews/:id', async (req: Request, res: Response, next: NextFunc
  *     responses:
  *       200:
  *         description: List of key-value settings
+ *         content:
+ *           application/json:
+ *             example:
+ *               - key: store_name
+ *                 value: "Planq Store"
+ *               - key: currency
+ *                 value: USD
+ *               - key: shipping_fee
+ *                 value: "9.99"
+ *               - key: free_shipping_threshold
+ *                 value: "100"
  */
 router.get(
   '/settings',
@@ -962,9 +1240,22 @@ router.get(
  *                   properties:
  *                     key: { type: string }
  *                     value: { type: string }
+ *           example:
+ *             settings:
+ *               - key: store_name
+ *                 value: "Planq Premium Store"
+ *               - key: shipping_fee
+ *                 value: "7.99"
  *     responses:
  *       200:
  *         description: Settings updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               - key: store_name
+ *                 value: "Planq Premium Store"
+ *               - key: shipping_fee
+ *                 value: "7.99"
  */
 router.put(
   '/settings',
@@ -999,6 +1290,13 @@ router.put(
  *     responses:
  *       200:
  *         description: Dashboard statistics (total orders, revenue today, pending orders, active users)
+ *         content:
+ *           application/json:
+ *             example:
+ *               totalOrders: 1562
+ *               revenueToday: 4250.00
+ *               pendingOrders: 23
+ *               activeUsers: 342
  */
 router.get('/stats', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -1017,6 +1315,15 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
  *     responses:
  *       200:
  *         description: Array of { date, revenue } for each day
+ *         content:
+ *           application/json:
+ *             example:
+ *               - date: "2025-03-01"
+ *                 revenue: 3200.50
+ *               - date: "2025-03-02"
+ *                 revenue: 1850.00
+ *               - date: "2025-03-03"
+ *                 revenue: 4100.75
  */
 router.get('/stats/revenue-chart', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -1035,6 +1342,19 @@ router.get('/stats/revenue-chart', async (_req: Request, res: Response, next: Ne
  *     responses:
  *       200:
  *         description: Array of { product, totalRevenue, totalOrders }
+ *         content:
+ *           application/json:
+ *             example:
+ *               - product:
+ *                   id: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *                   name: Nordic Sofa
+ *                 totalRevenue: 35999.60
+ *                 totalOrders: 40
+ *               - product:
+ *                   id: a2b3c4d5-e6f7-8901-abcd-234567890123
+ *                   name: Modern Table Lamp
+ *                 totalRevenue: 8998.50
+ *                 totalOrders: 150
  */
 router.get('/stats/top-products', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -1053,6 +1373,14 @@ router.get('/stats/top-products', async (_req: Request, res: Response, next: Nex
  *     responses:
  *       200:
  *         description: Object with status keys and count values
+ *         content:
+ *           application/json:
+ *             example:
+ *               PENDING: 23
+ *               PROCESSING: 15
+ *               SHIPPED: 42
+ *               DELIVERED: 1450
+ *               CANCELLED: 32
  */
 router.get('/stats/orders-by-status', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -1073,6 +1401,11 @@ router.get('/stats/orders-by-status', async (_req: Request, res: Response, next:
  *     responses:
  *       200:
  *         description: Scheduler restarted
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Scheduler restarted successfully
+ *               nextRun: "2025-03-15T11:00:00.000Z"
  */
 router.post(
   '/scheduler/restart',

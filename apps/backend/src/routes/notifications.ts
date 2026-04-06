@@ -19,6 +19,13 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: Notification preferences
+ *         content:
+ *           application/json:
+ *             example:
+ *               orderUpdates: true
+ *               promotions: false
+ *               newsletter: true
+ *               security: true
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -34,6 +41,25 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  *   put:
  *     tags: [Profile]
  *     summary: Update notification preferences
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             orderUpdates: true
+ *             promotions: true
+ *             newsletter: false
+ *             security: true
+ *     responses:
+ *       200:
+ *         description: Preferences updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               orderUpdates: true
+ *               promotions: true
+ *               newsletter: false
+ *               security: true
  */
 router.put(
   '/',

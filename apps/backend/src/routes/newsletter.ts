@@ -22,9 +22,15 @@ const router: ExpressRouter = Router();
  *             required: [email]
  *             properties:
  *               email: { type: string, format: email }
+ *           example:
+ *             email: alice@example.com
  *     responses:
  *       200:
  *         description: Subscription confirmed
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Successfully subscribed to newsletter
  */
 router.post(
   '/subscribe',

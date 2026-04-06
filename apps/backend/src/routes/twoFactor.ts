@@ -22,6 +22,11 @@ const router: ExpressRouter = Router();
  *     responses:
  *       200:
  *         description: Secret and QR data returned
+ *         content:
+ *           application/json:
+ *             example:
+ *               secret: JBSWY3DPEHPK3PXP
+ *               qrCodeUrl: "otpauth://totp/Planq:alice@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Planq"
  */
 router.post('/enable', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -48,9 +53,16 @@ router.post('/enable', authenticate, async (req: Request, res: Response, next: N
  *             required: [code]
  *             properties:
  *               code: { type: string, pattern: '^\d{6}$' }
+ *           example:
+ *             code: "123456"
  *     responses:
  *       200:
  *         description: 2FA enabled
+ *         content:
+ *           application/json:
+ *             example:
+ *               enabled: true
+ *               message: Two-factor authentication has been enabled
  */
 router.post(
   '/verify-setup',
@@ -77,6 +89,11 @@ router.post(
  *     responses:
  *       200:
  *         description: 2FA disabled
+ *         content:
+ *           application/json:
+ *             example:
+ *               enabled: false
+ *               message: Two-factor authentication has been disabled
  */
 router.post('/disable', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -97,6 +114,10 @@ router.post('/disable', authenticate, async (req: Request, res: Response, next: 
  *     responses:
  *       200:
  *         description: 2FA status
+ *         content:
+ *           application/json:
+ *             example:
+ *               enabled: true
  */
 router.get('/status', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -125,9 +146,21 @@ router.get('/status', authenticate, async (req: Request, res: Response, next: Ne
  *             properties:
  *               tempToken: { type: string }
  *               code: { type: string, pattern: '^\d{6}$' }
+ *           example:
+ *             tempToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *             code: "654321"
  *     responses:
  *       200:
  *         description: Login completed with tokens
+ *         content:
+ *           application/json:
+ *             example:
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               refreshToken: d4f8e2a1-b3c7-4e5f-9a1b-2c3d4e5f6a7b
+ *               user:
+ *                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                 email: alice@example.com
+ *                 name: Alice Johnson
  */
 router.post(
   '/verify',

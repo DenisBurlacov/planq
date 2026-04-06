@@ -29,6 +29,23 @@ const PaginationSchema = z.object({
  *     responses:
  *       200:
  *         description: Paginated list of wishlist items
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: wl1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                   productId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *                   product:
+ *                     name: Nordic Sofa
+ *                     price: 899.99
+ *                     image: "https://example.com/sofa.jpg"
+ *                     stock: 15
+ *                   addedAt: "2025-03-10T09:00:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 20
+ *                 total: 3
+ *                 totalPages: 1
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -45,6 +62,21 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  *   post:
  *     tags: [Wishlist]
  *     summary: Add product to wishlist
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             productId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *     responses:
+ *       201:
+ *         description: Product added to wishlist
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: wl2b3c4d5-e6f7-8901-bcde-f23456789012
+ *               productId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               addedAt: "2025-03-15T12:00:00.000Z"
  */
 router.post('/', validate(AddSchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -68,6 +100,9 @@ router.post('/', validate(AddSchema), async (req: Request, res: Response, next: 
  *     summary: Remove product from wishlist
  *     parameters:
  *       - { in: path, name: productId, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Product removed from wishlist
  */
 router.delete('/:productId', async (req: Request, res: Response, next: NextFunction) => {
   try {

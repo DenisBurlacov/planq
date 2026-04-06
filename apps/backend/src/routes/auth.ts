@@ -132,9 +132,16 @@ router.post('/login', loginLimiter, validate(LoginSchema), loginHandler);
  *             required: [refreshToken]
  *             properties:
  *               refreshToken: { type: string }
+ *           example:
+ *             refreshToken: d4f8e2a1-b3c7-4e5f-9a1b-2c3d4e5f6a7b
  *     responses:
  *       200:
  *         description: New access + refresh tokens
+ *         content:
+ *           application/json:
+ *             example:
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               refreshToken: e5a9b3c1-d7f2-4a6e-8b0c-3d4e5f6a7b8c
  *       401:
  *         description: Invalid or expired refresh token
  */
@@ -155,6 +162,8 @@ router.post('/refresh', validate(RefreshSchema), refreshHandler);
  *             required: [refreshToken]
  *             properties:
  *               refreshToken: { type: string }
+ *           example:
+ *             refreshToken: d4f8e2a1-b3c7-4e5f-9a1b-2c3d4e5f6a7b
  *     responses:
  *       204:
  *         description: Logged out successfully
@@ -246,6 +255,10 @@ router.get('/me', authenticate, meHandler);
  *     responses:
  *       200:
  *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Email verified successfully
  *       400:
  *         description: Invalid or expired token
  */
@@ -267,9 +280,16 @@ router.get('/verify-email', verifyEmailHandler);
  *             required: [email]
  *             properties:
  *               email: { type: string, format: email }
+ *           example:
+ *             email: alice@example.com
  *     responses:
  *       200:
  *         description: Verification email resent (token included in dev/test env)
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Verification email sent
+ *               token: f47ac10b-58cc-4372-a567-0e02b2c3d479
  */
 router.post(
   '/resend-verification',
@@ -295,9 +315,21 @@ router.post(
  *             properties:
  *               provider: { type: string, enum: [google, github] }
  *               code: { type: string }
+ *           example:
+ *             provider: google
+ *             code: "4/0AX4XfWg..."
  *     responses:
  *       200:
  *         description: OAuth login successful, returns tokens
+ *         content:
+ *           application/json:
+ *             example:
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *               refreshToken: d4f8e2a1-b3c7-4e5f-9a1b-2c3d4e5f6a7b
+ *               user:
+ *                 id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                 email: alice@example.com
+ *                 name: Alice Johnson
  */
 router.post('/oauth/callback', validate(OAuthCallbackSchema), oauthCallbackHandler);
 

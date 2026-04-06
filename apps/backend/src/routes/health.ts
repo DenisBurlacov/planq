@@ -15,6 +15,12 @@ const router: ExpressRouter = Router();
  *     responses:
  *       200:
  *         description: Service is healthy
+ *         content:
+ *           application/json:
+ *             example:
+ *               status: ok
+ *               db: ok
+ *               timestamp: "2025-06-15T12:00:00.000Z"
  *       503:
  *         description: Service is unhealthy
  */

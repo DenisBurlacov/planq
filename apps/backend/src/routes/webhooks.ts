@@ -22,6 +22,14 @@ const router: ExpressRouter = Router();
  *     responses:
  *       200:
  *         description: List of webhook subscriptions
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: w1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                 url: "https://example.com/webhooks/orders"
+ *                 events: ["order.created", "order.status.updated"]
+ *                 active: true
+ *                 createdAt: "2025-02-01T10:00:00.000Z"
  */
 router.get('/', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -49,9 +57,21 @@ router.get('/', authenticate, async (req: Request, res: Response, next: NextFunc
  *             properties:
  *               url: { type: string, format: uri }
  *               events: { type: array, items: { type: string, enum: ['order.created', 'order.status.updated'] } }
+ *           example:
+ *             url: "https://example.com/webhooks/orders"
+ *             events: ["order.created", "order.status.updated"]
  *     responses:
  *       201:
  *         description: Webhook created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: w1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               url: "https://example.com/webhooks/orders"
+ *               events: ["order.created", "order.status.updated"]
+ *               active: true
+ *               secret: whsec_a1b2c3d4e5f6g7h8
+ *               createdAt: "2025-03-15T10:00:00.000Z"
  */
 router.post(
   '/',
@@ -88,9 +108,18 @@ router.post(
  *             required: [active]
  *             properties:
  *               active: { type: boolean }
+ *           example:
+ *             active: false
  *     responses:
  *       200:
  *         description: Webhook updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: w1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               url: "https://example.com/webhooks/orders"
+ *               events: ["order.created", "order.status.updated"]
+ *               active: false
  */
 router.patch(
   '/:id/toggle',
@@ -144,6 +173,19 @@ router.delete(
  *     responses:
  *       200:
  *         description: List of deliveries
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: del_a1b2c3d4-e5f6-7890
+ *                 event: order.created
+ *                 status: SUCCESS
+ *                 httpStatus: 200
+ *                 attemptedAt: "2025-03-15T10:05:00.000Z"
+ *               - id: del_b2c3d4e5-f6a7-8901
+ *                 event: order.status.updated
+ *                 status: FAILED
+ *                 httpStatus: 500
+ *                 attemptedAt: "2025-03-15T10:10:00.000Z"
  */
 router.get(
   '/:id/deliveries',

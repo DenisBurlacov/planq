@@ -25,9 +25,18 @@ const router: ExpressRouter = Router();
  *               email: { type: string, format: email }
  *               subject: { type: string }
  *               message: { type: string }
+ *           example:
+ *             name: Alice Johnson
+ *             email: alice@example.com
+ *             subject: Question about my order
+ *             message: "I'd like to know the status of my recent order. Could you help?"
  *     responses:
  *       200:
  *         description: Message received
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Thank you for contacting us. We will get back to you shortly.
  */
 router.post(
   '/',

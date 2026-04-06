@@ -148,6 +148,11 @@ router.get('/:id', getProductHandler);
  *     responses:
  *       200:
  *         description: Current stock count
+ *         content:
+ *           application/json:
+ *             example:
+ *               productId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               stock: 15
  */
 router.get('/:id/stock', getProductStockHandler);
 
@@ -169,9 +174,18 @@ router.get('/:id/stock', getProductStockHandler);
  *             required: [email]
  *             properties:
  *               email: { type: string, format: email }
+ *           example:
+ *             email: alice@example.com
  *     responses:
  *       201:
  *         description: Notification subscription created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: sn1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               productId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               email: alice@example.com
+ *               createdAt: "2025-03-15T12:00:00.000Z"
  *       404:
  *         description: Product not found
  *       409:

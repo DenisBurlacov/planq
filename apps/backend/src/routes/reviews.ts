@@ -27,6 +27,27 @@ const ReviewsQuerySchema = z.object({
  *       - { in: query, name: rating, schema: { type: integer, minimum: 1, maximum: 5 } }
  *       - { in: query, name: page, schema: { type: integer, default: 1 } }
  *       - { in: query, name: limit, schema: { type: integer, default: 10 } }
+ *     responses:
+ *       200:
+ *         description: Product reviews
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: r1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                   rating: 5
+ *                   comment: "Excellent quality, very comfortable!"
+ *                   images: ["/uploads/reviews/img1.jpg"]
+ *                   user:
+ *                     id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+ *                     name: Alice Johnson
+ *                   createdAt: "2025-02-20T14:30:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 10
+ *                 total: 12
+ *                 totalPages: 2
+ *               averageRating: 4.5
  */
 router.get('/product/:productId', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -68,6 +89,18 @@ router.get('/product/:productId', async (req: Request, res: Response, next: Next
  *               rating: { type: integer, minimum: 1, maximum: 5 }
  *               comment: { type: string }
  *               images: { type: array, items: { type: string }, maxItems: 3 }
+ *     responses:
+ *       201:
+ *         description: Review created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: r2b3c4d5-e6f7-8901-bcde-f23456789012
+ *               productId: 383bf383-85a4-46ee-99f8-9517b7a588b3
+ *               rating: 4
+ *               comment: "Great product, fast delivery."
+ *               images: []
+ *               createdAt: "2025-03-15T12:00:00.000Z"
  */
 router.post(
   '/product/:productId',
@@ -107,6 +140,9 @@ router.post(
  *     summary: Delete (soft) a review
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Review deleted
  */
 router.delete('/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {

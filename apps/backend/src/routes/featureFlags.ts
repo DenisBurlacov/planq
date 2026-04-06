@@ -19,6 +19,15 @@ const router: ExpressRouter = Router();
  *     responses:
  *       200:
  *         description: List of feature flags
+ *         content:
+ *           application/json:
+ *             example:
+ *               - key: dark_mode
+ *                 enabled: true
+ *                 description: Enable dark mode UI
+ *               - key: new_checkout
+ *                 enabled: false
+ *                 description: New checkout flow
  */
 router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -52,9 +61,17 @@ adminFeatureFlagsRouter.use(adminAuth);
  *             required: [enabled]
  *             properties:
  *               enabled: { type: boolean }
+ *           example:
+ *             enabled: true
  *     responses:
  *       200:
  *         description: Feature flag updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               key: dark_mode
+ *               enabled: true
+ *               description: Enable dark mode UI
  */
 adminFeatureFlagsRouter.put(
   '/:key',

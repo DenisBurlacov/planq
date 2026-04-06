@@ -19,6 +19,22 @@ const router: ExpressRouter = Router();
  *     responses:
  *       200:
  *         description: Paginated list of blog articles
+ *         content:
+ *           application/json:
+ *             example:
+ *               data:
+ *                 - id: e1f2a3b4-c5d6-7890-abcd-ef1234567890
+ *                   title: "10 Tips for Modern Interior Design"
+ *                   slug: 10-tips-modern-interior-design
+ *                   excerpt: "Transform your living space with these expert tips..."
+ *                   category: design
+ *                   coverImage: "https://example.com/blog/interior.jpg"
+ *                   publishedAt: "2025-03-01T09:00:00.000Z"
+ *               meta:
+ *                 page: 1
+ *                 limit: 12
+ *                 total: 25
+ *                 totalPages: 3
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -41,6 +57,17 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  *     responses:
  *       200:
  *         description: Blog article
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: e1f2a3b4-c5d6-7890-abcd-ef1234567890
+ *               title: "10 Tips for Modern Interior Design"
+ *               slug: 10-tips-modern-interior-design
+ *               content: "Full article content in markdown..."
+ *               category: design
+ *               coverImage: "https://example.com/blog/interior.jpg"
+ *               author: "Jane Smith"
+ *               publishedAt: "2025-03-01T09:00:00.000Z"
  *       404:
  *         description: Article not found
  */

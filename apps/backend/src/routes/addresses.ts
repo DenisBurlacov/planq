@@ -19,6 +19,25 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: List of addresses
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: f1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *                 label: Home
+ *                 street: 123 Main St
+ *                 city: New York
+ *                 state: NY
+ *                 zip: "10001"
+ *                 country: US
+ *                 isDefault: true
+ *               - id: a9b8c7d6-e5f4-3210-abcd-ef0987654321
+ *                 label: Work
+ *                 street: 456 Office Blvd
+ *                 city: San Francisco
+ *                 state: CA
+ *                 zip: "94105"
+ *                 country: US
+ *                 isDefault: false
  */
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -34,6 +53,31 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  *   post:
  *     tags: [Addresses]
  *     summary: Create a new address
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             label: Home
+ *             street: 123 Main St
+ *             city: New York
+ *             state: NY
+ *             zip: "10001"
+ *             country: US
+ *     responses:
+ *       201:
+ *         description: Address created
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: f1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               label: Home
+ *               street: 123 Main St
+ *               city: New York
+ *               state: NY
+ *               zip: "10001"
+ *               country: US
+ *               isDefault: false
  */
 router.post(
   '/',
@@ -61,6 +105,30 @@ router.post(
  *     summary: Update an address
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             label: Home Updated
+ *             street: 789 New St
+ *             city: Brooklyn
+ *             state: NY
+ *             zip: "11201"
+ *     responses:
+ *       200:
+ *         description: Address updated
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: f1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               label: Home Updated
+ *               street: 789 New St
+ *               city: Brooklyn
+ *               state: NY
+ *               zip: "11201"
+ *               country: US
+ *               isDefault: true
  */
 router.put(
   '/:id',
@@ -89,6 +157,9 @@ router.put(
  *     summary: Delete an address
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       204:
+ *         description: Address deleted
  */
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -107,6 +178,20 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
  *     summary: Set address as default
  *     parameters:
  *       - { in: path, name: id, required: true, schema: { type: string } }
+ *     responses:
+ *       200:
+ *         description: Address set as default
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: f1a2b3c4-d5e6-7890-abcd-ef1234567890
+ *               label: Home
+ *               street: 123 Main St
+ *               city: New York
+ *               state: NY
+ *               zip: "10001"
+ *               country: US
+ *               isDefault: true
  */
 router.put('/:id/default', async (req: Request, res: Response, next: NextFunction) => {
   try {
