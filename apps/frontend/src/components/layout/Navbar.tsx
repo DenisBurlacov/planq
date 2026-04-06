@@ -657,6 +657,15 @@ export function Navbar() {
               )}
             </div>
             <Link
+              to="/wishlist"
+              data-testid="mobile-menu-wishlist"
+              onClick={() => setMenuOpen(false)}
+              className="block px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              style={{ minHeight: '44px' }}
+            >
+              {t('nav.wishlist')}
+            </Link>
+            <Link
               to="/about"
               data-testid="mobile-menu-about"
               onClick={() => setMenuOpen(false)}
@@ -693,6 +702,31 @@ export function Navbar() {
                 {t('nav.orders')}
               </Link>
             )}
+            {/* Blog with categories */}
+            <div className="border-t border-[var(--border)] mt-1 pt-1">
+              <Link
+                to="/blog"
+                data-testid="mobile-menu-blog"
+                onClick={() => setMenuOpen(false)}
+                className="block px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                style={{ minHeight: '44px' }}
+              >
+                {t('nav.blog')}
+              </Link>
+              <div className="pl-6 space-y-0.5">
+                {['trends', 'guides', 'inspiration', 'sustainability'].map(cat => (
+                  <Link
+                    key={cat}
+                    to={`/blog?category=${cat}`}
+                    data-testid={`mobile-menu-blog-${cat}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:text-accent"
+                  >
+                    {t(`nav.blogCategories.${cat}`)}
+                  </Link>
+                ))}
+              </div>
+            </div>
             {isAdmin && (
               <Link
                 to="/admin"
