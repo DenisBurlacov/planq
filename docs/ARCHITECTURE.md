@@ -1,4 +1,4 @@
-# planq -- Architecture
+# planq -- Architecture (v2.0.0)
 
 ## Overview
 
@@ -29,20 +29,20 @@ planq/
 │   │   │   │   ├── admin/        # AdminDashboardPage, AdminProductsPage, AdminCategoriesPage, AdminOrdersPage, AdminUsersPage, AdminPromosPage, AdminReviewsPage, AdminSettingsPage, AdminStatsPage, AdminAuditPage
 │   │   │   │   └── ...           # Public pages (Home, Catalog, Product, Cart, Checkout, Blog, Contact, Compare, FAQ, About, Shipping, Returns, Privacy, Terms, etc.)
 │   │   │   ├── store/            # Zustand stores (auth, cart, theme, compare, notifications, featureFlags)
-│   │   │   ├── hooks/            # useDebounce, useFeatureFlag, useProductLocale
+│   │   │   ├── hooks/            # useDebounce, useFeatureFlag, useProductLocale, useAddToCart, useConfirmModal, useModalAccessibility, usePagination
 │   │   │   ├── locales/          # i18n JSON (en / ru) — namespaces: common, catalog, checkout, profile, admin, pages, about
 │   │   │   └── styles/           # globals.css with CSS custom properties (design tokens)
 │   │   └── vite.config.ts
 │   └── backend/
 │       ├── prisma/
-│       │   ├── schema.prisma     # DB schema — 27 models, 3 roles, 5 enums
+│       │   ├── schema.prisma     # DB schema — 26 models, 3 roles, 4 enums
 │       │   ├── migrations/       # Prisma migrate history
 │       │   └── seed.ts           # Deterministic seed (10 categories, 101 products, 6 users, 6 blog articles)
 │       └── src/
 │           ├── routes/           # 23 Express routers
 │           ├── controllers/      # Route handlers
-│           ├── services/         # 24 service modules (business logic)
-│           ├── middleware/       # auth, adminAuth, managerRestrictions, contentNegotiation, upload, validate, errorHandler, requestId
+│           ├── services/         # 25 service modules (business logic)
+│           ├── middleware/       # auth, adminAuth, managerRestrictions, contentNegotiation, xmlNegotiation, upload, validate, errorHandler, requestId
 │           ├── utils/            # Prisma client, Swagger, response helpers
 │           ├── ws/               # WebSocket server
 │           ├── app.ts            # Express app setup (middleware, routes, rate limiter)
@@ -80,9 +80,42 @@ planq/
 | **Zustand**                | Minimal global state (auth, cart, theme, compare, notifications, featureFlags) |
 | **react-i18next**          | EN/RU toggle, JSON locale files, 7 namespaces                                  |
 
+### Hooks (7)
+
+| Hook                    | Purpose                                     |
+| ----------------------- | ------------------------------------------- |
+| `useDebounce`           | Debounced value for search/filter inputs    |
+| `useFeatureFlag`        | Read feature flag state from store          |
+| `useProductLocale`      | Resolve localised product name/description  |
+| `useAddToCart`          | Add-to-cart flow with modal confirmation    |
+| `useConfirmModal`       | Generic confirm/cancel modal state          |
+| `useModalAccessibility` | Focus trap and keyboard handling for modals |
+| `usePagination`         | Pagination state and helpers                |
+
+### Stores (Zustand — 6)
+
+| Store           | Key state                                                 |
+| --------------- | --------------------------------------------------------- |
+| `auth`          | `accessToken`, `user`, `login()`, `logout()`, `refresh()` |
+| `cart`          | `itemCount`, `setItemCount()`                             |
+| `theme`         | `isDark`, `toggle()`                                      |
+| `compare`       | `items[]`, `add()`, `remove()`, `clear()`                 |
+| `notifications` | `unreadCount`, `items[]`, `markRead()`, `markAllRead()`   |
+| `featureFlags`  | `flags{}`, `isEnabled()`, `fetch()`                       |
+
+### Shared Components
+
+**Layout:** Navbar, Footer, Layout, ProtectedRoute, AdminRoute, AdminLayout, MegaMenu, StaticPageLayout
+
+**UI (26):** Accordion, AddToCartModal, BackButton, Badge, Breadcrumb, Button, CopyButton, CountdownTimer, DataTable, DateRangeFilter, DragList, EmptyState, FileUploadZone, Input, Modal, PageLoadingFallback, PriceDisplay, ProductImage, ScrollToTop, Skeleton, SpecsTable, StarRating, StatCard, StockUrgencyBadge, Toast, Toggle, Tooltip, ViewToggle
+
+**Features (12):** CategoryBar, MobileFilterModal, NotificationDropdown, NotifyWhenInStock, OrderTrackingTimeline, ProductCard, ProductCardList, QuickViewModal, RecentlyViewedSection, RelatedProductsSection, ShareModal, ShareProduct
+
+**Overlays (5):** CookieConsent, SessionExpiredModal, KeyboardShortcutsModal, OnboardingTour, EmailVerificationBanner, SocialLoginButtons, CaptchaMock, FlakyElements
+
 ### Routing
 
-React Router v6 with `React.lazy` + `Suspense` on all routes for code-splitting. Protected routes wrapped in `<ProtectedRoute>` which redirects to `/login` with `state: { from }` for post-login redirect.
+React Router v6 with `React.lazy` + `Suspense` on all routes for code-splitting. 42 pages total (32 public + 10 admin). Protected routes wrapped in `<ProtectedRoute>` which redirects to `/login` with `state: { from }` for post-login redirect.
 
 Admin routes are wrapped in `<AdminRoute>` which requires both authentication and `role === 'ADMIN'` or `role === 'MANAGER'`. Non-admin users are silently redirected to `/`. The admin panel uses `<AdminLayout>` with a sidebar navigation and renders child routes via `<Outlet>`:
 
@@ -246,7 +279,7 @@ ContactMessage         id · name · email · subject · message
 NewsletterSubscriber   id · email(unique)
 ```
 
-**Total: 27 models, 4 enums.**
+**Total: 26 models, 4 enums.**
 
 ---
 
@@ -269,17 +302,41 @@ Grafana auto-provisions:
 
 ---
 
+## Key Features (v2.0.0)
+
+| Feature                     | Description                                                                                                             |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Feature flags**           | `StoreSetting` with `ff_` prefix; admin toggle in Settings page; `useFeatureFlag` hook on frontend                      |
+| **Notifications scheduler** | Configurable scheduler service (`scheduler.service.ts`) for automated notification delivery; admin controls in Settings |
+| **Auto-progress orders**    | Order status auto-advances through lifecycle via scheduler; tracking events logged as JSON                              |
+| **Webhooks**                | User-managed webhook subscriptions (`WebhookSubscription` + `WebhookDelivery` models); delivery history tracking        |
+| **Two-factor auth (2FA)**   | TOTP-based 2FA — setup via QR code, verify, disable; integrated into login flow                                         |
+| **Captcha**                 | Mock captcha component for registration/contact protection; generate + verify API endpoints                             |
+| **Email verification**      | Token-based email verification flow; banner reminder on unverified accounts                                             |
+| **OAuth (social login)**    | Google and GitHub OAuth buttons (frontend components); `provider`/`providerId` on User model                            |
+| **Saved payment cards**     | CRUD for `SavedCard` model; select saved card at checkout or add new                                                    |
+| **Addresses management**    | Full CRUD with set-default; address book in profile; integrated into checkout                                           |
+| **Product compare**         | Compare up to N products side-by-side; Zustand `compare` store; dedicated `/compare` page                               |
+| **Blog**                    | `BlogArticle` model with slug routing; list + detail pages; related articles                                            |
+| **Content negotiation**     | JSON (default) and XML response formats via `Accept` header                                                             |
+| **Audit logging**           | `AuditLog` model; automatic logging of admin actions; admin viewer page with filters                                    |
+| **Real-time notifications** | WebSocket `notification.new` event; `NotificationDropdown` component; mark-read API                                     |
+| **Cookie consent**          | GDPR-style cookie banner with essential/analytics/marketing toggles                                                     |
+| **Onboarding tour**         | First-visit guided tour with spotlight and tooltips                                                                     |
+
+---
+
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/ci.yml`):
 
 ```
-push/PR to develop or main
+push/PR to develop or main  (+  manual workflow_dispatch)
   ├── lint & typecheck (ESLint + tsc --noEmit)
   ├── test (Jest — backend unit tests, requires lint)    → uploads coverage artifact
   ├── build (tsc + vite build, requires lint)
-  ├── e2e (Playwright — chromium + firefox, requires build, continue-on-error)  → uploads report artifact
-  └── docker push → GHCR (main branch push only, requires test + build)
+  ├── e2e (Playwright — chromium + firefox, requires build, manual dispatch only, continue-on-error)  → uploads report artifact
+  └── docker push → GHCR (main branch push only, requires test + build, Buildx + layer caching)
 ```
 
 Branch protection: `develop` and `main` require CI to pass before merge.
