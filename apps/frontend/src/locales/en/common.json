@@ -59,7 +59,8 @@
     "generic": "Something went wrong. Please try again.",
     "notFound": "Page not found",
     "unauthorized": "Please sign in to continue",
-    "network": "Network error. Check your connection."
+    "network": "Network error. Check your connection.",
+    "dangerousContent": "Input contains potentially dangerous content. Please remove any scripts or special characters."
   },
   "theme": {
     "light": "Light",

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { useToast } from '@components/ui/Toast';
+import { hasDangerousContent } from '@utils/validation';
 
 interface FormErrors {
   name?: string;
@@ -48,6 +49,11 @@ export function ContactPage() {
     setErrors(validationErrors);
     setTouched({ name: true, email: true, subject: true, message: true });
     if (Object.keys(validationErrors).length > 0) return;
+
+    if ([name, subject, message].some(hasDangerousContent)) {
+      toast('error', t('common:errors.dangerousContent', { ns: 'common' }));
+      return;
+    }
 
     setSending(true);
     // Simulate sending

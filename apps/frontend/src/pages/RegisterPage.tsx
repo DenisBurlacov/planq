@@ -10,6 +10,7 @@ import { authApi } from '@api/auth';
 import { useState } from 'react';
 import { ApiException } from '@api/client';
 import { SocialLoginButtons } from '@components/SocialLoginButtons';
+import { hasDangerousContent } from '@utils/validation';
 
 const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -39,6 +40,10 @@ export function RegisterPage() {
 
   const onSubmit = async (data: FormData) => {
     setServerError('');
+    if (hasDangerousContent(data.name)) {
+      setServerError(t('common:errors.dangerousContent', { ns: 'common' }));
+      return;
+    }
     try {
       const res = await authApi.register(data.name, data.email, data.password);
       setAuth(res.accessToken, res.refreshToken, res.user);

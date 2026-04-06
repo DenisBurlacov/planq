@@ -9,6 +9,7 @@ import { productsApi } from '@api/products';
 import { apiFetch } from '@api/client';
 import { useConfirmModal } from '@hooks/useConfirmModal';
 import type { Category } from '@appTypes/api';
+import { hasDangerousContent } from '@utils/validation';
 
 interface CategoryInput {
   name: string;
@@ -50,6 +51,10 @@ export function AdminCategoriesPage() {
   };
 
   const handleSave = async () => {
+    if (hasDangerousContent(form.name)) {
+      toast('error', t('common:errors.dangerousContent', { ns: 'common' }));
+      return;
+    }
     try {
       if (editingId) {
         await apiFetch(`/api/v1/admin/categories/${editingId}`, {

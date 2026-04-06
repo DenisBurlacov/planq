@@ -17,6 +17,7 @@ import { useAuthStore } from '@store/auth.store';
 import { useConfirmModal } from '@hooks/useConfirmModal';
 import { usePagination } from '@hooks/usePagination';
 import type { Product } from '@appTypes/api';
+import { hasDangerousContent } from '@utils/validation';
 
 export function AdminProductsPage() {
   const { t } = useTranslation('admin');
@@ -146,6 +147,10 @@ export function AdminProductsPage() {
   };
 
   const handleSubmit = () => {
+    if ([formName, formDesc].some(hasDangerousContent)) {
+      toast('error', t('common:errors.dangerousContent', { ns: 'common' }));
+      return;
+    }
     const slug = formName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')

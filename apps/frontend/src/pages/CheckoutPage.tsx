@@ -14,6 +14,7 @@ import { profileApi } from '@api/profile';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
 import { CreditCard, Wallet, Check, Truck, Zap, Clock } from 'lucide-react';
+import { hasDangerousContent } from '@utils/validation';
 
 const schema = z.object({
   shippingAddress: z.string().min(5),
@@ -185,6 +186,10 @@ export function CheckoutPage() {
   };
 
   const onSubmit = async (data: FormData) => {
+    if (hasDangerousContent(data.shippingAddress)) {
+      toast('error', t('common:errors.dangerousContent', { ns: 'common' }));
+      return;
+    }
     try {
       const order = await ordersApi.checkout({
         shippingAddress: data.shippingAddress,
