@@ -2,6 +2,7 @@
 
 export enum Role {
   USER = 'USER',
+  MANAGER = 'MANAGER',
   ADMIN = 'ADMIN',
 }
 
@@ -281,3 +282,140 @@ export interface UpdateOrderStatusInput {
 
 /** Valid order status transitions map */
 export type OrderStatusTransitions = Record<OrderStatus, OrderStatus[]>;
+
+// ─── Delivery ───────────────────────────────────────────────────────────────
+
+export enum DeliveryMethod {
+  STANDARD = 'STANDARD',
+  EXPRESS = 'EXPRESS',
+  NEXT_DAY = 'NEXT_DAY',
+}
+
+// ─── Product Variant ────────────────────────────────────────────────────────
+
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  name: string;
+  color?: string | null;
+  size?: string | null;
+  stock: number;
+  priceAdjustment: number;
+  image?: string | null;
+}
+
+// ─── Address ────────────────────────────────────────────────────────────────
+
+export interface Address {
+  id: string;
+  userId: string;
+  name: string;
+  street: string;
+  city: string;
+  zip: string;
+  country: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── Notification ───────────────────────────────────────────────────────────
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
+// ─── Audit Log ──────────────────────────────────────────────────────────────
+
+export interface AuditLogEntry {
+  id: string;
+  userId: string;
+  action: string;
+  resource: string;
+  resourceId: string | null;
+  details: Record<string, unknown> | null;
+  createdAt: string;
+  user?: { name: string };
+}
+
+// ─── Saved Card ─────────────────────────────────────────────────────────────
+
+export interface SavedCard {
+  id: string;
+  userId: string;
+  last4: string;
+  brand: string;
+  cardholderName: string;
+  expMonth: number;
+  expYear: number;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+// ─── Webhook ────────────────────────────────────────────────────────────────
+
+export interface WebhookSubscription {
+  id: string;
+  userId: string;
+  url: string;
+  events: string[];
+  active: boolean;
+  createdAt: string;
+}
+
+export interface WebhookDelivery {
+  id: string;
+  subscriptionId: string;
+  event: string;
+  payload: Record<string, unknown>;
+  status: string;
+  createdAt: string;
+}
+
+// ─── Blog ───────────────────────────────────────────────────────────────────
+
+export interface BlogArticle {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImage: string | null;
+  category: string;
+  authorName: string;
+  publishedAt: string;
+}
+
+// ─── WebSocket ──────────────────────────────────────────────────────────────
+
+export interface WsMessage<T = unknown> {
+  event: 'payment.result' | 'order.status.updated' | 'cart.updated' | 'notification.new';
+  payload: T;
+}
+
+export interface PaymentResultPayload {
+  status: 'success' | 'failed' | 'declined' | 'timeout';
+  orderId: string;
+  reason?: string;
+}
+
+export interface OrderStatusPayload {
+  orderId: string;
+  status: OrderStatus;
+}
+
+// ─── Notification Preferences ───────────────────────────────────────────────
+
+export interface NotificationPreferences {
+  email: boolean;
+  push: boolean;
+  newsletter: boolean;
+  orderUpdates: boolean;
+  promotions: boolean;
+}
