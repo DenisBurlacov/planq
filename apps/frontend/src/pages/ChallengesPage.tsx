@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trophy, Medal, Star, Crown, ChevronDown, ChevronRight, Lightbulb } from 'lucide-react';
 import { useChallengesStore } from '@store/challenges.store';
@@ -81,6 +81,9 @@ export function ChallengesPage() {
     });
   };
 
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 5;
+
   const filtered = useMemo(
     () =>
       CHALLENGES.filter(c => {
@@ -90,6 +93,14 @@ export function ChallengesPage() {
       }),
     [diffFilter, catFilter]
   );
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginatedChallenges = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [diffFilter, catFilter]);
 
   const totalDone = totalCompleted();
 
@@ -209,8 +220,17 @@ export function ChallengesPage() {
       })}
 
       {/* Challenge list */}
-      <div data-testid="challenges-list" className="space-y-3 mt-6">
-        {filtered.map(challenge => {
+      <div className="flex items-center justify-between mt-6 mb-3">
+        <span className="text-sm text-[var(--text-secondary)]">
+          {t('page.showing', {
+            from: (page - 1) * PAGE_SIZE + 1,
+            to: Math.min(page * PAGE_SIZE, filtered.length),
+            total: filtered.length,
+          })}
+        </span>
+      </div>
+      <div data-testid="challenges-list" className="space-y-3">
+        {paginatedChallenges.map(challenge => {
           const done = isCompleted(challenge.id);
           const hintKey = `${challenge.id}.hint`;
           const hintText = t(hintKey, { defaultValue: '' });
@@ -310,6 +330,34 @@ export function ChallengesPage() {
           );
         })}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div
+          data-testid="challenges-pagination"
+          className="flex items-center justify-center gap-3 mt-6"
+        >
+          <button
+            data-testid="challenges-prev"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            ←
+          </button>
+          <span className="text-sm text-[var(--text-secondary)]">
+            {page} / {totalPages}
+          </span>
+          <button
+            data-testid="challenges-next"
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-3 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

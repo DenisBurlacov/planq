@@ -309,6 +309,11 @@ export function Navbar() {
                   )}
                 </div>
 
+                {accessToken && (
+                  <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
+                    {t('nav.orders')}
+                  </Link>
+                )}
                 <Link
                   data-testid="nav-challenges"
                   to="/challenges"
@@ -317,11 +322,6 @@ export function Navbar() {
                   <Trophy className="h-4 w-4" />
                   {t('nav.challenges')}
                 </Link>
-                {accessToken && (
-                  <Link data-testid="nav-orders" to="/orders" className={navLinkClass('/orders')}>
-                    {t('nav.orders')}
-                  </Link>
-                )}
                 {isAdmin && (
                   <Link
                     data-testid="nav-admin"
