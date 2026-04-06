@@ -23,23 +23,21 @@ import { ViewToggle, type ViewMode } from '@components/ui/ViewToggle';
 import { CategoryBar } from '@components/features/CategoryBar';
 import { useDebounce } from '@hooks/useDebounce';
 import { productsApi, type ProductsQuery } from '@api/products';
-import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
-import { useCartStore } from '@store/cart.store';
 import { useAuthStore } from '@store/auth.store';
 import { useCompareStore } from '@store/compare.store';
 import { useToast } from '@components/ui/Toast';
-import { ApiException } from '@api/client';
+import { useAddToCart } from '@hooks/useAddToCart';
 import type { Product } from '@appTypes/api';
 
 export function CatalogPage() {
   const { t } = useTranslation('catalog');
   const { accessToken } = useAuthStore();
-  const { increment } = useCartStore();
   const compareStore = useCompareStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+  const handleAddToCart = useAddToCart();
 
   // Read initial filters from URL query params
   const searchParams = new URLSearchParams(location.search);
@@ -201,20 +199,6 @@ export function CatalogPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setQuery(q => ({ ...q, search, page: 1 }));
-  };
-
-  const handleAddToCart = async (product: Product, quantity = 1) => {
-    if (!accessToken) {
-      navigate('/login', { state: { from: location } });
-      return;
-    }
-    try {
-      await cartApi.add(product.id, quantity);
-      increment(quantity);
-      toast('success', t('product.addedToCartName', { name: product.name }));
-    } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
-    }
   };
 
   const handleToggleWishlist = async (productId: string) => {

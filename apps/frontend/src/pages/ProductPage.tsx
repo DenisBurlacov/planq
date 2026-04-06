@@ -23,12 +23,11 @@ import { ShareProduct } from '@components/features/ShareProduct';
 import { NotifyWhenInStock } from '@components/features/NotifyWhenInStock';
 import { FileUploadZone } from '@components/ui/FileUploadZone';
 import { productsApi } from '@api/products';
-import { cartApi } from '@api/cart';
 import { wishlistApi } from '@api/wishlist';
-import { useCartStore } from '@store/cart.store';
 import { useAuthStore } from '@store/auth.store';
 import { useToast } from '@components/ui/Toast';
 import { ApiException } from '@api/client';
+import { useAddToCart } from '@hooks/useAddToCart';
 import { RelatedProductsSection } from '@components/features/RelatedProductsSection';
 import {
   RecentlyViewedSection,
@@ -50,11 +49,11 @@ export function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation('catalog');
   const { accessToken } = useAuthStore();
-  const { increment } = useCartStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const qc = useQueryClient();
+  const addToCart = useAddToCart();
   const enableReviews = useFeatureFlag('enable_reviews');
 
   const [activeImage, setActiveImage] = useState(0);
@@ -175,17 +174,11 @@ export function ProductPage() {
   };
 
   const handleCartModalConfirm = async (quantity: number) => {
+    if (!product) return;
     setAddingToCart(true);
-    try {
-      await cartApi.add(id ?? '', quantity);
-      increment(quantity);
-      toast('success', t('product.addedToCart'));
-      setCartModalOpen(false);
-    } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
-    } finally {
-      setAddingToCart(false);
-    }
+    await addToCart(product, quantity);
+    setAddingToCart(false);
+    setCartModalOpen(false);
   };
 
   const handleToggleWishlist = async () => {

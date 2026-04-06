@@ -7,30 +7,18 @@ import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { Modal } from '@components/ui/Modal';
 import { EmptyState } from '@components/ui/EmptyState';
 import { wishlistApi } from '@api/wishlist';
-import { cartApi } from '@api/cart';
-import { useCartStore } from '@store/cart.store';
 import { useToast } from '@components/ui/Toast';
-import { ApiException } from '@api/client';
+import { useAddToCart } from '@hooks/useAddToCart';
 import type { Product } from '@appTypes/api';
 
 export function WishlistPage() {
   const { t } = useTranslation('catalog');
-  const { increment } = useCartStore();
   const { toast } = useToast();
   const qc = useQueryClient();
+  const handleAddToCart = useAddToCart();
   const [pendingRemoveProduct, setPendingRemoveProduct] = useState<Product | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ['wishlist'], queryFn: wishlistApi.get });
-
-  const handleAddToCart = async (product: Product) => {
-    try {
-      await cartApi.add(product.id);
-      increment();
-      toast('success', t('product.addedToCartName', { name: product.name }));
-    } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
-    }
-  };
 
   const handleRemoveRequest = (productId: string) => {
     const item = data?.find(w => w.productId === productId || w.product.id === productId);

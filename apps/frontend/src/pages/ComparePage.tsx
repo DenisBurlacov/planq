@@ -7,12 +7,8 @@ import { Button } from '@components/ui/Button';
 import { Skeleton } from '@components/ui/Skeleton';
 import { EmptyState } from '@components/ui/EmptyState';
 import { useCompareStore } from '@store/compare.store';
-import { useCartStore } from '@store/cart.store';
-import { useAuthStore } from '@store/auth.store';
 import { productsApi } from '@api/products';
-import { cartApi } from '@api/cart';
-import { useToast } from '@components/ui/Toast';
-import { ApiException } from '@api/client';
+import { useAddToCart } from '@hooks/useAddToCart';
 import type { Product } from '@appTypes/api';
 
 const SPEC_KEYS = [
@@ -26,9 +22,7 @@ const SPEC_KEYS = [
 export function ComparePage() {
   const { t } = useTranslation('catalog');
   const { productIds, removeProduct, clearAll } = useCompareStore();
-  const { increment } = useCartStore();
-  const { accessToken } = useAuthStore();
-  const { toast } = useToast();
+  const handleAddToCart = useAddToCart();
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['compare-products', productIds],
@@ -39,17 +33,6 @@ export function ComparePage() {
     },
     enabled: productIds.length > 0,
   });
-
-  const handleAddToCart = async (product: Product) => {
-    if (!accessToken) return;
-    try {
-      await cartApi.add(product.id, 1);
-      increment(1);
-      toast('success', t('product.addedToCartName', { name: product.name }));
-    } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
-    }
-  };
 
   const getSpecValue = (product: Product, key: string): string => {
     switch (key) {

@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   Truck,
@@ -15,17 +15,13 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { ProductCard } from '@components/features/ProductCard';
 import { ProductCardSkeleton } from '@components/ui/Skeleton';
 import { productsApi } from '@api/products';
-import { cartApi } from '@api/cart';
-import { useCartStore } from '@store/cart.store';
 import { useAuthStore } from '@store/auth.store';
-import { useToast } from '@components/ui/Toast';
-import type { Product } from '@appTypes/api';
-import { ApiException } from '@api/client';
 import { useTranslation } from 'react-i18next';
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '@constants/categoryIcons';
 import { TESTIMONIALS } from '@constants/testimonials';
 import { OnboardingTour } from '@components/OnboardingTour';
 import { useFeatureFlag } from '@hooks/useFeatureFlag';
+import { useAddToCart } from '@hooks/useAddToCart';
 import { FlakyElements } from '@components/FlakyElements';
 
 // Verified Unsplash hero images (Scandinavian interior)
@@ -39,10 +35,7 @@ const HERO_IMAGES = [
 export function HomePage() {
   const { t } = useTranslation('catalog');
   const { accessToken } = useAuthStore();
-  const { increment } = useCartStore();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const handleAddToCart = useAddToCart();
 
   const showTestimonials = useFeatureFlag('show_testimonials');
   const showCountdown = useFeatureFlag('show_countdown');
@@ -102,20 +95,6 @@ export function HomePage() {
     queryKey: ['categories'],
     queryFn: productsApi.getCategories,
   });
-
-  const handleAddToCart = async (product: Product, quantity = 1) => {
-    if (!accessToken) {
-      navigate('/login', { state: { from: location } });
-      return;
-    }
-    try {
-      await cartApi.add(product.id, quantity);
-      increment(quantity);
-      toast('success', t('product.addedToCartName', { name: product.name }));
-    } catch (err) {
-      toast('error', err instanceof ApiException ? err.message : t('product.failedAddToCart'));
-    }
-  };
 
   return (
     <div className="space-y-16">
